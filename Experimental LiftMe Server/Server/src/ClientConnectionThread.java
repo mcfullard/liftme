@@ -17,6 +17,7 @@ public class ClientConnectionThread extends Thread {
     private final String AUTHENTICATE = "#AUTHENTICATE";
     private final String AUTHENTICATION_FAIL = "#NOAUTH";
     private final String AUTHENTICATION_SUCCESS = "#YESAUTH";
+    private final String UPDATE_DETAILS = "#UPDATE_DETAILS";
 
     public ClientConnectionThread(mainServer theServer,Socket newSocket){
         this.theServer = theServer;
@@ -39,6 +40,9 @@ public class ClientConnectionThread extends Thread {
                     case AUTHENTICATE:
                         authenticate();
                         break;
+                    case UPDATE_DETAILS:
+                        UpdateDetails();
+                        break;
                 }
 
                 response = readStream.readUTF();
@@ -58,6 +62,27 @@ public class ClientConnectionThread extends Thread {
 
     private void Register(){
         try {
+            String email = readStream.readUTF();
+            String password = readStream.readUTF();
+            String authKey = DatabaseHandler.RegisterUser(password,email);
+
+            if(authKey != null){
+                writeStream.writeUTF(AUTHENTICATION_SUCCESS);
+                writeStream.writeUTF(authKey);
+            }else{
+                writeStream.writeUTF(AUTHENTICATION_FAIL);
+            }
+
+            writeStream.flush();
+            System.out.println("CLIENT THREAD : Registering user " + email);
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    private void UpdateDetails(){
+        try {
+            String authKey = readStream.readUTF();
             String name = readStream.readUTF();
             String surname = readStream.readUTF();
             String email = readStream.readUTF();
@@ -65,10 +90,10 @@ public class ClientConnectionThread extends Thread {
             String contactNum = readStream.readUTF();
             String availableAsDriver = readStream.readUTF();
             String numberOfPassengers = readStream.readUTF();
-            Boolean success = DatabaseHandler.RegisterUser(name,surname,password,email,contactNum,Integer.parseInt(availableAsDriver),Integer.parseInt(numberOfPassengers));
+            Boolean success = DatabaseHandler.UpdateUser(authKey , name, surname, password, email, contactNum, Integer.parseInt(availableAsDriver), Integer.parseInt(numberOfPassengers));
             writeStream.writeBoolean(success);
             writeStream.flush();
-            System.out.println("CLIENT THREAD : Registering user '" + name + " " + surname);
+            System.out.println("CLIENT THREAD : Updating user '" + name + " " + surname);
         }catch(IOException e){
             e.printStackTrace();
         }
@@ -78,17 +103,10 @@ public class ClientConnectionThread extends Thread {
         try {
             String email = readStream.readUTF();
             String password = readStream.readUTF();
-            User userObj = DatabaseHandler.AuthenticateUser(email,password);
-            if(userObj != null){
+            String authKey = DatabaseHandler.AuthenticateUser(email,password);
+            if(authKey != null){
                 writeStream.writeUTF(AUTHENTICATION_SUCCESS);
-                writeStream.writeUTF(userObj.getName());
-                writeStream.writeUTF(userObj.getSurname());
-                writeStream.writeUTF(userObj.getEmail());
-                writeStream.writeUTF(userObj.getPassword());
-                writeStream.writeUTF(userObj.getContactNum());
-                writeStream.writeUTF(userObj.getUserID().toString());
-                writeStream.writeUTF(userObj.getAvailableAsDrive().toString());
-                writeStream.writeUTF(userObj.getNumberOfPassengers().toString());
+                writeStream.writeUTF(authKey);
             }else{
                 writeStream.writeUTF(AUTHENTICATION_FAIL);
             }
