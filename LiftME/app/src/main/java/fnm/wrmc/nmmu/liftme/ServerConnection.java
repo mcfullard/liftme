@@ -6,6 +6,8 @@ import android.util.Log;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.Socket;
 
 /**
@@ -26,6 +28,7 @@ public class ServerConnection {
 
     private static final String SERVER_IP = "192.168.1.74";
     private static final int SERVER_PORT = 5050;
+    private static final int CONNECTION_TIMEOUT = 5000;
 
     static class AuthenticationRunner implements Runnable {
 
@@ -45,8 +48,8 @@ public class ServerConnection {
                 Socket socket = null;
 
                 try {
-                    socket = new Socket(SERVER_IP, SERVER_PORT);
-
+                    socket = new Socket();
+                    socket.connect(new InetSocketAddress(SERVER_IP,SERVER_PORT),CONNECTION_TIMEOUT);
 
                     DataOutputStream writeStream = new DataOutputStream(socket.getOutputStream());
                     DataInputStream readStream = new DataInputStream(socket.getInputStream());
@@ -114,8 +117,8 @@ public class ServerConnection {
                 Socket socket = null;
 
                 try {
-                    socket = new Socket(SERVER_IP, SERVER_PORT);
-
+                    socket = new Socket();
+                    socket.connect(new InetSocketAddress(SERVER_IP,SERVER_PORT),CONNECTION_TIMEOUT);
 
                     DataOutputStream writeStream = new DataOutputStream(socket.getOutputStream());
                     DataInputStream readStream = new DataInputStream(socket.getInputStream());
