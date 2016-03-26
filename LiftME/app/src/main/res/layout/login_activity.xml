@@ -9,6 +9,12 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="fnm.wrmc.nmmu.liftme.LoginActivity">
 
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </FrameLayout>
+
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
@@ -49,7 +55,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="Password"
+                android:text="Password:"
                 android:id="@+id/tVLoginPassword" />
 
             <EditText
@@ -67,7 +73,8 @@
                 android:text="Login"
                 android:id="@+id/btnLogin"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginTop="20dp" />
+                android:layout_marginTop="20dp"
+                android:onClick="OnLoginClick"/>
 
             <Button
                 android:layout_width="170dp"
@@ -75,6 +82,15 @@
                 android:text="Register"
                 android:id="@+id/btnRegister"
                 android:layout_gravity="center_horizontal" />
+
+            <ProgressBar
+                style="?android:attr/progressBarStyleLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/pBLoginSpinner"
+                android:layout_gravity="center"
+                android:visibility="invisible"/>
+
         </LinearLayout>
     </LinearLayout>
 </RelativeLayout>
