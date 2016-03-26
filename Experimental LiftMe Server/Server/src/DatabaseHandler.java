@@ -15,10 +15,6 @@ public class DatabaseHandler {
     static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
     static final String DB_URL = "jdbc:mysql://localhost:3306/liftme";
 
-    //  Database credentials
-    static final String USER = "root";
-    static final String PASSWORD = "1678425";
-
     static boolean UpdateUser(String authKey, String name, String surname, String password, String email, String contactNum, int availableAsDriver, int numberOfPassengers ){
         writeLock.lock();
         Connection conn = null;
@@ -28,7 +24,8 @@ public class DatabaseHandler {
 
             Class.forName("com.mysql.jdbc.Driver");
             System.out.println("Connecting to database to register user " + name + " " + surname + ".");
-            conn = DriverManager.getConnection(DB_URL, USER, PASSWORD);
+            PropertyManager pm = PropertyManager.getInstance();
+            conn = DriverManager.getConnection(DB_URL, pm.getProperty("USER"), pm.getProperty("PASSWORD"));
 
             String updateSQL = "UPDATE user SET name = ? , surname = ? , password = ?, email = ?, contactNum = ?, availableAsDriver = ?, numberOfPassengers = ? WHERE authenticationToken = ?;";
             stmt = conn.prepareStatement(updateSQL);
@@ -78,7 +75,8 @@ public class DatabaseHandler {
 
             Class.forName("com.mysql.jdbc.Driver");
             System.out.println("Connecting to database to register user " + email + ".");
-            conn = DriverManager.getConnection(DB_URL, USER, PASSWORD);
+            PropertyManager pm = PropertyManager.getInstance();
+            conn = DriverManager.getConnection(DB_URL, pm.getProperty("USER"), pm.getProperty("PASSWORD"));
             tempKey = GenerateAuthKey();
 
             String registerSql = "INSERT INTO user ( password, email , authenticationToken) VALUES ( ? , ? , ? );";
@@ -123,7 +121,8 @@ public class DatabaseHandler {
 
             Class.forName("com.mysql.jdbc.Driver");
             System.out.println("Connecting to database to get user details " + authKey + ".");
-            conn = DriverManager.getConnection(DB_URL, USER, PASSWORD);
+            PropertyManager pm = PropertyManager.getInstance();
+            conn = DriverManager.getConnection(DB_URL, pm.getProperty("USER"), pm.getProperty("PASSWORD"));
 
             String authSql = "SELECT * FROM user WHERE authenticationToken = ?";
             stmt = conn.prepareStatement(authSql);
@@ -179,7 +178,8 @@ public class DatabaseHandler {
 
             Class.forName("com.mysql.jdbc.Driver");
             System.out.println("Connecting to database to Authenticate user " + email + ".");
-            conn = DriverManager.getConnection(DB_URL, USER, PASSWORD);
+            PropertyManager pm = PropertyManager.getInstance();
+            conn = DriverManager.getConnection(DB_URL, pm.getProperty("USER"), pm.getProperty("PASSWORD"));
 
             String authSql = "SELECT * FROM user WHERE email = ?";
             stmt = conn.prepareStatement(authSql);

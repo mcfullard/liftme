@@ -38,7 +38,7 @@ public class mainServer {
                 try {
                     serverSocket.close();
                 }catch (IOException e){
-
+                    System.out.println(e.getMessage());
                 }
             }
         }
