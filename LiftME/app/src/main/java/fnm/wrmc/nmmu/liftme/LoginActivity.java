@@ -1,5 +1,8 @@
 package fnm.wrmc.nmmu.liftme;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
@@ -44,7 +47,7 @@ public class LoginActivity extends AppCompatActivity {
                         loginSpinner.setVisibility(View.INVISIBLE);
                         switch (curAuthTask.authStatus) {
                             case ServerConnection.AUTHENTICATION_SUCCESS:
-                                OnAuthenticationFailure("!!!PLACEHOLDER!!! SUCCESS");
+                                OnAuthenticationSuccess(curAuthTask);
                                 break;
                             case ServerConnection.AUTHENTICATION_FAIL:
                                 OnAuthenticationFailure("The email and password combination was not found.");
@@ -71,8 +74,12 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void OnAuthenticationSuccess(AuthenticationTask authTask){
+        SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString(ServerConnection.AUTHENTICATION_TOKEN, authTask.authKey);
+        editor.commit();
 
-
+        //TODO Change to dashboard activity on successful login
     }
 
     private void OnAuthenticationFailure(String message){

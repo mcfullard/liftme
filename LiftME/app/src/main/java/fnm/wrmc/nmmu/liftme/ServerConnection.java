@@ -22,6 +22,7 @@ public class ServerConnection {
     public static final String AUTHENTICATION_SUCCESS = "#YESAUTH";
     public static final String AUTHENTICATION_INCOMPLETE = "#INCOMPLETEAUTH";
     public static final String UPDATE_DETAILS = "#UPDATE_DETAILS";
+    public static final String AUTHENTICATION_TOKEN = "AUTH_TOKEN";
 
     static class AuthenticationRunner implements Runnable {
 
