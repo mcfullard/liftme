@@ -32,4 +32,6 @@ proguard/
 captures/
 
 .idea/
+./*/.idea
 
+Experimental LiftMe Server/local_properties.xml
