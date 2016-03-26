@@ -76,22 +76,38 @@
                 android:id="@+id/edtRegisterPasswordConf"
                 android:hint="Confirmation Password" />
 
-            <Button
-                android:layout_width="170dp"
+            <FrameLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Register"
-                android:id="@+id/btnRegRegister"
-                android:layout_gravity="center_horizontal"
-                android:onClick="OnRegisterClick" />
+                android:layout_gravity="center_horizontal">
 
-            <ProgressBar
-                style="?android:attr/progressBarStyleLarge"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/pbRegisterSpinner"
-                android:layout_gravity="center"
-                android:visibility="invisible"
-                android:indeterminate="false" />
+                <ProgressBar
+                    style="?android:attr/progressBarStyleLarge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/pbRegisterSpinner"
+                    android:layout_gravity="center_horizontal"
+                    android:visibility="invisible"
+                    android:indeterminate="false" />
+
+                <Button
+                    android:layout_width="170dp"
+                    android:layout_height="wrap_content"
+                    android:text="Register"
+                    android:id="@+id/btnRegRegister"
+                    android:layout_gravity="center"
+                    android:onClick="OnRegisterClick"
+                    android:layout_margin="20dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:text="Registering you..."
+                    android:id="@+id/tVRegistering"
+                    android:visibility="invisible"
+                    android:layout_gravity="center" />
+            </FrameLayout>
 
         </LinearLayout>
     </LinearLayout>

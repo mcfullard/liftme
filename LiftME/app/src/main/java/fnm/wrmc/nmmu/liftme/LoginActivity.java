@@ -127,7 +127,7 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    public void AnimateLogin() {
+    private void AnimateLogin() {
         btnLogin.animate().alpha(0.0f).start();
         btnRegister.animate().alpha(0.0f).start();
         edtEmail.animate().alpha(0.5f).start();

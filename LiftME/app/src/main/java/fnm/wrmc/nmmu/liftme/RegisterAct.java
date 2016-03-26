@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import fnm.wrmc.nmmu.liftme.ServerConnection.RegisterRunner.RegistrationTask;
@@ -23,6 +24,7 @@ public class RegisterAct extends AppCompatActivity {
     EditText edtEmail, edtPassword, edtPasswordConf;
     ProgressBar pbRegisterSpinner;
     Button btnRegister;
+    TextView tvRegistering;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +35,7 @@ public class RegisterAct extends AppCompatActivity {
         edtPasswordConf = (EditText) findViewById(R.id.edtRegisterPasswordConf);
         btnRegister = (Button) findViewById(R.id.btnRegRegister);
         pbRegisterSpinner = (ProgressBar) findViewById(R.id.pbRegisterSpinner);
+        tvRegistering = (TextView)findViewById(R.id.tVRegistering);
 
         btnRegister.setVisibility(View.VISIBLE);
         pbRegisterSpinner.setVisibility(View.GONE);
@@ -47,8 +50,7 @@ public class RegisterAct extends AppCompatActivity {
                 switch (msg.what) {
                     case REG_MESSAGE:
                         RegistrationTask curRegTask = (RegistrationTask) msg.obj;
-                        btnRegister.setVisibility(View.VISIBLE);
-                        pbRegisterSpinner.setVisibility(View.GONE);
+                        ResetRegisterAnimation();
                         switch (curRegTask.authStatus) {
                             case ServerConnection.AUTHENTICATION_SUCCESS:
                                 OnRegistrationSuccess(curRegTask);
@@ -107,8 +109,7 @@ public class RegisterAct extends AppCompatActivity {
 
         if (dataValidationCheck == 1) {
             if (password.equals(passwordConf)) {
-                btnRegister.setVisibility(View.GONE);
-                pbRegisterSpinner.setVisibility(View.VISIBLE);
+                AnimateRegister();
 
                 RegistrationTask regTask = new RegistrationTask(email, password, this);
 
@@ -119,5 +120,37 @@ public class RegisterAct extends AppCompatActivity {
                 OnRegistrationFailure("Your confirmation password does not match.");
             }
         }
+    }
+
+    private void AnimateRegister() {
+        btnRegister.animate().alpha(0.0f).start();
+        edtEmail.animate().alpha(0.5f).start();
+        edtPassword.animate().alpha(0.5f).start();
+        pbRegisterSpinner.setVisibility(View.VISIBLE);
+        tvRegistering.setVisibility(View.VISIBLE);
+
+        edtEmail.clearFocus();
+        edtEmail.setFocusable(false);
+        edtPassword.clearFocus();
+        edtPassword.setFocusable(false);
+
+        pbRegisterSpinner.animate().translationX(-230f);
+        tvRegistering.animate().translationX(230f);
+    }
+
+    private void ResetRegisterAnimation(){
+        btnRegister.animate().alpha(1.0f).start();
+        edtEmail.animate().alpha(1.0f).start();
+        edtPassword.animate().alpha(1.0f).start();
+        pbRegisterSpinner.setVisibility(View.INVISIBLE);
+        tvRegistering.setVisibility(View.INVISIBLE);
+
+        edtEmail.setFocusable(true);
+        edtEmail.setFocusableInTouchMode(true);
+        edtPassword.setFocusable(true);
+        edtPassword.setFocusableInTouchMode(true);
+
+        pbRegisterSpinner.animate().translationX(230f);
+        tvRegistering.animate().translationX(-230f);
     }
 }
