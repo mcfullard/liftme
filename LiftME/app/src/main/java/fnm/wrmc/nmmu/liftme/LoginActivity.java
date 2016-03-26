@@ -22,6 +22,8 @@ public class LoginActivity extends AppCompatActivity {
     ProgressBar loginSpinner;
     Button btnLogin;
     Button btnRegister;
+    EditText edtEmail;
+    EditText edtPassword;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +33,8 @@ public class LoginActivity extends AppCompatActivity {
         loginSpinner = (ProgressBar)findViewById(R.id.pBLoginSpinner);
         btnLogin = (Button)findViewById(R.id.btnLogin);
         btnRegister = (Button)findViewById(R.id.btnRegister);
+        edtEmail = (EditText)findViewById(R.id.edtLoginEmail);
+        edtPassword = (EditText)findViewById(R.id.edtLoginPassword);
 
         btnLogin.setVisibility(View.VISIBLE);
         btnRegister.setVisibility(View.VISIBLE);
@@ -87,8 +91,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void OnLoginClick(View view){
-        EditText edtEmail = (EditText)findViewById(R.id.edtLoginEmail);
-        EditText edtPassword = (EditText)findViewById(R.id.edtLoginPassword);
+
 
         String email = edtEmail.getText().toString();
         String password = edtPassword.getText().toString();
@@ -116,5 +119,11 @@ public class LoginActivity extends AppCompatActivity {
             authenticationThread.start();
         }
 
+    }
+
+    public void OnRegisterClick(View view){
+        Intent registerIntent = new Intent(this,RegisterAct.class);
+        registerIntent.putExtra("Email",edtEmail.getText().toString());
+        startActivity(registerIntent);
     }
 }
