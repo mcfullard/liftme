@@ -97,13 +97,15 @@ public class RegisterAct extends AppCompatActivity {
         int dataValidationCheck = 1;
 
         if (email.isEmpty()) {
-            OnRegistrationFailure("Please enter your email.");
+            edtEmail.setError("Please enter your email.");
             dataValidationCheck = 0;
-        } else if (password.isEmpty()) {
-            OnRegistrationFailure("Please enter your password.");
+        }
+        if (password.isEmpty()) {
+            edtPassword.setError("Please enter your password.");
             dataValidationCheck = 0;
-        } else if (passwordConf.isEmpty()) {
-            OnRegistrationFailure("Please confirm your password.");
+        }
+        if (passwordConf.isEmpty()) {
+            edtPasswordConf.setError("Please confirm your password.");
             dataValidationCheck = 0;
         }
 
@@ -117,7 +119,7 @@ public class RegisterAct extends AppCompatActivity {
 
                 registrationThread.start();
             } else {
-                OnRegistrationFailure("Your confirmation password does not match.");
+                edtPasswordConf.setError("Your confirmation password does not match.");
             }
         }
     }

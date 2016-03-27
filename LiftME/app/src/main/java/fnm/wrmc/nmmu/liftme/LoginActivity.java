@@ -104,12 +104,12 @@ public class LoginActivity extends AppCompatActivity {
         Boolean bContinue = true;
 
         if(email.isEmpty()){
-            OnAuthenticationFailure("You have not entered your email.");
+            edtEmail.setError("Please enter your email.");
             bContinue = false;
         }
 
         if(password.isEmpty()){
-            OnAuthenticationFailure("You have not entered your password.");
+            edtPassword.setError("Please enter your password.");
             bContinue = false;
         }
 
