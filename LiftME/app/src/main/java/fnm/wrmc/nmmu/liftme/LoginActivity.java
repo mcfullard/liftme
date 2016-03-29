@@ -8,9 +8,12 @@ import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import fnm.wrmc.nmmu.liftme.ServerConnection.AuthenticationRunner.AuthenticationTask;
@@ -22,15 +25,23 @@ public class LoginActivity extends AppCompatActivity {
     ProgressBar loginSpinner;
     Button btnLogin;
     Button btnRegister;
+    EditText edtEmail;
+    EditText edtPassword;
+    TextView tVLogin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_activity);
 
+        this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
         loginSpinner = (ProgressBar)findViewById(R.id.pBLoginSpinner);
         btnLogin = (Button)findViewById(R.id.btnLogin);
         btnRegister = (Button)findViewById(R.id.btnRegister);
+        edtEmail = (EditText)findViewById(R.id.edtLoginEmail);
+        edtPassword = (EditText)findViewById(R.id.edtLoginPassword);
+        tVLogin = (TextView)findViewById(R.id.tVLogin);
 
         btnLogin.setVisibility(View.VISIBLE);
         btnRegister.setVisibility(View.VISIBLE);
@@ -42,9 +53,8 @@ public class LoginActivity extends AppCompatActivity {
                 switch (inputMessage.what) {
                     case AUTH_MESSAGE:
                         AuthenticationTask curAuthTask = (AuthenticationTask) inputMessage.obj;
-                        btnLogin.setVisibility(View.VISIBLE);
-                        btnRegister.setVisibility(View.VISIBLE);
-                        loginSpinner.setVisibility(View.INVISIBLE);
+                        ResetLoginAnimation();
+
                         switch (curAuthTask.authStatus) {
                             case ServerConnection.AUTHENTICATION_SUCCESS:
                                 OnAuthenticationSuccess(curAuthTask);
@@ -87,28 +97,27 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void OnLoginClick(View view){
-        EditText edtEmail = (EditText)findViewById(R.id.edtLoginEmail);
-        EditText edtPassword = (EditText)findViewById(R.id.edtLoginPassword);
+
 
         String email = edtEmail.getText().toString();
         String password = edtPassword.getText().toString();
         Boolean bContinue = true;
 
         if(email.isEmpty()){
-            OnAuthenticationFailure("You have not entered your email.");
+            edtEmail.setError("Please enter your email.");
             bContinue = false;
         }
 
         if(password.isEmpty()){
-            OnAuthenticationFailure("You have not entered your password.");
+            edtPassword.setError("Please enter your password.");
             bContinue = false;
         }
 
         if(bContinue){
 
-            btnLogin.setVisibility(View.GONE);
-            btnRegister.setVisibility(View.GONE);
-            loginSpinner.setVisibility(View.VISIBLE);
+            AnimateLogin();
+
+
             AuthenticationTask authTask = new AuthenticationTask(email,password,this);
 
             Thread authenticationThread = new Thread(new ServerConnection.AuthenticationRunner(authTask));
@@ -116,5 +125,44 @@ public class LoginActivity extends AppCompatActivity {
             authenticationThread.start();
         }
 
+    }
+
+    private void AnimateLogin() {
+        btnLogin.animate().alpha(0.0f).start();
+        btnRegister.animate().alpha(0.0f).start();
+        edtEmail.animate().alpha(0.5f).start();
+        edtPassword.animate().alpha(0.5f).start();
+        loginSpinner.setVisibility(View.VISIBLE);
+        tVLogin.setVisibility(View.VISIBLE);
+        edtEmail.clearFocus();
+        edtEmail.setFocusable(false);
+        edtPassword.clearFocus();
+        edtPassword.setFocusable(false);
+
+        loginSpinner.animate().translationX(-200f);
+        tVLogin.animate().translationX(200f);
+    }
+
+    private void ResetLoginAnimation(){
+        btnLogin.animate().alpha(1.0f).start();
+        btnRegister.animate().alpha(1.0f).start();
+        edtEmail.animate().alpha(1.0f).start();
+        edtPassword.animate().alpha(1.0f).start();
+        loginSpinner.setVisibility(View.INVISIBLE);
+        tVLogin.setVisibility(View.INVISIBLE);
+
+        edtEmail.setFocusable(true);
+        edtEmail.setFocusableInTouchMode(true);
+        edtPassword.setFocusable(true);
+        edtPassword.setFocusableInTouchMode(true);
+
+        loginSpinner.animate().translationX(200f);
+        tVLogin.animate().translationX(-200f);
+    }
+
+    public void OnRegisterClick(View view){
+        Intent registerIntent = new Intent(this,RegisterAct.class);
+        registerIntent.putExtra("Email",edtEmail.getText().toString());
+        startActivity(registerIntent);
     }
 }

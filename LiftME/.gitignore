@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Built application files
 *.apk
 *.ap_
@@ -34,3 +35,14 @@ captures/
 .idea/
 
 Experimental LiftMe Server/local_properties.xml
+=======
+*.iml
+.gradle
+/local.properties
+/.idea/workspace.xml
+/.idea/libraries
+/.idea
+.DS_Store
+/build
+/captures
+>>>>>>> 36e782245f5dccc371bfa58953fc7aa5af5b81ab
