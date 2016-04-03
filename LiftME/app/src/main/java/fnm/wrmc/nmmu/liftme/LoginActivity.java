@@ -89,7 +89,9 @@ public class LoginActivity extends AppCompatActivity {
         editor.putString(ServerConnection.AUTHENTICATION_TOKEN, authTask.authKey);
         editor.commit();
 
-        //TODO Change to dashboard activity on successful login
+        // may want to send the dashboard useful data here... or perhaps that should be done asynchronously?
+        Intent intent = new Intent(this, Dashboard.class);
+        startActivity(intent);
     }
 
     private void OnAuthenticationFailure(String message){

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="fnm.wrmc.nmmu.liftme">
+    package="fnm.wrmc.nmmu.liftme" >
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -9,15 +9,23 @@
         android:icon="@mipmap/liftme_ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
-        <activity android:name=".LoginActivity">
+        android:theme="@style/AppTheme" >
+        <activity android:name=".LoginActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".RegisterAct"></activity>
+        <activity android:name=".RegisterAct" />
+        <activity
+            android:name=".Dashboard"
+            android:label="@string/title_activity_dashboard"
+            android:parentActivityName=".LoginActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="fnm.wrmc.nmmu.liftme.LoginActivity" />
+        </activity>
     </application>
 
 </manifest>
