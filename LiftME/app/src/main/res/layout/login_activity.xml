@@ -79,7 +79,8 @@
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="20dp"
                         android:onClick="OnLoginClick"
-                        android:layout_margin="20dp" />
+                        android:layout_margin="20dp"
+                        style="@style/PrimaryButtonStyle" />
 
                     <Button
                         android:layout_width="170dp"
@@ -87,7 +88,9 @@
                         android:text="Register"
                         android:id="@+id/btnRegister"
                         android:layout_gravity="center_horizontal"
-                        android:onClick="OnRegisterClick"/>
+                        android:onClick="OnRegisterClick"
+                        style="@style/SecondaryButtonStyle"/>
+
                 </LinearLayout>
 
                 <ProgressBar

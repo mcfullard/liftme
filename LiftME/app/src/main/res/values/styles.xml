@@ -8,4 +8,12 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="PrimaryButtonStyle" parent="Base.Widget.AppCompat.Button.Colored">
+        <item name="android:colorButtonNormal">@color/colorPrimary</item>
+    </style>
+
+    <style name="SecondaryButtonStyle" parent="Base.Widget.AppCompat.Button.Colored">
+        <item name="android:colorButtonNormal">@color/white</item>
+    </style>
+
 </resources>
