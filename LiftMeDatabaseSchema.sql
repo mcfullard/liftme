@@ -18,6 +18,38 @@ USE `liftme`;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Table structure for table `trip`
+--
+
+DROP TABLE IF EXISTS `trip`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `trip` (
+  `tripID` int(11) NOT NULL AUTO_INCREMENT,
+  `userID` int(11) NOT NULL,
+  `pickUpLat` float DEFAULT NULL,
+  `pickUpLong` float DEFAULT NULL,
+  `dropOffLat` float DEFAULT NULL,
+  `dropOffLong` float DEFAULT NULL,
+  `pickUpTime` time DEFAULT NULL,
+  `dropOffTime` time DEFAULT NULL,
+  `date` date DEFAULT NULL,
+  PRIMARY KEY (`tripID`,`userID`),
+  KEY `userID_idx` (`userID`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `trip`
+--
+
+LOCK TABLES `trip` WRITE;
+/*!40000 ALTER TABLE `trip` DISABLE KEYS */;
+INSERT INTO `trip` VALUES (1,1,0.0005,0,0,0,'14:00:00','23:00:00',NULL);
+/*!40000 ALTER TABLE `trip` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `user`
 --
 
@@ -36,18 +68,13 @@ CREATE TABLE `user` (
   `authenticationToken` char(36) DEFAULT NULL,
   PRIMARY KEY (`userID`),
   UNIQUE KEY `email_UNIQUE` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
 -- Dumping data for table `user`
 --
 
-LOCK TABLES `user` WRITE;
-/*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'H','J','g','d','3','',2,NULL),(9,'Francois','du Plessis','francoispassword','francois@gmail.com','013123312','\0',3,'5A9DBD9E-4840-4811-B2C6-1DE8C9D768F5'),(14,'Francois','du Plessis','francoispassword','F@gmail.com','013123312','\0',3,'B009A2FB-CCED-476C-A3BA-4026ADD51383');
-/*!40000 ALTER TABLE `user` ENABLE KEYS */;
-UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -58,4 +85,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-03-26 13:08:44
+-- Dump completed on 2016-04-20 20:28:12
