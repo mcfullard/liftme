@@ -84,7 +84,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void OnAuthenticationSuccess(AuthenticationTask authTask){
-        SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = this.getSharedPreferences("GlobalPref",Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString(ServerConnection.AUTHENTICATION_TOKEN, authTask.authKey);
         editor.commit();
@@ -96,6 +96,12 @@ public class LoginActivity extends AppCompatActivity {
 
     private void OnAuthenticationFailure(String message){
         Toast.makeText(this,message,Toast.LENGTH_SHORT).show();
+
+
+        //TODO remove this!!!!!!
+        Toast.makeText(this,"FOR DEBUGGIN PURPOSES ONLY YOU CAN LOGIN WITHOUT THE SERVER WORKING!!!!!!!!!",Toast.LENGTH_LONG).show();
+        Intent intent = new Intent(this, Dashboard.class);
+        startActivity(intent);
     }
 
     public void OnLoginClick(View view){

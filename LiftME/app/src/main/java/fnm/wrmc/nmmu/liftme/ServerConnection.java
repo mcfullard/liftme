@@ -1,6 +1,8 @@
 package fnm.wrmc.nmmu.liftme;
 
 import android.app.Activity;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 
 import java.io.DataInputStream;
@@ -9,6 +11,11 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.sql.Date;
+import java.sql.Time;
+import java.text.DateFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Francois on 2016/03/25.
@@ -25,8 +32,10 @@ public class ServerConnection {
     public static final String AUTHENTICATION_INCOMPLETE = "#INCOMPLETEAUTH";
     public static final String UPDATE_DETAILS = "#UPDATE_DETAILS";
     public static final String AUTHENTICATION_TOKEN = "AUTH_TOKEN";
+    public static final String GET_USER_POSTED_TRIPS = "#GET_USER_POSTED_TRIPS";
+    public static final int USER_POSTED_TRIP_TASK = 1;
 
-    private static final String SERVER_IP = "192.168.1.74";
+    private static final String SERVER_IP = "192.168.1.82";
     private static final int SERVER_PORT = 5050;
     private static final int CONNECTION_TIMEOUT = 5000;
 
@@ -167,5 +176,94 @@ public class ServerConnection {
                 registerAct.HandleRegistration(this);
             }
         }
+    }
+
+    static class PostedUserTripRunner implements Runnable{
+
+        UserPostedTripsTask tripsTask;
+
+        public PostedUserTripRunner(UserPostedTripsTask tripsTask){
+            this.tripsTask = tripsTask;
+        }
+
+        @Override
+        public void run() {
+            Socket socket = null;
+
+            try {
+                socket = new Socket();
+                socket.connect(new InetSocketAddress(SERVER_IP,SERVER_PORT),CONNECTION_TIMEOUT);
+
+                DataOutputStream writeStream = new DataOutputStream(socket.getOutputStream());
+                DataInputStream readStream = new DataInputStream(socket.getInputStream());
+
+                writeStream.writeUTF(GET_USER_POSTED_TRIPS);
+                writeStream.writeUTF(tripsTask.authKey);
+                writeStream.flush();
+
+                tripsTask.authStatus = readStream.readUTF();
+
+                if(tripsTask.authStatus.equals(AUTHENTICATION_SUCCESS)) {
+                    int tripCount = readStream.readInt();
+                    List<Trip> trips = new ArrayList<>();
+                    for(int x = 0 ; x < tripCount ; x++){
+                        Trip curTrip = new Trip();
+                        curTrip.setPickupLat(readStream.readFloat());
+                        curTrip.setPickupLong(readStream.readFloat());
+                        curTrip.setDestinationLat(readStream.readFloat());
+                        curTrip.setDestinationLong(readStream.readFloat());
+                        Time pickUpTime = new Time(readStream.readLong());
+                        Time dropOffTime = new Time(readStream.readLong());
+                        Date date = new Date(readStream.readLong());
+
+                        curTrip.setPickupTime(pickUpTime);
+                        curTrip.setDropOffTime(dropOffTime);
+                        curTrip.setDate(date);
+
+                        trips.add(curTrip);
+                    }
+
+                    tripsTask.trips = trips;
+                }
+
+                writeStream.writeUTF(QUIT_MESSAGE);
+
+                writeStream.close();
+                readStream.close();
+                socket.close();
+
+
+            }catch(IOException e){
+                Log.e("Comms | GetTrips","Error Getting posted trips.");
+                e.printStackTrace();
+            }
+
+            tripsTask.HandleUserTrips();
+        }
+
+        public static class UserPostedTripsTask {
+
+            public String authKey;
+            public String authStatus = AUTHENTICATION_INCOMPLETE;;
+            private Handler handler;
+
+            public List<Trip> trips;
+
+            public UserPostedTripsTask(String authKey,Handler handler){
+                this.authKey =authKey;
+                this.handler = handler;
+            }
+
+            public void HandleUserTrips() {
+                if(trips == null){
+                    authStatus = AUTHENTICATION_INCOMPLETE;
+                }
+
+                Message completeMessage =
+                        handler.obtainMessage(USER_POSTED_TRIP_TASK, this);
+                completeMessage.sendToTarget();
+            }
+        }
+
     }
 }

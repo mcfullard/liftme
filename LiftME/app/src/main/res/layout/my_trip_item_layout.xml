@@ -26,13 +26,32 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_weight="4" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="Some Title"
-                android:id="@+id/tVMyTripTitle"
-                android:layout_weight="1" />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:text="Some Title"
+                    android:id="@+id/tVMyTripTitle"
+                    android:layout_weight="1"
+                    android:layout_margin="5dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:text="Some Title"
+                    android:id="@+id/tVMyTripTime"
+                    android:layout_weight="4"
+                    android:layout_gravity="right"
+                    android:layout_below="@+id/tVMyTripTitle"
+                    android:layout_alignParentEnd="true"
+                    android:layout_margin="5dp" />
+            </RelativeLayout>
+
         </LinearLayout>
 
     </android.support.v7.widget.CardView>

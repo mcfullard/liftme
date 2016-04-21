@@ -1,7 +1,5 @@
-package fnm.wrmc.nmmu.liftme;
 import java.sql.Date;
 import java.sql.Time;
-import java.text.SimpleDateFormat;
 
 /**
  * Created by Francois on 2016/04/13.
@@ -74,11 +72,5 @@ public class Trip {
 
     public void setDestinationLong(float destinationLong) {
         this.destinationLong = destinationLong;
-    }
-
-    public String getDayOfWeek(){
-        SimpleDateFormat formatter = new SimpleDateFormat(
-                "EEEE");
-        return formatter.format(date);
     }
 }

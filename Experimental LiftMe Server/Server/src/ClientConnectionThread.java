@@ -2,6 +2,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.List;
 
 /**
  * Created by s213263904 on 2015/10/16.
@@ -18,6 +19,7 @@ public class ClientConnectionThread extends Thread {
     private final String AUTHENTICATION_FAIL = "#NOAUTH";
     private final String AUTHENTICATION_SUCCESS = "#YESAUTH";
     private final String UPDATE_DETAILS = "#UPDATE_DETAILS";
+    private final String GET_USER_POSTED_TRIPS = "#GET_USER_POSTED_TRIPS";
 
     public ClientConnectionThread(mainServer theServer,Socket newSocket){
         this.theServer = theServer;
@@ -42,6 +44,9 @@ public class ClientConnectionThread extends Thread {
                         break;
                     case UPDATE_DETAILS:
                         UpdateDetails();
+                        break;
+                    case GET_USER_POSTED_TRIPS:
+                        GetUserPostedTrips();
                         break;
                 }
 
@@ -103,7 +108,7 @@ public class ClientConnectionThread extends Thread {
         try {
             String email = readStream.readUTF();
             String password = readStream.readUTF();
-            String authKey = DatabaseHandler.AuthenticateUser(email,password);
+            String authKey = DatabaseHandler.AuthenticateUser(email, password);
             if(authKey != null){
                 writeStream.writeUTF(AUTHENTICATION_SUCCESS);
                 writeStream.writeUTF(authKey);
@@ -117,28 +122,35 @@ public class ClientConnectionThread extends Thread {
         }
     }
 
-//    public void sendMessageTo(){
-//        try {
-//            String toClientName = readStream.readUTF();
-//            String Message = readStream.readUTF();
-//            System.out.println("CLIENT THREAD : Sending message '" + Message + "' to " + toClientName);
-//            theServer.sendMessage(toClientName,clientName,Message);
-//        }catch(IOException e){
-//            e.printStackTrace();
-//        }
-//    }
-//
-//    public void receiveMessageFrom(String fromName, String Message){
-//        try{
-//            writeStream.writeUTF(MESSAGE_FROM);
-//            writeStream.writeUTF(fromName);
-//            writeStream.writeUTF(Message);
-//            writeStream.flush();
-//            System.out.println("CLIENT THREAD : Receiving message '" + Message + "' from " + fromName);
-//        }catch (IOException e){
-//            e.printStackTrace();
-//        }
-//    }
+    private void GetUserPostedTrips(){
+        try {
+            String authKey = readStream.readUTF();
+
+            List<Trip> userTrips = DatabaseHandler.GetUserPostedTrips(authKey);
+
+            if(userTrips != null){
+                writeStream.writeUTF(AUTHENTICATION_SUCCESS);
+                writeStream.writeInt(userTrips.size());
+                for(Trip curTrip : userTrips){
+                    writeStream.writeFloat(curTrip.getPickupLat());
+                    writeStream.writeFloat(curTrip.getPickupLong());
+                    writeStream.writeFloat(curTrip.getDestinationLat());
+                    writeStream.writeFloat(curTrip.getDestinationLong());
+                    writeStream.writeLong(curTrip.getPickupTime().getTime());
+                    writeStream.writeLong(curTrip.getDropOffTime().getTime());
+                    writeStream.writeLong(curTrip.getDate().getTime());
+                }
+
+            }else{
+                writeStream.writeUTF(AUTHENTICATION_FAIL);
+            }
+            writeStream.flush();
+            System.out.println("CLIENT THREAD : Getting user posted trips. AuthKey " + authKey);
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+    }
+
 
 
 }

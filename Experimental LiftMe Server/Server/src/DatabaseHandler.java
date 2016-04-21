@@ -1,5 +1,7 @@
 import java.security.SecureRandom;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -228,6 +230,53 @@ public class DatabaseHandler {
         return authKey;
     }
 
+    static List<Trip> GetUserPostedTrips(String authKey){
+        writeLock.lock();
+        Connection conn = null;
+        PreparedStatement stmt = null;
 
+        List<Trip> trips = null;
+
+        try{
+
+            Class.forName("com.mysql.jdbc.Driver");
+            System.out.println("Connecting to database to retrieve trips for authKey " + authKey + ".");
+            PropertyManager pm = PropertyManager.getInstance();
+            conn = DriverManager.getConnection(DB_URL, pm.getProperty("USER"), pm.getProperty("PASSWORD"));
+
+            String authSql = "SELECT * FROM trip WHERE userID = (SELECT userID FROM user WHERE authenticationToken = ?)";
+            stmt = conn.prepareStatement(authSql);
+
+            stmt.setString(1, authKey);
+
+            ResultSet tripSet = stmt.executeQuery();
+
+            trips = new ArrayList<>();
+            while(tripSet.next()){
+                Trip curTrip = new Trip();
+                curTrip.setPickupLat(tripSet.getFloat("pickUpLat"));
+                curTrip.setPickupLong(tripSet.getFloat("pickUpLong"));
+                curTrip.setDestinationLat(tripSet.getFloat("dropOffLat"));
+                curTrip.setDestinationLong(tripSet.getFloat("dropOffLong"));
+                curTrip.setPickupTime(tripSet.getTime("pickUpTime"));
+                curTrip.setDropOffTime(tripSet.getTime("dropOffTime"));
+                curTrip.setDate(tripSet.getDate("date"));
+                trips.add(curTrip);
+            }
+
+            stmt.close();
+            conn.close();
+        }catch(SQLException e){
+            System.out.println("SQL error occurred whilst retrieving trips for authKey " + authKey + " .");
+            System.out.println(e);
+        }catch(Exception e){
+            System.out.println("Unexpected error occurred whilst retrieving trips for authKey " + authKey + " .");
+            System.out.println(e);
+        }
+        finally {
+            writeLock.unlock();
+        }
+        return trips;
+    }
 
 }

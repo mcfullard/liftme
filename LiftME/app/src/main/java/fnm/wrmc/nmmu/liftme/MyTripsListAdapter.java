@@ -9,9 +9,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 /**
@@ -31,11 +33,20 @@ public class MyTripsListAdapter extends ArrayAdapter<Trip> {
             curView = layoutInflater.inflate(R.layout.my_trip_item_layout,parent,false);
         }
 
+        Trip curTrip = getItem(position);
+
         ImageView destinationMapView = (ImageView)curView.findViewById(R.id.iVMyTripMap);
+        TextView tVTripTitle = (TextView)curView.findViewById(R.id.tVMyTripTitle);
+        TextView tVTripTime = (TextView)curView.findViewById(R.id.tVMyTripTime);
+
+
+        tVTripTitle.setText(curTrip.getDayOfWeek());
+        tVTripTime.setText(curTrip.getDropOffTime().toString());
+
         DownloadImageTask dlImageTask = new DownloadImageTask();
 
 
-        dlImageTask.execute(destinationMapView,"https://maps.googleapis.com/maps/api/staticmap?center=SUMERSTRAND,South_Africa&zoom=16&size=600x240");
+        dlImageTask.execute(destinationMapView,String.format("https://maps.googleapis.com/maps/api/staticmap?center=%f,%f&zoom=16&size=600x240",curTrip.getDestinationLat(),curTrip.getDestinationLong()));
 
         return curView;
     }
