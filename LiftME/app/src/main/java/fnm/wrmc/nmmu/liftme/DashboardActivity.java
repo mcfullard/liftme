@@ -44,7 +44,7 @@ public class DashboardActivity extends AppCompatActivity
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
 
-        Fragment containerFragment = new MyTripsFragment();
+        Fragment containerFragment = MyTripsFragment.newInstance(0);
         Intent intent = getIntent();
         if(intent != null) {
             Bundle extras = intent.getExtras();
@@ -58,10 +58,10 @@ public class DashboardActivity extends AppCompatActivity
             }
         }
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.container, containerFragment)
-                .commit();
+//        FragmentManager fragmentManager = getSupportFragmentManager();
+//        fragmentManager.beginTransaction()
+//                .replace(R.id.container, containerFragment)
+//                .commit();
     }
 
     @Override
@@ -80,10 +80,10 @@ public class DashboardActivity extends AppCompatActivity
         Fragment fragment = null;
         switch (position) {
             case 0:
-                fragment = new MyTripsFragment();
+                fragment = MyTripsFragment.newInstance(0);
                 break;
             case 1:
-                fragment = new UserProfileFragment();
+                fragment = UserProfileFragment.newInstance(1);
                 break;
         }
         return fragment;

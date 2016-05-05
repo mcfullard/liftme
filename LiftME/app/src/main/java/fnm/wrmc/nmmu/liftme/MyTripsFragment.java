@@ -112,7 +112,7 @@ public class MyTripsFragment extends Fragment {
     }
 
     private void OnUserTripRetrievalFailure(String message) {
-        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT);
+        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
     }
 
     @Override
