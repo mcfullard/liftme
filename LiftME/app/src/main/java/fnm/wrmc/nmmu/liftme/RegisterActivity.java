@@ -76,8 +76,9 @@ public class RegisterActivity extends AppCompatActivity {
         editor.putString(ServerConnection.AUTHENTICATION_TOKEN, regTask.authKey);
         editor.commit();
 
-        //TODO Change to edit profile activity on successful registration
-
+        Intent intent = new Intent(this, DashboardActivity.class);
+        intent.putExtra("fragment_number", DashboardActivity.USER_PROFILE_FRAGMENT);
+        startActivity(intent);
     }
 
     private void OnRegistrationFailure(String message) {

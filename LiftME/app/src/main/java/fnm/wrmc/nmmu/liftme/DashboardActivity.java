@@ -1,6 +1,7 @@
 package fnm.wrmc.nmmu.liftme;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -15,6 +16,9 @@ import android.support.v4.widget.DrawerLayout;
 
 public class DashboardActivity extends AppCompatActivity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+
+    public static final int USER_PROFILE_FRAGMENT = 1;
+    public static final int MY_TRIPS_FRAGMENT = 2;
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -39,6 +43,25 @@ public class DashboardActivity extends AppCompatActivity
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
+
+        Fragment containerFragment = new MyTripsFragment();
+        Intent intent = getIntent();
+        if(intent != null) {
+            Bundle extras = intent.getExtras();
+            if (extras != null) {
+                int fragmentId = extras.getInt("fragment_number");
+                switch (fragmentId) {
+                    case DashboardActivity.USER_PROFILE_FRAGMENT:
+                        containerFragment = new UserProfileFragment();
+                        break;
+                }
+            }
+        }
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction()
+                .replace(R.id.container, containerFragment)
+                .commit();
     }
 
     @Override
@@ -46,20 +69,33 @@ public class DashboardActivity extends AppCompatActivity
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.beginTransaction()
-                .replace(R.id.container, new MyTripsFragment())
+                .replace(R.id.container, getFragmentFromItemSelected(position))
                 .commit();
+    }
+
+    /**
+        Add the positions and corresponding fragments for the navigation drawer here
+     */
+    private Fragment getFragmentFromItemSelected(int position) {
+        Fragment fragment = null;
+        switch (position) {
+            case 1:
+                fragment = new MyTripsFragment();
+                break;
+            case 2:
+                fragment = new UserProfileFragment();
+                break;
+        }
+        return fragment;
     }
 
     public void onSectionAttached(int number) {
         switch (number) {
             case 1:
-                mTitle = getString(R.string.title_section1);
+                mTitle = getString(R.string.title_my_trips);
                 break;
             case 2:
-                mTitle = getString(R.string.title_section2);
-                break;
-            case 3:
-                mTitle = getString(R.string.title_section3);
+                mTitle = getString(R.string.title_user_profile);
                 break;
         }
     }
