@@ -79,10 +79,10 @@ public class DashboardActivity extends AppCompatActivity
     private Fragment getFragmentFromItemSelected(int position) {
         Fragment fragment = null;
         switch (position) {
-            case 1:
+            case 0:
                 fragment = new MyTripsFragment();
                 break;
-            case 2:
+            case 1:
                 fragment = new UserProfileFragment();
                 break;
         }
@@ -96,6 +96,9 @@ public class DashboardActivity extends AppCompatActivity
                 break;
             case 2:
                 mTitle = getString(R.string.title_user_profile);
+                break;
+            case 3:
+                mTitle = getString(R.string.title_section3);
                 break;
         }
     }
