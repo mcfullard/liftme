@@ -1,6 +1,5 @@
 package fnm.wrmc.nmmu.liftme;
 
-import android.app.Activity;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -8,12 +7,10 @@ import android.util.Log;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.sql.Date;
 import java.sql.Time;
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,7 +32,7 @@ public class ServerConnection {
     public static final String GET_USER_POSTED_TRIPS = "#GET_USER_POSTED_TRIPS";
     public static final int USER_POSTED_TRIP_TASK = 1;
 
-    private static final String SERVER_IP = "192.168.1.82";
+    private static final String SERVER_IP = "10.0.0.104";
     private static final int SERVER_PORT = 5050;
     private static final int CONNECTION_TIMEOUT = 5000;
 
@@ -164,16 +161,16 @@ public class ServerConnection {
             public String password;
             public String authStatus = AUTHENTICATION_INCOMPLETE;
             public String authKey;
-            public RegisterAct registerAct;
+            public RegisterActivity registerActivity;
 
-            public RegistrationTask(String email, String password, RegisterAct registerAct){
+            public RegistrationTask(String email, String password, RegisterActivity registerActivity){
                 this.email =email;
                 this.password = password;
-                this.registerAct = registerAct;
+                this.registerActivity = registerActivity;
             }
 
             public void HandleRegistration() {
-                registerAct.HandleRegistration(this);
+                registerActivity.HandleRegistration(this);
             }
         }
     }

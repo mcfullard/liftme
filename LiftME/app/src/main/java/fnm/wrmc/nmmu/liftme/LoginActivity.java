@@ -9,7 +9,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -90,7 +89,7 @@ public class LoginActivity extends AppCompatActivity {
         editor.commit();
 
         // may want to send the dashboard useful data here... or perhaps that should be done asynchronously?
-        Intent intent = new Intent(this, Dashboard.class);
+        Intent intent = new Intent(this, DashboardActivity.class);
         startActivity(intent);
     }
 
@@ -100,7 +99,7 @@ public class LoginActivity extends AppCompatActivity {
 
         //TODO remove this!!!!!!
         Toast.makeText(this,"FOR DEBUGGIN PURPOSES ONLY YOU CAN LOGIN WITHOUT THE SERVER WORKING!!!!!!!!!",Toast.LENGTH_LONG).show();
-        Intent intent = new Intent(this, Dashboard.class);
+        Intent intent = new Intent(this, DashboardActivity.class);
         startActivity(intent);
     }
 
@@ -169,7 +168,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void OnRegisterClick(View view){
-        Intent registerIntent = new Intent(this,RegisterAct.class);
+        Intent registerIntent = new Intent(this,RegisterActivity.class);
         registerIntent.putExtra("Email",edtEmail.getText().toString());
         startActivity(registerIntent);
     }

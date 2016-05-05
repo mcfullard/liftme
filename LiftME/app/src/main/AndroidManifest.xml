@@ -24,9 +24,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".RegisterAct" />
+        <activity android:name=".RegisterActivity" />
         <activity
-            android:name=".Dashboard"
+            android:name=".DashboardActivity"
             android:label="@string/title_activity_dashboard"
             android:parentActivityName=".LoginActivity">
             <meta-data
