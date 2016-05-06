@@ -10,8 +10,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.kd.dynamic.calendar.generator.ImageGenerator;
+
+import org.w3c.dom.Text;
 
 import java.util.Calendar;
 
@@ -22,19 +25,15 @@ import java.util.Calendar;
 public class TripDetailsFragment extends Fragment {
 
     private static final String ARG_SECTION_NUMBER = "section_number";
+    public static final String ARG_TRIP = "Selected_Trip";
+    public static final String FRAG_IDENTIFYER = "fnm.wrmc.nmmu.liftme.TripDetailsFragment";
 
     private ImageView detailImage;
+    private TextView tVPUDetails,tVDesDetails;
+    private Trip trip;
 
     public TripDetailsFragment() {
         // Required empty public constructor
-    }
-
-    public static TripDetailsFragment newInstance(int sectionNumber) {
-        TripDetailsFragment fragment = new TripDetailsFragment();
-        Bundle args = new Bundle();
-        args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-        fragment.setArguments(args);
-        return fragment;
     }
 
     @Override
@@ -43,20 +42,22 @@ public class TripDetailsFragment extends Fragment {
         // Inflate the layout for this fragment
         View curView = inflater.inflate(R.layout.fragment_trip_details, container, false);
         detailImage = (ImageView)curView.findViewById(R.id.iVMyTripDetailsImage);
+        tVPUDetails = (TextView) curView.findViewById(R.id.tVPickupDescription);
+        tVDesDetails = (TextView) curView.findViewById(R.id.tVDestinationDescription);
 
-        final ViewTreeObserver detailImageVto = detailImage.getViewTreeObserver();
-        detailImageVto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {  //code found at http://stackoverflow.com/questions/4142090/how-do-you-to-retrieve-dimensions-of-a-view-getheight-and-getwidth-always-r?lq=1
-            @Override
-            public void onGlobalLayout() {
-                GenerateImage(R.id.iVMyTripDetailsImage);
-                detailImageVto.removeOnGlobalLayoutListener(this);
-            }
-        });
+        Bundle curBundle = getArguments();
+
+        if(curBundle != null){
+            trip = (Trip)curBundle.get(ARG_TRIP);
+            tVPUDetails.setText(String.format("%s\n%s\n%s\n",trip.getPickupLong(),trip.getPickupLong(),trip.getDayOfWeek(),trip.getPickupTime()));
+            tVDesDetails.setText(String.format("%s\n%s\n%s\n",trip.getDestinationLong(),trip.getDestinationLong(),trip.getDayOfWeek(),trip.getDropOffTime()));
+        }
 
         return curView;
     }
 
-    public Bitmap GenerateImage(int imagaViewID){
+
+    public void GenerateImage(int imagaViewID){
         ImageGenerator mImageGenerator = new ImageGenerator(getContext());
 
         // Set the icon size to the generated in dip.
@@ -76,12 +77,7 @@ public class TripDetailsFragment extends Fragment {
 
         Calendar c = Calendar.getInstance();
         c.set(2016,11,17);
-        return mImageGenerator.generateDateImage(c,imagaViewID);
+        mImageGenerator.generateDateImage(c,imagaViewID);
     }
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-    }
 }

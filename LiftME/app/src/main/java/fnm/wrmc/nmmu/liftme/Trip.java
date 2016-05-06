@@ -1,4 +1,5 @@
 package fnm.wrmc.nmmu.liftme;
+import java.io.Serializable;
 import java.sql.Date;
 import java.sql.Time;
 import java.text.SimpleDateFormat;
@@ -6,7 +7,7 @@ import java.text.SimpleDateFormat;
 /**
  * Created by Francois on 2016/04/13.
  */
-public class Trip {
+public class Trip implements Serializable {
 
     private float pickupLat;
     private float pickupLong;
@@ -77,8 +78,14 @@ public class Trip {
     }
 
     public String getDayOfWeek(){
+        if(date == null){
+            return "";
+        }
+
         SimpleDateFormat formatter = new SimpleDateFormat(
                 "EEEE");
         return formatter.format(date);
     }
+
+
 }

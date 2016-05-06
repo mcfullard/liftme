@@ -21,6 +21,7 @@ import java.util.List;
  */
 public class MyTripsListAdapter extends ArrayAdapter<Trip> {
 
+
     public MyTripsListAdapter(Context context, List<Trip> objects) {
         super(context, R.layout.my_trip_item_layout, objects);
     }
