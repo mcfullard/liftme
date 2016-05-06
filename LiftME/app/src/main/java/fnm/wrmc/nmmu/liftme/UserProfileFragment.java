@@ -8,6 +8,9 @@ import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckedTextView;
@@ -32,13 +35,13 @@ public class UserProfileFragment extends Fragment {
     private TextView textPassengerCount;
 
     Handler getUserDetailsHandler;
-
-    public UserProfileFragment() {
-    }
+    Handler setUserDetailsHandler;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        setHasOptionsMenu(true);
+
         View view = inflater.inflate(R.layout.fragment_user_profile, container, false);
         editProfileName = (EditText)view.findViewById(R.id.editProfileName);
         editProfileSurname = (EditText)view.findViewById(R.id.editProfileSurname);
@@ -47,6 +50,17 @@ public class UserProfileFragment extends Fragment {
         checkedProfileDriver = (CheckedTextView)view.findViewById(R.id.checkedProfileDriver);
         seekBarPassengers = (SeekBar)view.findViewById(R.id.seekBarPassengers);
         textPassengerCount = (TextView)view.findViewById(R.id.textPassengerCount);
+
+        checkedProfileDriver.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CheckedTextView checkBox = (CheckedTextView) v;
+                if(checkBox.isChecked())
+                    checkBox.setChecked(false);
+                else
+                    checkBox.setChecked(true);
+            }
+        });
 
         seekBarPassengers.setProgress(0);
         seekBarPassengers.setMax(7);
@@ -65,6 +79,22 @@ public class UserProfileFragment extends Fragment {
         });
 
         return view;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
+        inflater.inflate(R.menu.change_profile, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if(id == R.id.action_accept_changes) {
+            setUserDetails();
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -96,18 +126,50 @@ public class UserProfileFragment extends Fragment {
             }
         };
 
+        /**
+         * Just defined for now. Don't see the use yet.
+         */
+        setUserDetailsHandler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                super.handleMessage(msg);
+            }
+        };
+
         getUserDetails();
     }
 
-    private void getUserDetails() {
+    private String getAuthKey() {
         SharedPreferences sharedPref = getActivity().getSharedPreferences("GlobalPref", Context.MODE_PRIVATE);
         String authKey = sharedPref.getString(ServerConnection.AUTHENTICATION_TOKEN,"");
-
         if(authKey.isEmpty()){
             onGetUserDetailsFailure("You never logged in previously. Please login.");
-            return;
+            return "";
         }
+        return authKey;
+    }
 
+    /**
+     *  Extract the user data from the graphical components, pass it to a task and pass the task to a runnable thread
+     */
+    private void setUserDetails() {
+        String authKey = getAuthKey();
+        ServerConnection.SetUserDetailsRunner.SetDetailsTask setDetailsTask = new ServerConnection.SetUserDetailsRunner.SetDetailsTask(
+                authKey,
+                setUserDetailsHandler,
+                editProfileName.getText().toString(),
+                editProfileSurname.getText().toString(),
+                editProfilePhone.getText().toString(),
+                editProfileEmail.getText().toString(),
+                checkedProfileDriver.isChecked() ? 1 : 0,
+                seekBarPassengers.getProgress()
+        );
+        Thread setUserDetailsThread = new Thread(new ServerConnection.SetUserDetailsRunner(setDetailsTask));
+        setUserDetailsThread.start();
+    }
+
+    private void getUserDetails() {
+        String authKey = getAuthKey();
         ServerConnection.GetUserDetailsRunner.GetUserDetailsTask userDetailsTask = new ServerConnection.GetUserDetailsRunner.GetUserDetailsTask(authKey, getUserDetailsHandler);
         Thread userDetailsThread = new Thread (new ServerConnection.GetUserDetailsRunner(userDetailsTask));
         userDetailsThread.start();

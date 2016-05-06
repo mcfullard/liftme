@@ -55,7 +55,7 @@
 
 
     <CheckedTextView
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Available as driver"
         android:ems="10"
@@ -63,6 +63,8 @@
         android:id="@+id/checkedProfileDriver"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="16dp"
+        android:checkMark="?android:attr/listChoiceIndicatorMultiple"
+        android:gravity="center_vertical"
          />
 
     <LinearLayout
@@ -93,6 +95,5 @@
             android:id="@+id/textPassengerCount"
             />
     </LinearLayout>
-
 
 </LinearLayout>

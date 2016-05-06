@@ -86,8 +86,8 @@ public class ClientConnectionThread extends Thread {
                 writeStream.writeUTF(surname != null ? surname : "");
                 writeStream.writeUTF(email != null ? email : "");
                 writeStream.writeUTF(phone != null ? phone : "");
-                writeStream.writeUTF(avail != null ? avail.toString() : "");
-                writeStream.writeUTF(passengers != null ? passengers.toString() : "");
+                writeStream.writeUTF(avail != null ? avail.toString() : "0");
+                writeStream.writeUTF(passengers != null ? passengers.toString() : "0");
             } else {
                 writeStream.writeUTF(AUTHENTICATION_FAIL);
             }
