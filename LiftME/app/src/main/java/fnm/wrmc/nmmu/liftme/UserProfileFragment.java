@@ -55,8 +55,8 @@ public class UserProfileFragment extends Fragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        ((DashboardActivity) activity).onSectionAttached(
-                getArguments().getInt(ARG_SECTION_NUMBER));
+//        ((DashboardActivity) activity).onSectionAttached(
+//                getArguments().getInt(ARG_SECTION_NUMBER));
     }
 }
 
