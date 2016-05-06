@@ -34,7 +34,7 @@ public class ServerConnection {
     public static final int USER_POSTED_TRIP_TASK = 1;
     public static final int GET_USER_DETAILS_TASK = 1;
 
-    private static final String SERVER_IP = "192.168.56.1";
+    private static final String SERVER_IP = "10.0.0.104";
     private static final int SERVER_PORT = 5050;
     private static final int CONNECTION_TIMEOUT = 5000;
 

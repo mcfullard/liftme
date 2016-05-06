@@ -63,7 +63,7 @@ CREATE TABLE `user` (
   `password` varchar(45) NOT NULL,
   `email` varchar(255) NOT NULL,
   `contactNum` varchar(10) DEFAULT NULL,
-  `availableAsDriver` bit(1) DEFAULT NULL,
+  `availableAsDriver` bit(1) NOT NULL DEFAULT b'0',
   `numberOfPassengers` int(11) DEFAULT NULL,
   `authenticationToken` char(36) DEFAULT NULL,
   PRIMARY KEY (`userID`),
@@ -77,7 +77,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'H','J','g','d','3','',2,'9AD12D0A-7AB0-4203-818C-EA4EB209708B'),(9,'Francois','du Plessis','francoispassword','francois@gmail.com','013123312','\0',3,'85260865-F142-47A9-B258-68DEFC030311'),(14,'Francois','du Plessis','francoispassword','F@gmail.com','013123312','\0',3,'B009A2FB-CCED-476C-A3BA-4026ADD51383'),(15,NULL,NULL,'newpassword1','new@user',NULL,NULL,NULL,'0F34E017-CBEA-46DB-BE20-CAC0C6B81BF0');
+INSERT INTO `user` VALUES (1,'H','J','g','d','3','',2,'D53171E4-6889-4228-ADC9-F1288C585BB9'),(9,'Francois','du Plessis','francoispassword','francois@gmail.com','013123312','\0',3,'85260865-F142-47A9-B258-68DEFC030311'),(14,'Francois','du Plessis','francoispassword','F@gmail.com','013123312','\0',3,'B009A2FB-CCED-476C-A3BA-4026ADD51383'),(15,NULL,NULL,'newpassword1','new@user',NULL,'\0',NULL,'0F34E017-CBEA-46DB-BE20-CAC0C6B81BF0');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -90,4 +90,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-05-05 17:08:59
+-- Dump completed on 2016-05-06 12:40:13

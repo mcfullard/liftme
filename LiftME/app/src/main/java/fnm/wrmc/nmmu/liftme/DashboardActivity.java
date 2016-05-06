@@ -20,6 +20,8 @@ import android.view.MenuItem;
 public class DashboardActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    static public String USER_PROFILE_FRAGMENT = "fnm.wrmc.nmmu.liftme.UserProfileFragment";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
