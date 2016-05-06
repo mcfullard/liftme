@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -24,6 +25,13 @@ import fnm.wrmc.nmmu.liftme.ServerConnection.PostedUserTripsRunner.UserPostedTri
  */
 public class MyTripsFragment extends Fragment {
 
+    private static final String ARG_SECTION_NUMBER = "section_number";
+
+    public interface IMyTripsCallback{
+        void onMyTripClick(Trip clickedTrip);
+    }
+
+    private IMyTripsCallback callbackListener;
     private MyTripsListAdapter adapter;
     private ListView myTripsList;
     private List<Trip> trips;
@@ -31,6 +39,14 @@ public class MyTripsFragment extends Fragment {
 
     public MyTripsFragment() {
         // Required empty public constructor
+    }
+
+    public static MyTripsFragment newInstance(int sectionNumber) {
+        MyTripsFragment fragment = new MyTripsFragment();
+        Bundle args = new Bundle();
+        args.putInt(ARG_SECTION_NUMBER, sectionNumber);
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
@@ -77,6 +93,18 @@ public class MyTripsFragment extends Fragment {
             }
         };
 
+        if(getActivity() instanceof IMyTripsCallback){
+            callbackListener = (IMyTripsCallback)getActivity();
+        }
+
+        myTripsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Trip clickedTrip = (Trip)myTripsList.getItemAtPosition(position);
+                OnMyTripClick(clickedTrip);
+            }
+        });
+
         GetUserTrips();
     }
 
@@ -101,6 +129,12 @@ public class MyTripsFragment extends Fragment {
 
     private void OnUserTripRetrievalFailure(String message) {
         Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+    }
+
+    public void OnMyTripClick(Trip trip){
+        if(callbackListener != null){
+            callbackListener.onMyTripClick(trip);
+        }
     }
 
 }

@@ -17,8 +17,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import java.io.Serializable;
+
 public class DashboardActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, MyTripsFragment.IMyTripsCallback {
 
     static public String USER_PROFILE_FRAGMENT = "fnm.wrmc.nmmu.liftme.UserProfileFragment";
 
@@ -48,36 +50,52 @@ public class DashboardActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        FragmentManager fm = getSupportFragmentManager();
-        Fragment mainFragment = getFragmentFromContext("");
+
+        Fragment mainFragment = getFragmentFromContext("",null);
 
         Intent intent = getIntent();
         if(intent != null) {
             Bundle extras = intent.getExtras();
             if(extras != null) {
                 String fragment_context = extras.getString("fragment_context");
-                mainFragment = getFragmentFromContext(fragment_context);
+                mainFragment = getFragmentFromContext(fragment_context,null);
             }
         }
 
-        FragmentTransaction transaction = fm.beginTransaction();
-        if(fm.findFragmentById(R.id.container) != null) {
-            transaction.replace(R.id.container, mainFragment);
-        } else {
-            transaction.add(R.id.container, mainFragment);
-        }
-        transaction.commit();
+        AddFragmentToContainer(R.id.container,mainFragment);
 
     }
 
-    private Fragment getFragmentFromContext(String fragment_context) {
+    private void AddFragmentToContainer(int container,Fragment fragment){
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction transaction = fm.beginTransaction();
+        if(fm.findFragmentById(container) != null) {
+            transaction.replace(container, fragment);
+        } else {
+            transaction.add(container, fragment);
+        }
+        transaction.commit();
+    }
+
+    private Fragment getFragmentFromContext(String fragment_context,Bundle fragmentArguments) {
+        Fragment newFragment;
         switch (fragment_context) {
             case "fnm.wrmc.nmmu.liftme.UserProfileFragment":
-                return new UserProfileFragment();
+                newFragment = new UserProfileFragment();
+                break;
+            case "fnm.wrmc.nmmu.liftme.TripDetailsFragment":
+                newFragment = new TripDetailsFragment();
+                break;
             case "fnm.wrmc.nmmu.liftme.MyTripsFragment":
             default:
-                return new MyTripsFragment();
+                newFragment = new MyTripsFragment();
         }
+
+        if(newFragment != null && fragmentArguments != null){
+            newFragment.setArguments(fragmentArguments);
+        }
+
+        return newFragment;
     }
 
     @Override
@@ -135,5 +153,13 @@ public class DashboardActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void onMyTripClick(Trip clickedTrip) {
+        Bundle B = new Bundle();
+        B.putSerializable(TripDetailsFragment.ARG_TRIP, ((Serializable) clickedTrip));
+        Fragment newFragment = getFragmentFromContext(TripDetailsFragment.FRAG_IDENTIFYER,B);
+        AddFragmentToContainer(R.id.container,newFragment);
     }
 }

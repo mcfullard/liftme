@@ -1,4 +1,5 @@
 package fnm.wrmc.nmmu.liftme;
+import java.io.Serializable;
 import java.sql.Date;
 import java.sql.Time;
 import java.text.SimpleDateFormat;
@@ -6,12 +7,12 @@ import java.text.SimpleDateFormat;
 /**
  * Created by Francois on 2016/04/13.
  */
-public class Trip {
+public class Trip implements Serializable {
 
-    private float pickupLat;
-    private float pickupLong;
-    private float destinationLat;
-    private float destinationLong;
+    private double pickupLat;
+    private double pickupLong;
+    private double destinationLat;
+    private double destinationLong;
     private Time pickupTime;
     private Time dropOffTime;
     private Date date;
@@ -44,41 +45,47 @@ public class Trip {
         this.date = date;
     }
 
-    public float getPickupLat() {
+    public double getPickupLat() {
         return pickupLat;
     }
 
-    public void setPickupLat(float pickupLat) {
+    public void setPickupLat(double pickupLat) {
         this.pickupLat = pickupLat;
     }
 
-    public float getPickupLong() {
+    public double getPickupLong() {
         return pickupLong;
     }
 
-    public void setPickupLong(float pickupLong) {
+    public void setPickupLong(double pickupLong) {
         this.pickupLong = pickupLong;
     }
 
-    public float getDestinationLat() {
+    public double getDestinationLat() {
         return destinationLat;
     }
 
-    public void setDestinationLat(float destinationLat) {
+    public void setDestinationLat(double destinationLat) {
         this.destinationLat = destinationLat;
     }
 
-    public float getDestinationLong() {
+    public double getDestinationLong() {
         return destinationLong;
     }
 
-    public void setDestinationLong(float destinationLong) {
+    public void setDestinationLong(double destinationLong) {
         this.destinationLong = destinationLong;
     }
 
     public String getDayOfWeek(){
+        if(date == null){
+            return "";
+        }
+
         SimpleDateFormat formatter = new SimpleDateFormat(
                 "EEEE");
         return formatter.format(date);
     }
+
+
 }
