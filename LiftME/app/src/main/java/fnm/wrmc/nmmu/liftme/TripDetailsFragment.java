@@ -1,22 +1,31 @@
 package fnm.wrmc.nmmu.liftme;
 
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.location.Address;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.kd.dynamic.calendar.generator.ImageGenerator;
 
 import org.w3c.dom.Text;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 
 /**
@@ -31,6 +40,7 @@ public class TripDetailsFragment extends Fragment {
     private ImageView detailImage;
     private TextView tVPUDetails,tVDesDetails;
     private Trip trip;
+    private Handler handler;
 
     public TripDetailsFragment() {
         // Required empty public constructor
@@ -45,17 +55,60 @@ public class TripDetailsFragment extends Fragment {
         tVPUDetails = (TextView) curView.findViewById(R.id.tVPickupDescription);
         tVDesDetails = (TextView) curView.findViewById(R.id.tVDestinationDescription);
 
+        handler = new Handler(){
+            @Override
+            public void handleMessage(Message inputMessage) {
+                switch (inputMessage.what) {
+                    case ServerConnection.GET_ADDRESS_TASK:
+                        ServerConnection.GetAddressFromLatLongRunner.GetAddressTask AddrTask = (ServerConnection.GetAddressFromLatLongRunner.GetAddressTask) inputMessage.obj;
+                        switch (AddrTask.Status) {
+                            case ServerConnection.STATUS_SUCCESS:
+                                OnAddressRetrieveSuccess(AddrTask);
+                                break;
+                            case ServerConnection.STATUS_FAILED:
+                                OnAddressRetrieveFailure("Unable to retrieve address at this time.");
+                                break;
+                        }
+                        break;
+                    default:
+                        super.handleMessage(inputMessage);
+                        break;
+                }
+            }
+        };
+
         Bundle curBundle = getArguments();
 
         if(curBundle != null){
             trip = (Trip)curBundle.get(ARG_TRIP);
-            tVPUDetails.setText(String.format("%s\n%s\n%s\n",trip.getPickupLong(),trip.getPickupLong(),trip.getDayOfWeek(),trip.getPickupTime()));
-            tVDesDetails.setText(String.format("%s\n%s\n%s\n",trip.getDestinationLong(),trip.getDestinationLong(),trip.getDayOfWeek(),trip.getDropOffTime()));
+            RetrieveAddressFromLatLong();
         }
 
         return curView;
     }
 
+    private void OnAddressRetrieveSuccess(ServerConnection.GetAddressFromLatLongRunner.GetAddressTask addressTask){
+        List<String> addressList = addressTask.Addresses;
+        String puDetails = addressList.get(0).replace(",","\n");
+        String desDetails = addressList.get(1).replace(",", "\n");
+        tVPUDetails.setText(puDetails);
+        tVDesDetails.setText(desDetails);
+    }
+
+    private void OnAddressRetrieveFailure(String message) {
+        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+    }
+
+
+    private void RetrieveAddressFromLatLong(){
+
+        List<Pair<Double,Double>> coordinates = new ArrayList<>();
+        coordinates.add(new Pair<Double, Double>(trip.getPickupLat(),trip.getPickupLong()));
+        coordinates.add(new Pair<Double, Double>(trip.getDestinationLat(),trip.getDestinationLong()));
+        ServerConnection.GetAddressFromLatLongRunner.GetAddressTask addressTask = new ServerConnection.GetAddressFromLatLongRunner.GetAddressTask(handler,coordinates);
+        Thread addrThread = new Thread (new ServerConnection.GetAddressFromLatLongRunner(addressTask));
+        addrThread.start();
+    }
 
     public void GenerateImage(int imagaViewID){
         ImageGenerator mImageGenerator = new ImageGenerator(getContext());
@@ -79,5 +132,7 @@ public class TripDetailsFragment extends Fragment {
         c.set(2016,11,17);
         mImageGenerator.generateDateImage(c,imagaViewID);
     }
+
+
 
 }

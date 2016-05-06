@@ -253,10 +253,10 @@ public class DatabaseHandler {
             trips = new ArrayList<>();
             while(tripSet.next()){
                 Trip curTrip = new Trip();
-                curTrip.setPickupLat(tripSet.getFloat("pickUpLat"));
-                curTrip.setPickupLong(tripSet.getFloat("pickUpLong"));
-                curTrip.setDestinationLat(tripSet.getFloat("dropOffLat"));
-                curTrip.setDestinationLong(tripSet.getFloat("dropOffLong"));
+                curTrip.setPickupLat(tripSet.getDouble("pickUpLat"));
+                curTrip.setPickupLong(tripSet.getDouble("pickUpLong"));
+                curTrip.setDestinationLat(tripSet.getDouble("dropOffLat"));
+                curTrip.setDestinationLong(tripSet.getDouble("dropOffLong"));
                 curTrip.setPickupTime(tripSet.getTime("pickUpTime"));
                 curTrip.setDropOffTime(tripSet.getTime("dropOffTime"));
                 curTrip.setDate(tripSet.getDate("date"));
