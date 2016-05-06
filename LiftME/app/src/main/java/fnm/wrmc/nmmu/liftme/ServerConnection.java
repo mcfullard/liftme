@@ -32,7 +32,7 @@ public class ServerConnection {
     public static final String GET_USER_POSTED_TRIPS = "#GET_USER_POSTED_TRIPS";
     public static final int USER_POSTED_TRIP_TASK = 1;
 
-    private static final String SERVER_IP = "10.122.61.175";
+    private static final String SERVER_IP = "192.168.56.1";
     private static final int SERVER_PORT = 5050;
     private static final int CONNECTION_TIMEOUT = 5000;
 

@@ -1,8 +1,12 @@
 package fnm.wrmc.nmmu.liftme;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -40,6 +44,38 @@ public class DashboardActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        FragmentManager fm = getSupportFragmentManager();
+        Fragment mainFragment = getFragmentFromContext("");
+
+        Intent intent = getIntent();
+        if(intent != null) {
+            Bundle extras = intent.getExtras();
+            if(extras != null) {
+                String fragment_context = extras.getString("fragment_context");
+                mainFragment = getFragmentFromContext(fragment_context);
+            }
+        }
+
+        FragmentTransaction transaction = fm.beginTransaction();
+        if(fm.findFragmentById(R.id.container) != null) {
+            transaction.replace(R.id.container, mainFragment);
+        } else {
+            transaction.add(R.id.container, mainFragment);
+        }
+        transaction.addToBackStack("");
+        transaction.commit();
+
+    }
+
+    private Fragment getFragmentFromContext(String fragment_context) {
+        switch (fragment_context) {
+            case "fnm.wrmc.nmmu.liftme.UserProfileFragment":
+                return new UserProfileFragment();
+            case "fnm.wrmc.nmmu.liftme.MyTripsFragment":
+            default:
+                return new MyTripsFragment();
+        }
     }
 
     @Override
