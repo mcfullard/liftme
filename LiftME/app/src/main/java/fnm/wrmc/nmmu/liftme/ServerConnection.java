@@ -30,7 +30,9 @@ public class ServerConnection {
     public static final String UPDATE_DETAILS = "#UPDATE_DETAILS";
     public static final String AUTHENTICATION_TOKEN = "AUTH_TOKEN";
     public static final String GET_USER_POSTED_TRIPS = "#GET_USER_POSTED_TRIPS";
+    public static final String GET_USER_DETAILS = "#GET_USER_DETAILS";
     public static final int USER_POSTED_TRIP_TASK = 1;
+    public static final int GET_USER_DETAILS_TASK = 1;
 
     private static final String SERVER_IP = "192.168.56.1";
     private static final int SERVER_PORT = 5050;
@@ -76,7 +78,7 @@ public class ServerConnection {
                     writeStream.close();
                     readStream.close();
                     socket.close();
-                }catch(IOException e){
+                } catch(IOException e) {
                     Log.e("Comms | Authentication","Error authenticating user " + authTask.email);
                     e.printStackTrace();
                 }
@@ -175,11 +177,11 @@ public class ServerConnection {
         }
     }
 
-    static class PostedUserTripRunner implements Runnable{
+    static class PostedUserTripsRunner implements Runnable{
 
         UserPostedTripsTask tripsTask;
 
-        public PostedUserTripRunner(UserPostedTripsTask tripsTask){
+        public PostedUserTripsRunner(UserPostedTripsTask tripsTask){
             this.tripsTask = tripsTask;
         }
 
@@ -230,7 +232,7 @@ public class ServerConnection {
                 socket.close();
 
 
-            }catch(IOException e){
+            } catch(IOException e) {
                 Log.e("Comms | GetTrips","Error Getting posted trips.");
                 e.printStackTrace();
             }
@@ -241,7 +243,7 @@ public class ServerConnection {
         public static class UserPostedTripsTask {
 
             public String authKey;
-            public String authStatus = AUTHENTICATION_INCOMPLETE;;
+            public String authStatus = AUTHENTICATION_INCOMPLETE;
             private Handler handler;
 
             public List<Trip> trips;
@@ -262,5 +264,72 @@ public class ServerConnection {
             }
         }
 
+    }
+
+    static class GetUserDetailsRunner implements Runnable {
+
+        GetUserDetailsTask getUserDetailsTask;
+
+        public GetUserDetailsRunner(GetUserDetailsTask getUserDetailsTask) {
+            this.getUserDetailsTask = getUserDetailsTask;
+        }
+
+        @Override
+        public void run() {
+            try {
+                Socket socket = new Socket();
+                socket.connect(new InetSocketAddress(SERVER_IP, SERVER_PORT), CONNECTION_TIMEOUT);
+
+                DataOutputStream writeStream = new DataOutputStream(socket.getOutputStream());
+                DataInputStream readStream = new DataInputStream(socket.getInputStream());
+
+                writeStream.writeUTF(GET_USER_DETAILS);
+                writeStream.writeUTF(getUserDetailsTask.authKey);
+                writeStream.flush();
+
+                getUserDetailsTask.authStatus = readStream.readUTF();
+
+                if(getUserDetailsTask.authStatus.equals(AUTHENTICATION_SUCCESS)) {
+                    getUserDetailsTask.name = readStream.readUTF();
+                    getUserDetailsTask.surname = readStream.readUTF();
+                    getUserDetailsTask.email = readStream.readUTF();
+                    getUserDetailsTask.phone = readStream.readUTF();
+                    getUserDetailsTask.availableAsDriver = Integer.parseInt(readStream.readUTF());
+                    getUserDetailsTask.numberOfPassengers = Integer.parseInt(readStream.readUTF());
+                }
+
+                writeStream.writeUTF(QUIT_MESSAGE);
+
+                writeStream.close();
+                readStream.close();
+                socket.close();
+
+
+            } catch (IOException e) {
+                Log.e("Comms | GetUserDetails", "Error getting user details.");
+            }
+        }
+
+        public static class GetUserDetailsTask {
+            public String authKey;
+            public String authStatus = AUTHENTICATION_INCOMPLETE;
+            private Handler handler;
+
+            public String name = "";
+            public String surname = "";
+            public String email = "";
+            public String phone = "";
+            public int availableAsDriver = 0;
+            public int numberOfPassengers = 0;
+
+            public GetUserDetailsTask(String authKey, Handler handler) {
+                this.authKey = authKey;
+                this.handler = handler;
+            }
+
+            public void HandleGetUserDetails() {
+                handler.obtainMessage(GET_USER_DETAILS_TASK, this).sendToTarget();
+            }
+        }
     }
 }

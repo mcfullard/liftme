@@ -1,7 +1,6 @@
 package fnm.wrmc.nmmu.liftme;
 
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -17,8 +16,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
-import fnm.wrmc.nmmu.liftme.ServerConnection.PostedUserTripRunner.UserPostedTripsTask;
-import fnm.wrmc.nmmu.liftme.ServerConnection.*;
+import fnm.wrmc.nmmu.liftme.ServerConnection.PostedUserTripsRunner.UserPostedTripsTask;
 
 
 /**
@@ -39,7 +37,7 @@ public class MyTripsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View curView = inflater.inflate(R.layout.my_trips_frag, container, false);
+        View curView = inflater.inflate(R.layout.fragment_my_trips, container, false);
 
         myTripsList =  (ListView)curView.findViewById(R.id.lVMyTrips);
 
@@ -92,7 +90,7 @@ public class MyTripsFragment extends Fragment {
         }
 
         UserPostedTripsTask tripsTask = new UserPostedTripsTask(authKey,tripsHandler);
-        Thread tripThread = new Thread (new ServerConnection.PostedUserTripRunner(tripsTask));
+        Thread tripThread = new Thread (new ServerConnection.PostedUserTripsRunner(tripsTask));
         tripThread.start();
     }
 

@@ -9,7 +9,7 @@ public class User {
     private String password;
     private String email;
     private String contactNum;
-    private Integer availableAsDrive;
+    private Integer availableAsDriver;
     private Integer numberOfPassengers;
 
     public String getName() {
@@ -60,12 +60,12 @@ public class User {
         this.contactNum = contactNum;
     }
 
-    public Integer getAvailableAsDrive() {
-        return availableAsDrive;
+    public Integer getAvailableAsDriver() {
+        return availableAsDriver;
     }
 
-    public void setAvailableAsDrive(Integer availableAsDrive) {
-        this.availableAsDrive = availableAsDrive;
+    public void setAvailableAsDriver(Integer availableAsDriver) {
+        this.availableAsDriver = availableAsDriver;
     }
 
     public Integer getNumberOfPassengers() {

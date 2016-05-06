@@ -1,4 +1,3 @@
-import java.security.SecureRandom;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -140,7 +139,7 @@ public class DatabaseHandler {
                 userObj.setName(userSet.getString("name"));
                 userObj.setSurname(userSet.getString("surname"));
                 userObj.setEmail(userSet.getString("email"));
-                userObj.setAvailableAsDrive(userSet.getInt("availableAsDriver"));
+                userObj.setAvailableAsDriver(userSet.getInt("availableAsDriver"));
                 userObj.setContactNum(userSet.getString("contactNum"));
                 userObj.setUserID(userSet.getInt("userID"));
                 userObj.setNumberOfPassengers(userSet.getInt("numberOfPassengers"));
