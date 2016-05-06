@@ -21,20 +21,10 @@ import java.util.Calendar;
  */
 public class TripDetailsFragment extends Fragment {
 
-    private static final String ARG_SECTION_NUMBER = "section_number";
-
     private ImageView detailImage;
 
     public TripDetailsFragment() {
         // Required empty public constructor
-    }
-
-    public static TripDetailsFragment newInstance(int sectionNumber) {
-        TripDetailsFragment fragment = new TripDetailsFragment();
-        Bundle args = new Bundle();
-        args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-        fragment.setArguments(args);
-        return fragment;
     }
 
     @Override
@@ -82,6 +72,5 @@ public class TripDetailsFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
     }
 }

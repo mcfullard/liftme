@@ -74,13 +74,20 @@ public class ClientConnectionThread extends Thread {
             String authKey = readStream.readUTF();
             User user = DatabaseHandler.GetUserDetails(authKey);
             if(user != null) {
+                String name = user.getName();
+                String surname = user.getSurname();
+                String email = user.getEmail();
+                String phone = user.getContactNum();
+                Integer avail = user.getAvailableAsDriver();
+                Integer passengers = user.getNumberOfPassengers();
+
                 writeStream.writeUTF(AUTHENTICATION_SUCCESS);
-                writeStream.writeUTF(user.getName());
-                writeStream.writeUTF(user.getSurname());
-                writeStream.writeUTF(user.getEmail());
-                writeStream.writeUTF(user.getContactNum());
-                writeStream.writeUTF(user.getAvailableAsDriver().toString());
-                writeStream.writeUTF(user.getNumberOfPassengers().toString());
+                writeStream.writeUTF(name != null ? name : "");
+                writeStream.writeUTF(surname != null ? surname : "");
+                writeStream.writeUTF(email != null ? email : "");
+                writeStream.writeUTF(phone != null ? phone : "");
+                writeStream.writeUTF(avail != null ? avail.toString() : "");
+                writeStream.writeUTF(passengers != null ? passengers.toString() : "");
             } else {
                 writeStream.writeUTF(AUTHENTICATION_FAIL);
             }

@@ -24,8 +24,6 @@ import fnm.wrmc.nmmu.liftme.ServerConnection.PostedUserTripsRunner.UserPostedTri
  */
 public class MyTripsFragment extends Fragment {
 
-    private static final String ARG_SECTION_NUMBER = "section_number";
-
     private MyTripsListAdapter adapter;
     private ListView myTripsList;
     private List<Trip> trips;
@@ -33,14 +31,6 @@ public class MyTripsFragment extends Fragment {
 
     public MyTripsFragment() {
         // Required empty public constructor
-    }
-
-    public static MyTripsFragment newInstance(int sectionNumber) {
-        MyTripsFragment fragment = new MyTripsFragment();
-        Bundle args = new Bundle();
-        args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-        fragment.setArguments(args);
-        return fragment;
     }
 
     @Override
