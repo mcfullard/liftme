@@ -41,10 +41,9 @@ public class ServerConnection {
     public static final String STATUS_FAILED = "#FAILED";
     public static final int USER_POSTED_TRIP_TASK = 1;
     public static final int GET_USER_DETAILS_TASK = 1;
+    public static final int SET_USER_DETAILS_TASK = 1;
     public static final int GET_ADDRESS_TASK = 1;
-
-
-    private static final String SERVER_IP = "192.168.1.82";
+    private static final String SERVER_IP = "192.168.56.1";
     private static final int SERVER_PORT = 5050;
     private static final int CONNECTION_TIMEOUT = 5000;
 
@@ -318,6 +317,8 @@ public class ServerConnection {
             } catch (IOException e) {
                 Log.e("Comms | GetUserDetails", "Error getting user details.");
             }
+
+            getUserDetailsTask.handleGetUserDetails();
         }
 
         public static class GetUserDetailsTask {
@@ -337,13 +338,76 @@ public class ServerConnection {
                 this.handler = handler;
             }
 
-            public void HandleGetUserDetails() {
+            public void handleGetUserDetails() {
                 handler.obtainMessage(GET_USER_DETAILS_TASK, this).sendToTarget();
             }
         }
     }
 
-    static class GetAddressFromLatLongRunner implements Runnable {
+    static class SetUserDetailsRunner implements Runnable {
+
+        SetDetailsTask setDetailsTask;
+
+        public SetUserDetailsRunner(SetDetailsTask setDetailsTask) {
+            this.setDetailsTask = setDetailsTask;
+        }
+
+        @Override
+        public void run() {
+            try {
+                Socket socket = new Socket();
+                socket.connect(new InetSocketAddress(SERVER_IP, SERVER_PORT), CONNECTION_TIMEOUT);
+
+                DataOutputStream writeStream = new DataOutputStream(socket.getOutputStream());
+                DataInputStream readStream = new DataInputStream(socket.getInputStream());
+
+                /*
+                Communicate with the server
+                 */
+
+                writeStream.writeUTF(QUIT_MESSAGE);
+
+                writeStream.close();
+                readStream.close();
+                socket.close();
+            } catch (IOException e) {
+                Log.e("Comms | SetUserDetails", "Error sending user details to server. AuthKey " + setDetailsTask.authKey);
+                e.printStackTrace();
+            }
+            setDetailsTask.handleSetDetailsTask();
+        }
+
+        public static class SetDetailsTask {
+
+            public String authKey;
+            public String authStatus = AUTHENTICATION_INCOMPLETE;
+            private Handler handler;
+
+            public String name;
+            public String surname;
+            public String email;
+            public String phone;
+            public int availableAsDriver;
+            public int numberOfPassengers;
+
+            public SetDetailsTask(String authKey, Handler handler, String name, String surname, String phone, String email, int availableAsDriver, int numberOfPassengers) {
+                this.authKey = authKey;
+                this.handler = handler;
+                this.name = name;
+                this.surname = surname;
+                this.phone = phone;
+                this.email = email;
+                this.availableAsDriver = availableAsDriver;
+                this.numberOfPassengers = numberOfPassengers;
+            }
+
+            public void handleSetDetailsTask() {
+                handler.obtainMessage(SET_USER_DETAILS_TASK, this).sendToTarget();
+            }
+        }
+    }
+
+    public static class GetAddressFromLatLongRunner implements Runnable {
 
         private GetAddressTask getAddressTask;
 
