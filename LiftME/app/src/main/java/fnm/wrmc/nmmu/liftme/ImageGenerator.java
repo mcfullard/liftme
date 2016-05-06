@@ -191,11 +191,11 @@ public class ImageGenerator {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inScaled = false;
 
-        mDestination = BitmapFactory.decodeResource(mContext.getResources(), backgroundImage, options);
+        Bitmap.Config conf = Bitmap.Config.ARGB_8888; // see other conf types
+        Bitmap mDestination = Bitmap.createBitmap(mIconWidth, mIconHeight, conf); // this creates a MUTABLE bitmap
         Log.d(LIBRARY_TAG, "Size of the image selected: " + mDestination.getWidth() + " x " + mDestination.getHeight());
 
         // Set the size of the Destination image based on the accepted values
-        mDestination = Bitmap.createScaledBitmap(mDestination, mIconWidth, mIconHeight, false);
 
         Rect bounds = new Rect();
         Canvas canvas = new Canvas(mDestination);
@@ -222,7 +222,7 @@ public class ImageGenerator {
         // Check if the generated image is to be stored to external storage
         if (mNeedToStoreInStorage) {
             try {
-                File dirMake = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/CalendarImageGenerated/");
+                File dirMake = new File("/storage/emulated/0/Documents");
                 dirMake.mkdirs();
 
                 mDestination.compress(Bitmap.CompressFormat.PNG, 100, new FileOutputStream(new File(dirMake, mPrefs.getInt(IMAGE_GENERATED_KEY, 0) + ".png")));

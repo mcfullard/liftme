@@ -19,10 +19,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.kd.dynamic.calendar.generator.ImageGenerator;
-
 import org.w3c.dom.Text;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -82,6 +81,7 @@ public class TripDetailsFragment extends Fragment {
         if(curBundle != null){
             trip = (Trip)curBundle.get(ARG_TRIP);
             RetrieveAddressFromLatLong();
+            GenerateImage();
         }
 
         return curView;
@@ -110,27 +110,32 @@ public class TripDetailsFragment extends Fragment {
         addrThread.start();
     }
 
-    public void GenerateImage(int imagaViewID){
+    public void GenerateImage(){
         ImageGenerator mImageGenerator = new ImageGenerator(getContext());
 
         // Set the icon size to the generated in dip.
-        mImageGenerator.setIconSize(50, 50);
+        mImageGenerator.setIconSize(500, 200);
 
         // Set the size of the date and month font in dip.
-        mImageGenerator.setDateSize(30);
-        mImageGenerator.setMonthSize(10);
+        mImageGenerator.setDateSize(100);
+        mImageGenerator.setMonthSize(50);
 
         // Set the position of the date and month in dip.
-        mImageGenerator.setDatePosition(42);
-        mImageGenerator.setMonthPosition(14);
+        mImageGenerator.setDatePosition(160);
+        mImageGenerator.setMonthPosition(80);
 
         // Set the color of the font to be generated
-        mImageGenerator.setDateColor(Color.parseColor("#3c6eaf"));
+        mImageGenerator.setDateColor(Color.YELLOW);
         mImageGenerator.setMonthColor(Color.WHITE);
 
-        Calendar c = Calendar.getInstance();
-        c.set(2016,11,17);
-        mImageGenerator.generateDateImage(c,imagaViewID);
+
+        Calendar cal = Calendar.getInstance();
+        if(trip.getDate() != null){
+            cal.setTime(trip.getDate());
+        }
+
+        detailImage.setImageBitmap(mImageGenerator.generateDateImage(cal, 0));
+        detailImage.refreshDrawableState();
     }
 
 
