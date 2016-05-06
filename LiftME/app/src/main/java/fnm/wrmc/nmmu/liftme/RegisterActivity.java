@@ -29,7 +29,7 @@ public class RegisterActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.register_activity);
+        setContentView(R.layout.activity_register);
         edtEmail = (EditText) findViewById(R.id.edtRegisterEmail);
         edtPassword = (EditText) findViewById(R.id.edtRegisterPassword);
         edtPasswordConf = (EditText) findViewById(R.id.edtRegisterPasswordConf);
@@ -77,7 +77,7 @@ public class RegisterActivity extends AppCompatActivity {
         editor.commit();
 
         Intent intent = new Intent(this, DashboardActivity.class);
-        intent.putExtra("fragment_number", DashboardActivity.USER_PROFILE_FRAGMENT);
+        intent.putExtra("fragment_context", "fnm.wrmc.nmmu.liftme.UserProfileFragment");
         startActivity(intent);
     }
 

@@ -73,7 +73,6 @@ public class DashboardActivity extends AppCompatActivity
         } else {
             transaction.add(container, fragment);
         }
-        transaction.addToBackStack("");
         transaction.commit();
     }
 
