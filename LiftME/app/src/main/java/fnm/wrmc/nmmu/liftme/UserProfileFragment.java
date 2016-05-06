@@ -17,8 +17,6 @@ import android.widget.TextView;
  */
 public class UserProfileFragment extends Fragment {
 
-    private static final String ARG_SECTION_NUMBER = "section_number";
-
     private EditText editProfileName;
     private EditText editProfileSurname;
     private EditText editProfileEmail;
@@ -26,14 +24,6 @@ public class UserProfileFragment extends Fragment {
     private CheckedTextView checkedProfileDriver;
     private SeekBar seekBarPassengers;
     private TextView textPassengerCount;
-
-    public static UserProfileFragment newInstance(int sectionNumber) {
-        UserProfileFragment fragment = new UserProfileFragment();
-        Bundle args = new Bundle();
-        args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     public UserProfileFragment() {
     }
@@ -52,12 +42,6 @@ public class UserProfileFragment extends Fragment {
         return view;
     }
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        ((DashboardActivity) activity).onSectionAttached(
-                getArguments().getInt(ARG_SECTION_NUMBER));
-    }
 }
 
 

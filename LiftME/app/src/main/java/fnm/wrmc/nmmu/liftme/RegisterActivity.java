@@ -75,10 +75,11 @@ public class RegisterActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString(ServerConnection.AUTHENTICATION_TOKEN, regTask.authKey);
         editor.commit();
-
+        /*
         Intent intent = new Intent(this, DashboardActivity.class);
         intent.putExtra("fragment_number", DashboardActivity.USER_PROFILE_FRAGMENT);
         startActivity(intent);
+        */
     }
 
     private void OnRegistrationFailure(String message) {
