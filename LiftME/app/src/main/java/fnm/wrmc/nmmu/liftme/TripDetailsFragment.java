@@ -25,7 +25,10 @@ import java.util.List;
 public class TripDetailsFragment extends Fragment {
 
     public static final String ARG_TRIP = "Selected_Trip";
+    public static final String ARG_TRIP_TYPE = "Trip_Type";
     public static final String FRAG_IDENTIFYER = "fnm.wrmc.nmmu.liftme.TripDetailsFragment";
+    public static final String MY_TRIP_DETAILS = "My Trip Details";
+    public static final String VIEW_TRIP_DETAILS = "View Trip Details";
 
     private ImageView detailImage;
     private TextView tVPUDetails, tVDesDetails;
@@ -42,6 +45,34 @@ public class TripDetailsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+
+        View curView;
+
+        Bundle curBundle = getArguments();
+
+        if (curBundle != null) {
+            trip = (Trip) curBundle.get(ARG_TRIP);
+            String tripType = curBundle.getString(ARG_TRIP_TYPE);
+            if(tripType != null && tripType.equals(MY_TRIP_DETAILS)){
+                curView = setupFragForMyTrip(inflater,container);
+                return curView;
+            } else if(tripType != null && tripType.equals(VIEW_TRIP_DETAILS)){
+                //TODO add trip view varient here
+                curView = inflater.inflate(R.layout.fragment_trip_details, container, false);
+                return curView;
+            }
+            else{
+                curView = inflater.inflate(R.layout.fragment_trip_details, container, false);
+                return curView;
+            }
+
+        }else{
+            curView = inflater.inflate(R.layout.fragment_trip_details, container, false);
+            return curView;
+        }
+    }
+
+    public View setupFragForMyTrip(LayoutInflater inflater,ViewGroup container){
         View curView = inflater.inflate(R.layout.fragment_trip_details_with_interested_users, container, false);
         detailImage = (ImageView) curView.findViewById(R.id.iVMyTripDetailsImage);
         tVPUDetails = (TextView) curView.findViewById(R.id.tVPickupDescription);
@@ -88,14 +119,9 @@ public class TripDetailsFragment extends Fragment {
             }
         };
 
-        Bundle curBundle = getArguments();
-
-        if (curBundle != null) {
-            trip = (Trip) curBundle.get(ARG_TRIP);
-            RetrieveAddressFromLatLong();
-            RetrieveInterestedUsers();
-            GenerateImage();
-        }
+        RetrieveAddressFromLatLong();
+        RetrieveInterestedUsers();
+        GenerateImage();
 
         return curView;
     }

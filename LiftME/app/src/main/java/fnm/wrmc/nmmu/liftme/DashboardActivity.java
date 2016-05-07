@@ -160,6 +160,7 @@ public class DashboardActivity extends AppCompatActivity
     public void onMyTripClick(Trip clickedTrip) {
         Bundle B = new Bundle();
         B.putSerializable(TripDetailsFragment.ARG_TRIP, ((Serializable) clickedTrip));
+        B.putString(TripDetailsFragment.ARG_TRIP_TYPE,TripDetailsFragment.MY_TRIP_DETAILS);
         Fragment newFragment = getFragmentFromContext(TripDetailsFragment.FRAG_IDENTIFYER,B);
         AddFragmentToContainer(R.id.container,newFragment);
     }
