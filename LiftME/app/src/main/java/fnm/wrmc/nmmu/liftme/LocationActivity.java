@@ -105,11 +105,11 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(locationPos, 13));
 
                 CameraPosition cameraPosition = new CameraPosition.Builder()
-                        .target(locationPos)        // Sets the center of the map to location user
-                        .zoom(17)                   // Sets the zoom
-                        .bearing(90)                // Sets the orientation of the camera to east
-                        .tilt(40)                   // Sets the tilt of the camera to 30 degrees
-                        .build();                   // Creates a CameraPosition from the builder
+                        .target(locationPos)
+                        .zoom(17)
+                        .bearing(0)
+                        .tilt(30)
+                        .build();
                 mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
                 mMap.addMarker(new MarkerOptions().position(locationPos).title(getApplicationContext().getResources().getString(R.string.pickup_location)));
