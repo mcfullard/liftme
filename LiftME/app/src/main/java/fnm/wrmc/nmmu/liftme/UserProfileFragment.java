@@ -36,6 +36,11 @@ public class UserProfileFragment extends Fragment {
 
     Handler getUserDetailsHandler;
     Handler setUserDetailsHandler;
+    AcceptChangeClickListener acceptChangeClickListener;
+
+    public interface AcceptChangeClickListener {
+        public void onAcceptChangeClick();
+    }
 
     @Nullable
     @Override
@@ -93,6 +98,7 @@ public class UserProfileFragment extends Fragment {
         int id = item.getItemId();
         if(id == R.id.action_accept_changes) {
             setUserDetails();
+            acceptChangeClickListener.onAcceptChangeClick();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -135,6 +141,10 @@ public class UserProfileFragment extends Fragment {
                 super.handleMessage(msg);
             }
         };
+
+        if(getActivity() instanceof DashboardActivity) {
+            acceptChangeClickListener = (DashboardActivity)getActivity();
+        }
 
         getUserDetails();
     }

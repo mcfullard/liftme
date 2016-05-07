@@ -33,17 +33,17 @@ public class ServerConnection {
     public static final String AUTHENTICATION_FAIL = "#NOAUTH";
     public static final String AUTHENTICATION_SUCCESS = "#YESAUTH";
     public static final String AUTHENTICATION_INCOMPLETE = "#INCOMPLETEAUTH";
-    public static final String UPDATE_DETAILS = "#UPDATE_DETAILS";
     public static final String AUTHENTICATION_TOKEN = "AUTH_TOKEN";
     public static final String GET_USER_POSTED_TRIPS = "#GET_USER_POSTED_TRIPS";
     public static final String GET_USER_DETAILS = "#GET_USER_DETAILS";
+    public static final String SET_USER_DETAILS = "#SET_USER_DETAILS";
     public static final String STATUS_SUCCESS = "#SUCCESS";
     public static final String STATUS_FAILED = "#FAILED";
     public static final int USER_POSTED_TRIP_TASK = 1;
     public static final int GET_USER_DETAILS_TASK = 1;
     public static final int SET_USER_DETAILS_TASK = 1;
     public static final int GET_ADDRESS_TASK = 1;
-    private static final String SERVER_IP = "192.168.1.82";
+    private static final String SERVER_IP = "192.168.56.1";
     private static final int SERVER_PORT = 5050;
     private static final int CONNECTION_TIMEOUT = 5000;
 
@@ -131,10 +131,8 @@ public class ServerConnection {
                 regTask.authStatus = AUTHENTICATION_FAIL;
                 regTask.HandleRegistration();
             } else {
-                Socket socket = null;
-
                 try {
-                    socket = new Socket();
+                    Socket socket = new Socket();
                     socket.connect(new InetSocketAddress(SERVER_IP, SERVER_PORT), CONNECTION_TIMEOUT);
 
                     DataOutputStream writeStream = new DataOutputStream(socket.getOutputStream());
@@ -317,6 +315,7 @@ public class ServerConnection {
 
             } catch (IOException e) {
                 Log.e("Comms | GetUserDetails", "Error getting user details.");
+                e.printStackTrace();
             }
 
             getUserDetailsTask.handleGetUserDetails();
@@ -362,9 +361,21 @@ public class ServerConnection {
                 DataOutputStream writeStream = new DataOutputStream(socket.getOutputStream());
                 DataInputStream readStream = new DataInputStream(socket.getInputStream());
 
-                /*
-                Communicate with the server
-                 */
+                writeStream.writeUTF(SET_USER_DETAILS);
+                writeStream.writeUTF(setDetailsTask.authKey);
+                writeStream.flush();
+
+                setDetailsTask.authStatus = readStream.readUTF();
+
+                if(setDetailsTask.authStatus.equals(AUTHENTICATION_SUCCESS)){
+                    writeStream.writeUTF(setDetailsTask.name);
+                    writeStream.writeUTF(setDetailsTask.surname);
+                    writeStream.writeUTF(setDetailsTask.email);
+                    writeStream.writeUTF(setDetailsTask.phone);
+                    writeStream.writeUTF(String.valueOf(setDetailsTask.availableAsDriver));
+                    writeStream.writeUTF(String.valueOf(setDetailsTask.numberOfPassengers));
+                    writeStream.flush();
+                }
 
                 writeStream.writeUTF(QUIT_MESSAGE);
 

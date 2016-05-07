@@ -20,7 +20,7 @@ import android.view.MenuItem;
 import java.io.Serializable;
 
 public class DashboardActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, MyTripsFragment.IMyTripsCallback {
+        implements NavigationView.OnNavigationItemSelectedListener, MyTripsFragment.IMyTripsCallback, UserProfileFragment.AcceptChangeClickListener {
 
     static public String USER_PROFILE_FRAGMENT = "fnm.wrmc.nmmu.liftme.UserProfileFragment";
 
@@ -58,7 +58,7 @@ public class DashboardActivity extends AppCompatActivity
             Bundle extras = intent.getExtras();
             if(extras != null) {
                 String fragment_context = extras.getString("fragment_context");
-                mainFragment = getFragmentFromContext(fragment_context,null);
+                mainFragment = getFragmentFromContext(fragment_context, null);
             }
         }
 
@@ -92,7 +92,7 @@ public class DashboardActivity extends AppCompatActivity
                 newFragment = new MyTripsFragment();
         }
 
-        if(newFragment != null && fragmentArguments != null){
+        if(fragmentArguments != null){
             newFragment.setArguments(fragmentArguments);
         }
 
@@ -162,5 +162,10 @@ public class DashboardActivity extends AppCompatActivity
         B.putSerializable(TripDetailsFragment.ARG_TRIP, ((Serializable) clickedTrip));
         Fragment newFragment = getFragmentFromContext(TripDetailsFragment.FRAG_IDENTIFYER,B);
         AddFragmentToContainer(R.id.container,newFragment);
+    }
+
+    @Override
+    public void onAcceptChangeClick() {
+        AddFragmentToContainer(R.id.container, getFragmentFromContext("fnm.wrmc.nmmu.liftme.MyTripsFragment", null));
     }
 }
