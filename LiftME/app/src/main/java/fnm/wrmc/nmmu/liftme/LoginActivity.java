@@ -146,8 +146,10 @@ public class LoginActivity extends AppCompatActivity {
         edtPassword.clearFocus();
         edtPassword.setFocusable(false);
 
-        loginSpinner.animate().translationX(-200f);
-        tVLogin.animate().translationX(200f);
+        float movement = tVLogin.getWidth()/2;
+
+        loginSpinner.animate().translationX(-movement);
+        tVLogin.animate().translationX(movement);
     }
 
     private void ResetLoginAnimation(){
@@ -163,8 +165,9 @@ public class LoginActivity extends AppCompatActivity {
         edtPassword.setFocusable(true);
         edtPassword.setFocusableInTouchMode(true);
 
-        loginSpinner.animate().translationX(200f);
-        tVLogin.animate().translationX(-200f);
+        float movement = tVLogin.getWidth()/2;
+        loginSpinner.animate().translationX(movement);
+        tVLogin.animate().translationX(-movement);
     }
 
     public void OnRegisterClick(View view){
