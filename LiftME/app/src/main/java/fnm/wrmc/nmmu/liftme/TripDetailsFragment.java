@@ -1,9 +1,12 @@
 package fnm.wrmc.nmmu.liftme;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -36,6 +39,7 @@ public class TripDetailsFragment extends Fragment {
     private Handler handler;
     private InterestedUsersListAdapter adapter;
     private ListView lVinterestedUser;
+    private FloatingActionButton fabInterestedToggle;
 
     public TripDetailsFragment() {
         // Required empty public constructor
@@ -54,11 +58,10 @@ public class TripDetailsFragment extends Fragment {
             trip = (Trip) curBundle.get(ARG_TRIP);
             String tripType = curBundle.getString(ARG_TRIP_TYPE);
             if(tripType != null && tripType.equals(MY_TRIP_DETAILS)){
-                curView = setupFragForMyTrip(inflater,container);
+                curView = setupFragForMyTrip(inflater, container);
                 return curView;
             } else if(tripType != null && tripType.equals(VIEW_TRIP_DETAILS)){
-                //TODO add trip view varient here
-                curView = inflater.inflate(R.layout.fragment_trip_details, container, false);
+                curView = setupFragForViewTrip(inflater,container);
                 return curView;
             }
             else{
@@ -82,6 +85,7 @@ public class TripDetailsFragment extends Fragment {
         adapter = new InterestedUsersListAdapter(getContext(), (new ArrayList<User>()));
         lVinterestedUser = (ListView) curView.findViewById(R.id.lvTripDetailsInterestedUsers);
         lVinterestedUser.setAdapter(adapter);
+
 
         handler = new Handler() {
             @Override
@@ -126,6 +130,63 @@ public class TripDetailsFragment extends Fragment {
         return curView;
     }
 
+    public View setupFragForViewTrip(LayoutInflater inflater,ViewGroup container){
+        View curView = inflater.inflate(R.layout.fragment_trip_details, container, false);
+        detailImage = (ImageView) curView.findViewById(R.id.iVMyTripDetailsImage);
+        tVPUDetails = (TextView) curView.findViewById(R.id.tVPickupDescription);
+        tVDesDetails = (TextView) curView.findViewById(R.id.tVDestinationDescription);
+
+        fabInterestedToggle = (FloatingActionButton)curView.findViewById(R.id.fab);
+        fabInterestedToggle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                OnInterestedUserToggle();
+            }
+        });
+
+        handler = new Handler() {
+            @Override
+            public void handleMessage(Message inputMessage) {
+                switch (inputMessage.what) {
+                    case ServerConnection.GET_ADDRESS_TASK:
+                        ServerConnection.GetAddressFromLatLongRunner.GetAddressTask AddrTask = (ServerConnection.GetAddressFromLatLongRunner.GetAddressTask) inputMessage.obj;
+                        switch (AddrTask.Status) {
+                            case ServerConnection.STATUS_SUCCESS:
+                                OnAddressRetrieveSuccess(AddrTask);
+                                break;
+                            case ServerConnection.STATUS_FAILED:
+                                OnRetrieveFailure("Unable to retrieve address at this time.");
+                                break;
+                        }
+                        break;
+                    case ServerConnection.TOGGLE_INTERESTED_USER_TASK:
+                        ServerConnection.ToggleInterestedUserRunner.ToggleInterestedUserTask tglTask = (ServerConnection.ToggleInterestedUserRunner.ToggleInterestedUserTask) inputMessage.obj;
+                        switch (tglTask.authStatus) {
+                            case ServerConnection.AUTHENTICATION_SUCCESS:
+                                OnInterestedUserToggleSuccess(tglTask);
+                                break;
+                            case ServerConnection.AUTHENTICATION_FAIL:
+                                OnRetrieveFailure("Unable to authenticate you. Are you logged in?");
+                                break;
+                            case ServerConnection.AUTHENTICATION_INCOMPLETE:
+                                OnRetrieveFailure("Could not connect to server. Please check internet connection and try again.");
+                                break;
+                        }
+                    default:
+                        super.handleMessage(inputMessage);
+                        break;
+
+                }
+            }
+        };
+
+        RetrieveAddressFromLatLong();
+        GenerateImage();
+
+        return curView;
+
+    }
+
     private void OnAddressRetrieveSuccess(ServerConnection.GetAddressFromLatLongRunner.GetAddressTask addressTask) {
         List<String> addressList = addressTask.Addresses;
         String puDetails = addressList.get(0).replace(",", "\n");
@@ -139,10 +200,31 @@ public class TripDetailsFragment extends Fragment {
         adapter.addAll(IUTask.interestedUsers);
     }
 
+    private void OnInterestedUserToggleSuccess(ServerConnection.ToggleInterestedUserRunner.ToggleInterestedUserTask tglTask){
+        if(tglTask.toggleStatus == 2) {
+            fabInterestedToggle.setBackgroundColor(Color.GRAY);
+        }else{
+            fabInterestedToggle.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+        }
+    }
+
+    private void OnInterestedUserToggle(){
+        SharedPreferences sharedPref = getActivity().getSharedPreferences("GlobalPref", Context.MODE_PRIVATE);
+        String authKey = sharedPref.getString(ServerConnection.AUTHENTICATION_TOKEN,"");
+
+        if(authKey.isEmpty()){
+            OnRetrieveFailure("You never logged in previously. Please login.");
+            return;
+        }
+
+        ServerConnection.ToggleInterestedUserRunner.ToggleInterestedUserTask tglTask = new ServerConnection.ToggleInterestedUserRunner.ToggleInterestedUserTask(authKey,trip.getTripID(),handler);
+        Thread tglThread = new Thread(new ServerConnection.ToggleInterestedUserRunner(tglTask));
+        tglThread.start();
+    }
+
     private void OnRetrieveFailure(String message) {
         Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
     }
-
 
     private void RetrieveAddressFromLatLong() {
 
@@ -164,7 +246,7 @@ public class TripDetailsFragment extends Fragment {
         ImageGenerator mImageGenerator = new ImageGenerator(getContext());
 
         // Set the icon size to the generated in dip.
-        mImageGenerator.setIconSize(500, 200);
+        mImageGenerator.setIconSize(500, 300);
 
         // Set the size of the date and month font in dip.
         mImageGenerator.setDateSize(100);

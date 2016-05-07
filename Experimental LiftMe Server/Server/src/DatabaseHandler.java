@@ -329,4 +329,60 @@ public class DatabaseHandler {
         return interestedUsers;
     }
 
+    static int InterestedUserToggle(String authKey,int tripID){
+        writeLock.lock();
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        int affectedRows = 0;
+
+        try{
+
+            Class.forName("com.mysql.jdbc.Driver");
+            System.out.println("Connecting to database to retrieve interested users for tripID: " + tripID + ";");
+            PropertyManager pm = PropertyManager.getInstance();
+            conn = DriverManager.getConnection(DB_URL, pm.getProperty("USER"), pm.getProperty("PASSWORD"));
+
+            String checkInterStatusSQL = "SELECT * FROM interesteduser WHERE tripID = ? AND userID = (SELECT userID FROM user WHERE authenticationToken = ?);";
+            stmt = conn.prepareStatement(checkInterStatusSQL);
+
+            stmt.setInt(1, tripID);
+            stmt.setString(2, authKey);
+
+            ResultSet resultSet = stmt.executeQuery();
+
+            if(resultSet.next()){
+                String deleteInterSQL = "DELETE FROM interesteduser WHERE tripID = ? AND userID = (SELECT userID FROM user WHERE authenticationToken = ?);";
+                stmt = conn.prepareStatement(deleteInterSQL);
+                stmt.setInt(1, tripID);
+                stmt.setString(2, authKey);
+                affectedRows = stmt.executeUpdate();
+                if(affectedRows > 0){
+                    affectedRows = 1;
+                }
+            }else{
+                String insertInterSQL = "INSERT INTO interesteduser (userID,tripID) VALUES ((SELECT userID FROM user WHERE authenticationToken = ?),?);";
+                stmt = conn.prepareStatement(insertInterSQL);
+                stmt.setString(1, authKey);
+                stmt.setInt(2, tripID);
+                affectedRows = stmt.executeUpdate();
+                if(affectedRows > 0){
+                    affectedRows = 2;
+                }
+            }
+
+            stmt.close();
+            conn.close();
+        }catch(SQLException e){
+            System.out.println("SQL error occurred whilst toggling interested user for tripID " + tripID + " .");
+            System.out.println(e);
+        }catch(Exception e){
+            System.out.println("Unexpected error occurred whilst toggling interested user for tripID " + tripID + " .");
+            System.out.println(e);
+        }
+        finally {
+            writeLock.unlock();
+        }
+        return affectedRows;
+    }
+
 }

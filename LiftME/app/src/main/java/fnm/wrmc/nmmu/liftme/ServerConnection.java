@@ -37,6 +37,7 @@ public class ServerConnection {
     public static final String GET_USER_DETAILS = "#GET_USER_DETAILS";
     public static final String SET_USER_DETAILS = "#SET_USER_DETAILS";
     public static final String GET_INTERESTED_USERS = "#GET_INTERESTED_USERS";
+    public static final String INTERESTED_USER_TOGGLE = "#INTERESTED_USER_TOGGLE";
 
     public static final String STATUS_SUCCESS = "#SUCCESS";
     public static final String STATUS_FAILED = "#FAILED";
@@ -46,8 +47,9 @@ public class ServerConnection {
     public static final int SET_USER_DETAILS_TASK = 3;
     public static final int GET_INTERESTED_USER_TASK = 4;
     public static final int GET_ADDRESS_TASK = 5;
+    public static final int TOGGLE_INTERESTED_USER_TASK = 6;
 
-    private static final String SERVER_IP = "192.168.56.1";
+    private static final String SERVER_IP = "192.168.1.82";
     private static final int SERVER_PORT = 5050;
     private static final int CONNECTION_TIMEOUT = 5000;
 
@@ -576,6 +578,67 @@ public class ServerConnection {
 
             public void handleGetInterestedUsers() {
                 handler.obtainMessage(GET_INTERESTED_USER_TASK, this).sendToTarget();
+            }
+        }
+    }
+
+    static class ToggleInterestedUserRunner implements Runnable {
+
+        ToggleInterestedUserTask toggleInterestedUserTask;
+
+        public ToggleInterestedUserRunner(ToggleInterestedUserTask toggleInterestedUserTask) {
+            this.toggleInterestedUserTask = toggleInterestedUserTask;
+        }
+
+        @Override
+        public void run() {
+            try {
+                Socket socket = new Socket();
+                socket.connect(new InetSocketAddress(SERVER_IP, SERVER_PORT), CONNECTION_TIMEOUT);
+
+                DataOutputStream writeStream = new DataOutputStream(socket.getOutputStream());
+                DataInputStream readStream = new DataInputStream(socket.getInputStream());
+
+                writeStream.writeUTF(INTERESTED_USER_TOGGLE);
+                writeStream.writeUTF(toggleInterestedUserTask.authKey);
+                writeStream.writeInt(toggleInterestedUserTask.tripID);
+                writeStream.flush();
+
+                toggleInterestedUserTask.authStatus = readStream.readUTF();
+                if(toggleInterestedUserTask.authStatus.equals(AUTHENTICATION_SUCCESS)){
+                    toggleInterestedUserTask.toggleStatus = readStream.readInt();
+                }
+
+                writeStream.writeUTF(QUIT_MESSAGE);
+
+                writeStream.close();
+                readStream.close();
+                socket.close();
+
+
+            } catch (IOException e) {
+                Log.e("Comms |TgLInterestedUsr", "Error toggleing interested interested users for tripID " + toggleInterestedUserTask.tripID + ".");
+                e.printStackTrace();
+            }
+
+            toggleInterestedUserTask.handleToggleInterestedUser();
+        }
+
+        public static class ToggleInterestedUserTask {
+            public int tripID;
+            public int toggleStatus;
+            public String authKey;
+            public String authStatus = AUTHENTICATION_INCOMPLETE;
+            private Handler handler;
+
+            public ToggleInterestedUserTask(String authKey, int tripID, Handler handler) {
+                this.authKey = authKey;
+                this.tripID = tripID;
+                this.handler = handler;
+            }
+
+            public void handleToggleInterestedUser() {
+                handler.obtainMessage(TOGGLE_INTERESTED_USER_TASK, this).sendToTarget();
             }
         }
     }

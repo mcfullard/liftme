@@ -22,22 +22,23 @@ public class ClientConnectionThread extends Thread {
     private final String GET_USER_DETAILS = "#GET_USER_DETAILS";
     private final String SET_USER_DETAILS = "#SET_USER_DETAILS";
     private final String GET_INTERESTED_USERS = "#GET_INTERESTED_USERS";
+    private final String INTERESTED_USER_TOGGLE = "#INTERESTED_USER_TOGGLE";
 
-    public ClientConnectionThread(mainServer theServer,Socket newSocket){
+    public ClientConnectionThread(mainServer theServer, Socket newSocket) {
         this.theServer = theServer;
         this.socket = newSocket;
     }
 
     @Override
     public void run() {
-        try{
+        try {
             readStream = new DataInputStream(socket.getInputStream());
             writeStream = new DataOutputStream(socket.getOutputStream());
 
             String response = readStream.readUTF();
-            while(!response.equals(QUIT_MESSAGE)){
+            while (!response.equals(QUIT_MESSAGE)) {
 
-                switch (response){
+                switch (response) {
                     case REGISTER:
                         Register();
                         break;
@@ -56,18 +57,21 @@ public class ClientConnectionThread extends Thread {
                     case GET_INTERESTED_USERS:
                         GetInterestedUsers();
                         break;
+                    case INTERESTED_USER_TOGGLE:
+                        InterestedUserToggle();
+                        break;
                 }
 
                 response = readStream.readUTF();
             }
-        }catch(IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             try {
                 readStream.close();
                 writeStream.close();
                 socket.close();
-            }catch(IOException e){
+            } catch (IOException e) {
                 System.out.println("Error closing client connections.");
             }
         }
@@ -77,7 +81,7 @@ public class ClientConnectionThread extends Thread {
         try {
             String authKey = readStream.readUTF();
             User user = DatabaseHandler.GetUserDetails(authKey);
-            if(user != null) {
+            if (user != null) {
                 writeStream.writeUTF(AUTHENTICATION_SUCCESS);
                 writeStream.flush();
                 user.setName(readStream.readUTF());
@@ -101,7 +105,7 @@ public class ClientConnectionThread extends Thread {
         try {
             String authKey = readStream.readUTF();
             User user = DatabaseHandler.GetUserDetails(authKey);
-            if(user != null) {
+            if (user != null) {
                 String name = user.getName();
                 String surname = user.getSurname();
                 String email = user.getEmail();
@@ -126,54 +130,54 @@ public class ClientConnectionThread extends Thread {
         }
     }
 
-    private void Register(){
+    private void Register() {
         try {
             String email = readStream.readUTF();
             String password = readStream.readUTF();
             String authKey = DatabaseHandler.RegisterUser(password, email);
 
-            if(authKey != null){
+            if (authKey != null) {
                 writeStream.writeUTF(AUTHENTICATION_SUCCESS);
                 writeStream.writeUTF(authKey);
-            }else{
+            } else {
                 writeStream.writeUTF(AUTHENTICATION_FAIL);
             }
 
             writeStream.flush();
             System.out.println("CLIENT THREAD : Registering user " + email + ". AuthKey: " + authKey);
-        }catch(IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void authenticate(){
+    private void authenticate() {
         try {
             String email = readStream.readUTF();
             String password = readStream.readUTF();
             String authKey = DatabaseHandler.AuthenticateUser(email, password);
-            if(authKey != null){
+            if (authKey != null) {
                 writeStream.writeUTF(AUTHENTICATION_SUCCESS);
                 writeStream.writeUTF(authKey);
-            }else{
+            } else {
                 writeStream.writeUTF(AUTHENTICATION_FAIL);
             }
             writeStream.flush();
             System.out.println("CLIENT THREAD : Authenticating user " + email);
-        }catch(IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void GetUserPostedTrips(){
+    private void GetUserPostedTrips() {
         try {
             String authKey = readStream.readUTF();
 
             List<Trip> userTrips = DatabaseHandler.GetUserPostedTrips(authKey);
 
-            if(userTrips != null){
+            if (userTrips != null) {
                 writeStream.writeUTF(AUTHENTICATION_SUCCESS);
                 writeStream.writeInt(userTrips.size());
-                for(Trip curTrip : userTrips){
+                for (Trip curTrip : userTrips) {
                     writeStream.writeInt(curTrip.getTripID());
                     writeStream.writeDouble(curTrip.getPickupLat());
                     writeStream.writeDouble(curTrip.getPickupLong());
@@ -184,26 +188,26 @@ public class ClientConnectionThread extends Thread {
                     writeStream.writeLong(curTrip.getDate().getTime());
                 }
 
-            }else{
+            } else {
                 writeStream.writeUTF(AUTHENTICATION_FAIL);
             }
             writeStream.flush();
             System.out.println("CLIENT THREAD : Getting user posted trips. AuthKey " + authKey);
-        }catch(IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void GetInterestedUsers(){
+    private void GetInterestedUsers() {
         try {
             int tripID = readStream.readInt();
 
             List<User> interestedUsers = DatabaseHandler.GetInterestedUsersOfTrip(tripID);
 
-            if(interestedUsers != null){
+            if (interestedUsers != null) {
                 writeStream.writeUTF(AUTHENTICATION_SUCCESS);
                 writeStream.writeInt(interestedUsers.size());
-                for(User curUser : interestedUsers){
+                for (User curUser : interestedUsers) {
                     writeStream.writeInt(curUser.getUserID());
                     writeStream.writeUTF(curUser.getName());
                     writeStream.writeUTF(curUser.getSurname());
@@ -213,16 +217,35 @@ public class ClientConnectionThread extends Thread {
                     writeStream.writeInt(curUser.getAvailableAsDriver());
                     writeStream.writeInt(curUser.getNumberOfPassengers());
                 }
-            }else{
+            } else {
                 writeStream.writeUTF(AUTHENTICATION_FAIL);
             }
             writeStream.flush();
             System.out.println("CLIENT THREAD : Getting interested users for tripID " + tripID);
-        }catch(IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    private void InterestedUserToggle() {
+        try {
+            String authKey = readStream.readUTF();
+            int tripID = readStream.readInt();
+
+            int interestedUsers = DatabaseHandler.InterestedUserToggle(authKey, tripID);
+
+            if (interestedUsers != 0) {
+                writeStream.writeUTF(AUTHENTICATION_SUCCESS);
+                writeStream.writeInt(interestedUsers);
+            } else {
+                writeStream.writeUTF(AUTHENTICATION_FAIL);
+            }
+            writeStream.flush();
+            System.out.println("CLIENT THREAD : Getting interested users for tripID " + tripID);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 
 }
