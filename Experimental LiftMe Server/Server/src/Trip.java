@@ -1,5 +1,6 @@
 import java.sql.Date;
 import java.sql.Time;
+import java.sql.Timestamp;
 
 /**
  * Created by Francois on 2016/04/13.
@@ -11,36 +12,18 @@ public class Trip {
     private double pickupLong;
     private double destinationLat;
     private double destinationLong;
-    private Time pickupTime;
-    private Time dropOffTime;
-    private Date date;
+    private Timestamp pickupTime;
 
     public Trip(){
 
     }
 
-    public Time getPickupTime() {
+    public Timestamp getPickupTime() {
         return pickupTime;
     }
 
-    public void setPickupTime(Time pickupTime) {
+    public void setPickupTime(Timestamp pickupTime) {
         this.pickupTime = pickupTime;
-    }
-
-    public Time getDropOffTime() {
-        return dropOffTime;
-    }
-
-    public void setDropOffTime(Time dropOffTime) {
-        this.dropOffTime = dropOffTime;
-    }
-
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
     }
 
     public double getPickupLat() {

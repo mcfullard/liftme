@@ -2,6 +2,7 @@ package fnm.wrmc.nmmu.liftme;
 import java.io.Serializable;
 import java.sql.Date;
 import java.sql.Time;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 
 /**
@@ -14,35 +15,18 @@ public class Trip implements Serializable {
     private double pickupLong;
     private double destinationLat;
     private double destinationLong;
-    private Time pickupTime;
-    private Time dropOffTime;
-    private Date date;
+    private Timestamp pickupTime;
 
     public Trip(){
+
     }
 
-    public Time getPickupTime() {
+    public Timestamp getPickupTime() {
         return pickupTime;
     }
 
-    public void setPickupTime(Time pickupTime) {
+    public void setPickupTime(Timestamp pickupTime) {
         this.pickupTime = pickupTime;
-    }
-
-    public Time getDropOffTime() {
-        return dropOffTime;
-    }
-
-    public void setDropOffTime(Time dropOffTime) {
-        this.dropOffTime = dropOffTime;
-    }
-
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
     }
 
     public double getPickupLat() {
@@ -78,13 +62,23 @@ public class Trip implements Serializable {
     }
 
     public String getDayOfWeek(){
-        if(date == null){
+        if(pickupTime == null){
             return "";
         }
 
         SimpleDateFormat formatter = new SimpleDateFormat(
                 "EEEE");
-        return formatter.format(date);
+        return formatter.format(pickupTime);
+    }
+
+    public String getTime(){
+        if(pickupTime == null){
+            return "";
+        }
+
+        SimpleDateFormat formatter = new SimpleDateFormat(
+                "HH:mm");
+        return formatter.format(pickupTime);
     }
 
     public int getTripID() {

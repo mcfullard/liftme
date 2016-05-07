@@ -16,6 +16,7 @@ import java.net.Socket;
 import java.net.URL;
 import java.sql.Date;
 import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -225,13 +226,9 @@ public class ServerConnection {
                         curTrip.setPickupLong(readStream.readDouble());
                         curTrip.setDestinationLat(readStream.readDouble());
                         curTrip.setDestinationLong(readStream.readDouble());
-                        Time pickUpTime = new Time(readStream.readLong());
-                        Time dropOffTime = new Time(readStream.readLong());
-                        Date date = new Date(readStream.readLong());
+                        Timestamp pickUpTime = new Timestamp(readStream.readLong());
 
                         curTrip.setPickupTime(pickUpTime);
-                        curTrip.setDropOffTime(dropOffTime);
-                        curTrip.setDate(date);
 
                         trips.add(curTrip);
                     }

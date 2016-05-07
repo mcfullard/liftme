@@ -43,7 +43,7 @@ public class MyTripsListAdapter extends ArrayAdapter<Trip> {
 
         destinationMapView.animate().alpha(0.0f);
         tVTripTitle.setText(curTrip.getDayOfWeek());
-        tVTripTime.setText(curTrip.getDropOffTime().toString());
+        tVTripTime.setText(curTrip.getTime());
 
         DownloadImageTask dlImageTask = new DownloadImageTask();
 

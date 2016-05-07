@@ -262,8 +262,8 @@ public class TripDetailsFragment extends Fragment {
 
 
         Calendar cal = Calendar.getInstance();
-        if (trip.getDate() != null) {
-            cal.setTime(trip.getDate());
+        if (trip.getPickupTime() != null) {
+            cal.setTime(trip.getPickupTime());
         }
 
         detailImage.setImageBitmap(mImageGenerator.generateDateImage(cal, 0));

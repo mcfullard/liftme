@@ -258,9 +258,7 @@ public class DatabaseHandler {
                 curTrip.setPickupLong(tripSet.getDouble("pickUpLong"));
                 curTrip.setDestinationLat(tripSet.getDouble("dropOffLat"));
                 curTrip.setDestinationLong(tripSet.getDouble("dropOffLong"));
-                curTrip.setPickupTime(tripSet.getTime("pickUpTime"));
-                curTrip.setDropOffTime(tripSet.getTime("dropOffTime"));
-                curTrip.setDate(tripSet.getDate("date"));
+                curTrip.setPickupTime(tripSet.getTimestamp("pickUpTime"));
                 trips.add(curTrip);
             }
 
