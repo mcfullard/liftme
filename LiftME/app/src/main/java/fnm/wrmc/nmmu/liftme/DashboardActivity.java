@@ -20,7 +20,7 @@ import android.view.MenuItem;
 import java.io.Serializable;
 
 public class DashboardActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, MyTripsFragment.IMyTripsCallback {
+        implements NavigationView.OnNavigationItemSelectedListener, MyTripsFragment.IMyTripsCallback, UserProfileFragment.AcceptChangeClickListener {
 
     static public String USER_PROFILE_FRAGMENT = "fnm.wrmc.nmmu.liftme.UserProfileFragment";
 
@@ -162,5 +162,10 @@ public class DashboardActivity extends AppCompatActivity
         B.putSerializable(TripDetailsFragment.ARG_TRIP, ((Serializable) clickedTrip));
         Fragment newFragment = getFragmentFromContext(TripDetailsFragment.FRAG_IDENTIFYER,B);
         AddFragmentToContainer(R.id.container,newFragment);
+    }
+
+    @Override
+    public void onAcceptChangeClick() {
+        AddFragmentToContainer(R.id.container, getFragmentFromContext("fnm.wrmc.nmmu.liftme.MyTripsFragment", null));
     }
 }
