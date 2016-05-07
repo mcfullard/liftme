@@ -1,11 +1,6 @@
 package fnm.wrmc.nmmu.liftme;
 
-
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.location.Address;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -14,14 +9,11 @@ import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.w3c.dom.Text;
-
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -32,7 +24,6 @@ import java.util.List;
  */
 public class TripDetailsFragment extends Fragment {
 
-    private static final String ARG_SECTION_NUMBER = "section_number";
     public static final String ARG_TRIP = "Selected_Trip";
     public static final String FRAG_IDENTIFYER = "fnm.wrmc.nmmu.liftme.TripDetailsFragment";
 
@@ -49,11 +40,25 @@ public class TripDetailsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View curView = inflater.inflate(R.layout.fragment_trip_details, container, false);
+        View curView = inflater.inflate(R.layout.fragment_trip_details_with_interested_users, container, false);
         detailImage = (ImageView)curView.findViewById(R.id.iVMyTripDetailsImage);
         tVPUDetails = (TextView) curView.findViewById(R.id.tVPickupDescription);
         tVDesDetails = (TextView) curView.findViewById(R.id.tVDestinationDescription);
+        List<User> users = new ArrayList<>();
+        users.add(new User());
+        users.add(new User());
+        users.add(new User());
+        users.add(new User());
+        users.add(new User());
+        users.add(new User());
+        users.add(new User());
+        users.add(new User());
+        users.add(new User());
 
+        InterestedUsersListAdapter adapter = new InterestedUsersListAdapter(getContext(),users);
+        ListView lVinterestedUser = (ListView)curView.findViewById(R.id.lvTripDetailsInterestedUsers);
+
+        lVinterestedUser.setAdapter(adapter);
 
         handler = new Handler(){
             @Override

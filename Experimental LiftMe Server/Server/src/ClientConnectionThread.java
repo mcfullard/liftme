@@ -102,7 +102,7 @@ public class ClientConnectionThread extends Thread {
         try {
             String email = readStream.readUTF();
             String password = readStream.readUTF();
-            String authKey = DatabaseHandler.RegisterUser(password,email);
+            String authKey = DatabaseHandler.RegisterUser(password, email);
 
             if(authKey != null){
                 writeStream.writeUTF(AUTHENTICATION_SUCCESS);
@@ -180,6 +180,35 @@ public class ClientConnectionThread extends Thread {
             }
             writeStream.flush();
             System.out.println("CLIENT THREAD : Getting user posted trips. AuthKey " + authKey);
+        }catch(IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    private void GetInterestedUsers(){
+        try {
+            int tripID = readStream.readInt();
+
+            List<User> interestedUsers = DatabaseHandler.GetInterestedUsersOfTrip(tripID);
+
+            if(interestedUsers != null){
+                writeStream.writeUTF(AUTHENTICATION_SUCCESS);
+                writeStream.writeInt(interestedUsers.size());
+                for(User curUser : interestedUsers){
+                    writeStream.writeInt(curUser.getUserID());
+                    writeStream.writeUTF(curUser.getName());
+                    writeStream.writeUTF(curUser.getSurname());
+                    writeStream.writeUTF(curUser.getPassword());
+                    writeStream.writeUTF(curUser.getEmail());
+                    writeStream.writeUTF(curUser.getContactNum());
+                    writeStream.writeInt(curUser.getAvailableAsDriver());
+                    writeStream.writeInt(curUser.getNumberOfPassengers());
+                }
+            }else{
+                writeStream.writeUTF(AUTHENTICATION_FAIL);
+            }
+            writeStream.flush();
+            System.out.println("CLIENT THREAD : Getting interested users for tripID " + tripID);
         }catch(IOException e){
             e.printStackTrace();
         }

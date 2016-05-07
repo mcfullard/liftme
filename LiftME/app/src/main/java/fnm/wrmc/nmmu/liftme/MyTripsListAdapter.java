@@ -41,6 +41,7 @@ public class MyTripsListAdapter extends ArrayAdapter<Trip> {
         TextView tVTripTime = (TextView)curView.findViewById(R.id.tVMyTripTime);
 
 
+        destinationMapView.animate().alpha(0.0f);
         tVTripTitle.setText(curTrip.getDayOfWeek());
         tVTripTime.setText(curTrip.getDropOffTime().toString());
 
@@ -65,6 +66,7 @@ public class MyTripsListAdapter extends ArrayAdapter<Trip> {
         /** The system calls this to perform work in the UI thread and delivers
          * the result from doInBackground() */
         protected void onPostExecute(Drawable result) {
+            imageView.animate().alpha(1.0f);
             imageView.setImageDrawable(result);
         }
 

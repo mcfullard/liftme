@@ -279,4 +279,54 @@ public class DatabaseHandler {
         return trips;
     }
 
+    static List<User> GetInterestedUsersOfTrip(int tripID){
+        writeLock.lock();
+        Connection conn = null;
+        PreparedStatement stmt = null;
+
+        List<User> interestedUsers = null;
+
+        try{
+
+            Class.forName("com.mysql.jdbc.Driver");
+            System.out.println("Connecting to database to retrieve interested users for tripID: " + tripID + ";");
+            PropertyManager pm = PropertyManager.getInstance();
+            conn = DriverManager.getConnection(DB_URL, pm.getProperty("USER"), pm.getProperty("PASSWORD"));
+
+            String interUserSQL = "SELECT user.* FROM user,interesteduser WHERE interesteduser.tripID = ? AND user.userID = interesteduser.userID;";
+            stmt = conn.prepareStatement(interUserSQL);
+
+            stmt.setInt(1, tripID);
+
+            ResultSet interUserSet = stmt.executeQuery();
+
+            interestedUsers = new ArrayList<>();
+            while(interUserSet.next()){
+                User curUser = new User();
+                curUser.setUserID(interUserSet.getInt("userID"));
+                curUser.setName(interUserSet.getString("name"));
+                curUser.setSurname(interUserSet.getString("surname"));
+                curUser.setPassword("");
+                curUser.setEmail(interUserSet.getString("email"));
+                curUser.setContactNum(interUserSet.getString("contactNum"));
+                curUser.setAvailableAsDriver(interUserSet.getByte("availableAsDriver") == 0 ? 0 : 1);
+                curUser.setNumberOfPassengers(interUserSet.getInt("numberOfPassengers"));
+                interestedUsers.add(curUser);
+            }
+
+            stmt.close();
+            conn.close();
+        }catch(SQLException e){
+            System.out.println("SQL error occurred whilst retrieving interested users for tripID " + tripID + " .");
+            System.out.println(e);
+        }catch(Exception e){
+            System.out.println("Unexpected error occurred whilst retrieving interested users for tripID " + tripID + " .");
+            System.out.println(e);
+        }
+        finally {
+            writeLock.unlock();
+        }
+        return interestedUsers;
+    }
+
 }
