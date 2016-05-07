@@ -112,7 +112,7 @@ public class ClientConnectionThread extends Thread {
             }
 
             writeStream.flush();
-            System.out.println("CLIENT THREAD : Registering user " + email);
+            System.out.println("CLIENT THREAD : Registering user " + email + ". AuthKey: " + authKey);
         }catch(IOException e){
             e.printStackTrace();
         }

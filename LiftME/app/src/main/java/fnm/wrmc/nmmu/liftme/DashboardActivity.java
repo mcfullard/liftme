@@ -58,7 +58,7 @@ public class DashboardActivity extends AppCompatActivity
             Bundle extras = intent.getExtras();
             if(extras != null) {
                 String fragment_context = extras.getString("fragment_context");
-                mainFragment = getFragmentFromContext(fragment_context,null);
+                mainFragment = getFragmentFromContext(fragment_context, null);
             }
         }
 
@@ -92,7 +92,7 @@ public class DashboardActivity extends AppCompatActivity
                 newFragment = new MyTripsFragment();
         }
 
-        if(newFragment != null && fragmentArguments != null){
+        if(fragmentArguments != null){
             newFragment.setArguments(fragmentArguments);
         }
 
