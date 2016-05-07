@@ -21,6 +21,7 @@ public class ClientConnectionThread extends Thread {
     private final String GET_USER_POSTED_TRIPS = "#GET_USER_POSTED_TRIPS";
     private final String GET_USER_DETAILS = "#GET_USER_DETAILS";
     private final String SET_USER_DETAILS = "#SET_USER_DETAILS";
+    private final String GET_INTERESTED_USERS = "#GET_INTERESTED_USERS";
 
     public ClientConnectionThread(mainServer theServer,Socket newSocket){
         this.theServer = theServer;
@@ -51,6 +52,9 @@ public class ClientConnectionThread extends Thread {
                         break;
                     case SET_USER_DETAILS:
                         setUserDetails();
+                        break;
+                    case GET_INTERESTED_USERS:
+                        GetInterestedUsers();
                         break;
                 }
 

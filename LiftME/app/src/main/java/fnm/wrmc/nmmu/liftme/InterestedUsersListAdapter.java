@@ -32,8 +32,10 @@ public class InterestedUsersListAdapter extends ArrayAdapter<User> {
         TextView userName = (TextView)curView.findViewById(R.id.tVInterestedUserName);
         TextView userDetails = (TextView)curView.findViewById(R.id.tVInterestedUserDetails);
 
-        userName.setText("STATIC SAMPLE NAME");
-        userDetails.setText("STATIC\nSAMPLE\nDETAILS");
+        User curUser = getItem(position);
+
+        userName.setText(String.format("%s %s",curUser.getName(),curUser.getSurname()));
+        userDetails.setText(String.format("%s\n%s",curUser.getEmail(),curUser.getContactNum()));
 
         return curView;
     }

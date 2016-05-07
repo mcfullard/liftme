@@ -26,24 +26,28 @@ import java.util.Locale;
 public class ServerConnection {
 
     public static final String QUIT_MESSAGE = "#QUIT";
-    public static final String MESSAGE_TO = "#MESSAGETO";
-    public static final String MESSAGE_FROM = "#MESSAGEFROM";
     public static final String REGISTER = "#REGISTER";
     public static final String AUTHENTICATE = "#AUTHENTICATE";
     public static final String AUTHENTICATION_FAIL = "#NOAUTH";
     public static final String AUTHENTICATION_SUCCESS = "#YESAUTH";
     public static final String AUTHENTICATION_INCOMPLETE = "#INCOMPLETEAUTH";
     public static final String AUTHENTICATION_TOKEN = "AUTH_TOKEN";
+
     public static final String GET_USER_POSTED_TRIPS = "#GET_USER_POSTED_TRIPS";
     public static final String GET_USER_DETAILS = "#GET_USER_DETAILS";
     public static final String SET_USER_DETAILS = "#SET_USER_DETAILS";
+    public static final String GET_INTERESTED_USERS = "#GET_INTERESTED_USERS";
+
     public static final String STATUS_SUCCESS = "#SUCCESS";
     public static final String STATUS_FAILED = "#FAILED";
+
     public static final int USER_POSTED_TRIP_TASK = 1;
-    public static final int GET_USER_DETAILS_TASK = 1;
-    public static final int SET_USER_DETAILS_TASK = 1;
-    public static final int GET_ADDRESS_TASK = 1;
-    private static final String SERVER_IP = "192.168.56.1";
+    public static final int GET_USER_DETAILS_TASK = 2;
+    public static final int SET_USER_DETAILS_TASK = 3;
+    public static final int GET_INTERESTED_USER_TASK = 4;
+    public static final int GET_ADDRESS_TASK = 5;
+
+    private static final String SERVER_IP = "192.168.1.82";
     private static final int SERVER_PORT = 5050;
     private static final int CONNECTION_TIMEOUT = 5000;
 
@@ -419,7 +423,7 @@ public class ServerConnection {
         }
     }
 
-    public static class GetAddressFromLatLongRunner implements Runnable {
+    static public class GetAddressFromLatLongRunner implements Runnable {
 
         private GetAddressTask getAddressTask;
 
@@ -500,6 +504,78 @@ public class ServerConnection {
 
             public void HandleGetAddressTask() {
                 handler.obtainMessage(GET_ADDRESS_TASK, this).sendToTarget();
+            }
+        }
+    }
+
+    static class GetInterestedUsersRunner implements Runnable {
+
+        GetInterestedUsersTask getInterestedUsersTask;
+
+        public GetInterestedUsersRunner(GetInterestedUsersTask getInterestedUsersTask) {
+            this.getInterestedUsersTask = getInterestedUsersTask;
+        }
+
+        @Override
+        public void run() {
+            try {
+                Socket socket = new Socket();
+                socket.connect(new InetSocketAddress(SERVER_IP, SERVER_PORT), CONNECTION_TIMEOUT);
+
+                DataOutputStream writeStream = new DataOutputStream(socket.getOutputStream());
+                DataInputStream readStream = new DataInputStream(socket.getInputStream());
+
+                writeStream.writeUTF(GET_INTERESTED_USERS);
+                writeStream.writeInt(getInterestedUsersTask.tripID);
+                writeStream.flush();
+
+                getInterestedUsersTask.authStatus = readStream.readUTF();
+
+                if (getInterestedUsersTask.authStatus.equals(AUTHENTICATION_SUCCESS)) {
+                    int numberIUsers = readStream.readInt();
+                    for(int x = 0 ; x < numberIUsers ; x++) {
+                        User curUser = new User();
+                        curUser.setUserID(readStream.readInt());
+                        curUser.setName(readStream.readUTF());
+                        curUser.setSurname(readStream.readUTF());
+                        curUser.setPassword(readStream.readUTF());
+                        curUser.setEmail(readStream.readUTF());
+                        curUser.setContactNum(readStream.readUTF());
+                        curUser.setAvailableAsDriver(readStream.readInt());
+                        curUser.setNumberOfPassengers(readStream.readInt());
+                        getInterestedUsersTask.interestedUsers.add(curUser);
+                    }
+                }
+
+                writeStream.writeUTF(QUIT_MESSAGE);
+
+                writeStream.close();
+                readStream.close();
+                socket.close();
+
+
+            } catch (IOException e) {
+                Log.e("Comms |GetInterestedUsr", "Error getting user interested users for tripID " + getInterestedUsersTask.tripID + ".");
+                e.printStackTrace();
+            }
+
+            getInterestedUsersTask.handleGetInterestedUsers();
+        }
+
+        public static class GetInterestedUsersTask {
+            public int tripID;
+            public String authStatus = AUTHENTICATION_INCOMPLETE;
+            private Handler handler;
+
+            public List<User> interestedUsers = new ArrayList<>();
+
+            public GetInterestedUsersTask(int tripID, Handler handler) {
+                this.tripID = tripID;
+                this.handler = handler;
+            }
+
+            public void handleGetInterestedUsers() {
+                handler.obtainMessage(GET_INTERESTED_USER_TASK, this).sendToTarget();
             }
         }
     }

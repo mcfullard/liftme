@@ -28,9 +28,11 @@ public class TripDetailsFragment extends Fragment {
     public static final String FRAG_IDENTIFYER = "fnm.wrmc.nmmu.liftme.TripDetailsFragment";
 
     private ImageView detailImage;
-    private TextView tVPUDetails,tVDesDetails;
+    private TextView tVPUDetails, tVDesDetails;
     private Trip trip;
     private Handler handler;
+    private InterestedUsersListAdapter adapter;
+    private ListView lVinterestedUser;
 
     public TripDetailsFragment() {
         // Required empty public constructor
@@ -41,26 +43,16 @@ public class TripDetailsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View curView = inflater.inflate(R.layout.fragment_trip_details_with_interested_users, container, false);
-        detailImage = (ImageView)curView.findViewById(R.id.iVMyTripDetailsImage);
+        detailImage = (ImageView) curView.findViewById(R.id.iVMyTripDetailsImage);
         tVPUDetails = (TextView) curView.findViewById(R.id.tVPickupDescription);
         tVDesDetails = (TextView) curView.findViewById(R.id.tVDestinationDescription);
-        List<User> users = new ArrayList<>();
-        users.add(new User());
-        users.add(new User());
-        users.add(new User());
-        users.add(new User());
-        users.add(new User());
-        users.add(new User());
-        users.add(new User());
-        users.add(new User());
-        users.add(new User());
 
-        InterestedUsersListAdapter adapter = new InterestedUsersListAdapter(getContext(),users);
-        ListView lVinterestedUser = (ListView)curView.findViewById(R.id.lvTripDetailsInterestedUsers);
 
+        adapter = new InterestedUsersListAdapter(getContext(), (new ArrayList<User>()));
+        lVinterestedUser = (ListView) curView.findViewById(R.id.lvTripDetailsInterestedUsers);
         lVinterestedUser.setAdapter(adapter);
 
-        handler = new Handler(){
+        handler = new Handler() {
             @Override
             public void handleMessage(Message inputMessage) {
                 switch (inputMessage.what) {
@@ -71,52 +63,78 @@ public class TripDetailsFragment extends Fragment {
                                 OnAddressRetrieveSuccess(AddrTask);
                                 break;
                             case ServerConnection.STATUS_FAILED:
-                                OnAddressRetrieveFailure("Unable to retrieve address at this time.");
+                                OnRetrieveFailure("Unable to retrieve address at this time.");
                                 break;
                         }
                         break;
+                    case ServerConnection.GET_INTERESTED_USER_TASK:
+                        ServerConnection.GetInterestedUsersRunner.GetInterestedUsersTask getIUTask = (ServerConnection.GetInterestedUsersRunner.GetInterestedUsersTask) inputMessage.obj;
+                        switch (getIUTask.authStatus) {
+                            case ServerConnection.AUTHENTICATION_SUCCESS:
+                                OnInterestedUsersSuccess(getIUTask);
+                                break;
+                            case ServerConnection.AUTHENTICATION_FAIL:
+                                OnRetrieveFailure("Authentication error occurred. Please login.");
+                                break;
+                            case ServerConnection.AUTHENTICATION_INCOMPLETE:
+                                OnRetrieveFailure("Could not successfully connect to server to retrieve interested users. Please check your network connection and try again.");
+                                break;
+                        }
                     default:
                         super.handleMessage(inputMessage);
                         break;
+
                 }
             }
         };
 
         Bundle curBundle = getArguments();
 
-        if(curBundle != null){
-            trip = (Trip)curBundle.get(ARG_TRIP);
+        if (curBundle != null) {
+            trip = (Trip) curBundle.get(ARG_TRIP);
             RetrieveAddressFromLatLong();
+            RetrieveInterestedUsers();
             GenerateImage();
         }
 
         return curView;
     }
 
-    private void OnAddressRetrieveSuccess(ServerConnection.GetAddressFromLatLongRunner.GetAddressTask addressTask){
+    private void OnAddressRetrieveSuccess(ServerConnection.GetAddressFromLatLongRunner.GetAddressTask addressTask) {
         List<String> addressList = addressTask.Addresses;
-        String puDetails = addressList.get(0).replace(",","\n");
+        String puDetails = addressList.get(0).replace(",", "\n");
         String desDetails = addressList.get(1).replace(",", "\n");
         tVPUDetails.setText(puDetails);
         tVDesDetails.setText(desDetails);
     }
 
-    private void OnAddressRetrieveFailure(String message) {
+    private void OnInterestedUsersSuccess(ServerConnection.GetInterestedUsersRunner.GetInterestedUsersTask IUTask){
+        adapter.clear();
+        adapter.addAll(IUTask.interestedUsers);
+    }
+
+    private void OnRetrieveFailure(String message) {
         Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
     }
 
 
-    private void RetrieveAddressFromLatLong(){
+    private void RetrieveAddressFromLatLong() {
 
-        List<Pair<Double,Double>> coordinates = new ArrayList<>();
-        coordinates.add(new Pair<Double, Double>(trip.getPickupLat(),trip.getPickupLong()));
-        coordinates.add(new Pair<Double, Double>(trip.getDestinationLat(),trip.getDestinationLong()));
-        ServerConnection.GetAddressFromLatLongRunner.GetAddressTask addressTask = new ServerConnection.GetAddressFromLatLongRunner.GetAddressTask(handler,coordinates);
-        Thread addrThread = new Thread (new ServerConnection.GetAddressFromLatLongRunner(addressTask));
+        List<Pair<Double, Double>> coordinates = new ArrayList<>();
+        coordinates.add(new Pair<Double, Double>(trip.getPickupLat(), trip.getPickupLong()));
+        coordinates.add(new Pair<Double, Double>(trip.getDestinationLat(), trip.getDestinationLong()));
+        ServerConnection.GetAddressFromLatLongRunner.GetAddressTask addressTask = new ServerConnection.GetAddressFromLatLongRunner.GetAddressTask(handler, coordinates);
+        Thread addrThread = new Thread(new ServerConnection.GetAddressFromLatLongRunner(addressTask));
         addrThread.start();
     }
 
-    public void GenerateImage(){
+    private void RetrieveInterestedUsers(){
+        ServerConnection.GetInterestedUsersRunner.GetInterestedUsersTask IUTask = new ServerConnection.GetInterestedUsersRunner.GetInterestedUsersTask(trip.getTripID(),handler);
+        Thread IUThread = new Thread(new ServerConnection.GetInterestedUsersRunner(IUTask));
+        IUThread.start();
+    }
+
+    public void GenerateImage() {
         ImageGenerator mImageGenerator = new ImageGenerator(getContext());
 
         // Set the icon size to the generated in dip.
@@ -136,14 +154,13 @@ public class TripDetailsFragment extends Fragment {
 
 
         Calendar cal = Calendar.getInstance();
-        if(trip.getDate() != null){
+        if (trip.getDate() != null) {
             cal.setTime(trip.getDate());
         }
 
         detailImage.setImageBitmap(mImageGenerator.generateDateImage(cal, 0));
         detailImage.refreshDrawableState();
     }
-
 
 
 }
