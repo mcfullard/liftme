@@ -18,9 +18,9 @@ public class ClientConnectionThread extends Thread {
     private final String AUTHENTICATE = "#AUTHENTICATE";
     private final String AUTHENTICATION_FAIL = "#NOAUTH";
     private final String AUTHENTICATION_SUCCESS = "#YESAUTH";
-    private final String UPDATE_DETAILS = "#UPDATE_DETAILS";
     private final String GET_USER_POSTED_TRIPS = "#GET_USER_POSTED_TRIPS";
     private final String GET_USER_DETAILS = "#GET_USER_DETAILS";
+    private final String SET_USER_DETAILS = "#SET_USER_DETAILS";
 
     public ClientConnectionThread(mainServer theServer,Socket newSocket){
         this.theServer = theServer;
@@ -43,14 +43,14 @@ public class ClientConnectionThread extends Thread {
                     case AUTHENTICATE:
                         authenticate();
                         break;
-                    case UPDATE_DETAILS:
-                        UpdateDetails();
-                        break;
                     case GET_USER_POSTED_TRIPS:
                         GetUserPostedTrips();
                         break;
                     case GET_USER_DETAILS:
                         getUserDetails();
+                        break;
+                    case SET_USER_DETAILS:
+                        setUserDetails();
                         break;
                 }
 
@@ -66,6 +66,30 @@ public class ClientConnectionThread extends Thread {
             }catch(IOException e){
                 System.out.println("Error closing client connections.");
             }
+        }
+    }
+
+    private void setUserDetails() {
+        try {
+            String authKey = readStream.readUTF();
+            User user = DatabaseHandler.GetUserDetails(authKey);
+            if(user != null) {
+                writeStream.writeUTF(AUTHENTICATION_SUCCESS);
+                writeStream.flush();
+                user.setName(readStream.readUTF());
+                user.setSurname(readStream.readUTF());
+                user.setEmail(readStream.readUTF());
+                user.setContactNum(readStream.readUTF());
+                user.setAvailableAsDriver(Integer.parseInt(readStream.readUTF()));
+                user.setNumberOfPassengers(Integer.parseInt(readStream.readUTF()));
+                DatabaseHandler.UpdateUser(user, authKey);
+            } else {
+                writeStream.writeUTF(AUTHENTICATION_FAIL);
+                writeStream.flush();
+            }
+            System.out.println("CLIENT THREAD : Setting user details. AuthKey " + authKey);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -113,25 +137,6 @@ public class ClientConnectionThread extends Thread {
 
             writeStream.flush();
             System.out.println("CLIENT THREAD : Registering user " + email + ". AuthKey: " + authKey);
-        }catch(IOException e){
-            e.printStackTrace();
-        }
-    }
-
-    private void UpdateDetails(){
-        try {
-            String authKey = readStream.readUTF();
-            String name = readStream.readUTF();
-            String surname = readStream.readUTF();
-            String email = readStream.readUTF();
-            String password = readStream.readUTF();
-            String contactNum = readStream.readUTF();
-            String availableAsDriver = readStream.readUTF();
-            String numberOfPassengers = readStream.readUTF();
-            Boolean success = DatabaseHandler.UpdateUser(authKey , name, surname, password, email, contactNum, Integer.parseInt(availableAsDriver), Integer.parseInt(numberOfPassengers));
-            writeStream.writeBoolean(success);
-            writeStream.flush();
-            System.out.println("CLIENT THREAD : Updating user '" + name + " " + surname);
         }catch(IOException e){
             e.printStackTrace();
         }

@@ -16,7 +16,7 @@ public class DatabaseHandler {
     static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
     static final String DB_URL = "jdbc:mysql://localhost:3306/liftme";
 
-    static boolean UpdateUser(String authKey, String name, String surname, String password, String email, String contactNum, int availableAsDriver, int numberOfPassengers ){
+    static boolean UpdateUser(User user, String authKey){
         writeLock.lock();
         Connection conn = null;
         PreparedStatement stmt = null;
@@ -24,20 +24,20 @@ public class DatabaseHandler {
         try{
 
             Class.forName("com.mysql.jdbc.Driver");
-            System.out.println("Connecting to database to register user " + name + " " + surname + ".");
+            System.out.println("Connecting to database to register user " + user.getName() + " " + user.getSurname() + ".");
             PropertyManager pm = PropertyManager.getInstance();
             conn = DriverManager.getConnection(DB_URL, pm.getProperty("USER"), pm.getProperty("PASSWORD"));
 
             String updateSQL = "UPDATE user SET name = ? , surname = ? , password = ?, email = ?, contactNum = ?, availableAsDriver = ?, numberOfPassengers = ? WHERE authenticationToken = ?;";
             stmt = conn.prepareStatement(updateSQL);
 
-            stmt.setString(1,name);
-            stmt.setString(2,surname);
-            stmt.setString(3,password);
-            stmt.setString(4,email);
-            stmt.setString(5, contactNum);
-            stmt.setInt(6, availableAsDriver);
-            stmt.setInt(7, numberOfPassengers);
+            stmt.setString(1,user.getName());
+            stmt.setString(2,user.getSurname());
+            stmt.setString(3,user.getPassword());
+            stmt.setString(4,user.getEmail());
+            stmt.setString(5, user.getContactNum());
+            stmt.setInt(6, user.getAvailableAsDriver());
+            stmt.setInt(7, user.getNumberOfPassengers());
             stmt.setString(8,authKey);
 
             stmt.execute();
@@ -47,10 +47,10 @@ public class DatabaseHandler {
             bSuccess = true;
 
         }catch(SQLException e){
-            System.out.println("SQL error occurred whilst updating user " + name + " " + surname + ".");
+            System.out.println("SQL error occurred whilst updating user " + user.getName() + " " + user.getSurname() + ".");
             System.out.println(e);
         }catch(Exception e){
-            System.out.println("Unexpected error occurred whilst updating user " + name + " " + surname + ".");
+            System.out.println("Unexpected error occurred whilst updating user " + user.getName() + " " + user.getSurname() + ".");
             System.out.println(e);
         }
         finally {
