@@ -3,7 +3,9 @@ package fnm.wrmc.nmmu.liftme;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.location.Address;
 import android.location.Criteria;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.support.annotation.NonNull;
@@ -13,6 +15,7 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -21,6 +24,11 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 public class LocationActivity extends AppCompatActivity implements OnMapReadyCallback, OnRequestPermissionsResultCallback {
 
@@ -112,9 +120,27 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
                         .build();
                 mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
-                mMap.addMarker(new MarkerOptions().position(locationPos).title(getApplicationContext().getResources().getString(R.string.pickup_location)));
+                try {
+                    ArrayList<String> address = getAddressFromLatLng(this, locationPos);
+                    mMap.addMarker(new MarkerOptions().position(locationPos).title(TextUtils.join(", ", address)));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
+    }
+
+    public static ArrayList<String> getAddressFromLatLng(Context context, LatLng latLng) throws IOException {
+        ArrayList<String> address = new ArrayList<>();
+        Geocoder geocoder;
+        List<Address> addresses;
+        geocoder = new Geocoder(context, Locale.getDefault());
+        addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
+        int maxIndex = addresses.get(0).getMaxAddressLineIndex();
+        for(int i = 0; i <= maxIndex; i++) {
+            address.add(i, addresses.get(0).getAddressLine(i));
+        }
+        return address;
     }
 
     @Override
