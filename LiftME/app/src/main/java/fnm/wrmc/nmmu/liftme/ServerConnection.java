@@ -47,7 +47,7 @@ public class ServerConnection {
     public static final int GET_INTERESTED_USER_TASK = 4;
     public static final int GET_ADDRESS_TASK = 5;
 
-    private static final String SERVER_IP = "192.168.1.82";
+    private static final String SERVER_IP = "192.168.56.1";
     private static final int SERVER_PORT = 5050;
     private static final int CONNECTION_TIMEOUT = 5000;
 
