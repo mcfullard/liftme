@@ -70,6 +70,8 @@
                             android:id="@+id/tVTripPickupTitle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:gravity="left"
+                            android:layout_gravity="left"
                             android:text="Pickup address"
                             android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
 
@@ -77,6 +79,8 @@
                             android:id="@+id/tVPickupDescription"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:gravity="left"
+                            android:layout_gravity="left"
                             android:text="This is a description."
                             android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 
@@ -110,6 +114,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="right"
+                            android:gravity="right"
                             android:text="Destination address"
                             android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
 
@@ -118,6 +123,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="right"
+                            android:gravity="right"
                             android:text="This is a description."
                             android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
 

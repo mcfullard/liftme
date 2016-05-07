@@ -54,6 +54,7 @@ public class TripDetailsFragment extends Fragment {
         tVPUDetails = (TextView) curView.findViewById(R.id.tVPickupDescription);
         tVDesDetails = (TextView) curView.findViewById(R.id.tVDestinationDescription);
 
+
         handler = new Handler(){
             @Override
             public void handleMessage(Message inputMessage) {

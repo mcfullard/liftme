@@ -71,6 +71,7 @@ public class DashboardActivity extends AppCompatActivity
         FragmentTransaction transaction = fm.beginTransaction();
         if(fm.findFragmentById(container) != null) {
             transaction.replace(container, fragment);
+            transaction.addToBackStack("");
         } else {
             transaction.add(container, fragment);
         }
