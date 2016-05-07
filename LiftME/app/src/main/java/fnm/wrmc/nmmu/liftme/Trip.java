@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
  */
 public class Trip implements Serializable {
 
+    private int tripID;
     private double pickupLat;
     private double pickupLong;
     private double destinationLat;
@@ -18,7 +19,6 @@ public class Trip implements Serializable {
     private Date date;
 
     public Trip(){
-
     }
 
     public Time getPickupTime() {
@@ -87,5 +87,12 @@ public class Trip implements Serializable {
         return formatter.format(date);
     }
 
+    public int getTripID() {
+        return tripID;
+    }
+
+    public void setTripID(int tripID) {
+        this.tripID = tripID;
+    }
 
 }

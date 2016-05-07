@@ -43,7 +43,7 @@ public class ServerConnection {
     public static final int GET_USER_DETAILS_TASK = 1;
     public static final int SET_USER_DETAILS_TASK = 1;
     public static final int GET_ADDRESS_TASK = 1;
-    private static final String SERVER_IP = "192.168.56.1";
+    private static final String SERVER_IP = "192.168.1.82";
     private static final int SERVER_PORT = 5050;
     private static final int CONNECTION_TIMEOUT = 5000;
 
@@ -216,6 +216,7 @@ public class ServerConnection {
                     List<Trip> trips = new ArrayList<>();
                     for (int x = 0; x < tripCount; x++) {
                         Trip curTrip = new Trip();
+                        curTrip.setTripID(readStream.readInt());
                         curTrip.setPickupLat(readStream.readDouble());
                         curTrip.setPickupLong(readStream.readDouble());
                         curTrip.setDestinationLat(readStream.readDouble());

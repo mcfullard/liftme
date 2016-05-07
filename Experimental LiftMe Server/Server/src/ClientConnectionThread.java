@@ -165,6 +165,7 @@ public class ClientConnectionThread extends Thread {
                 writeStream.writeUTF(AUTHENTICATION_SUCCESS);
                 writeStream.writeInt(userTrips.size());
                 for(Trip curTrip : userTrips){
+                    writeStream.writeInt(curTrip.getTripID());
                     writeStream.writeDouble(curTrip.getPickupLat());
                     writeStream.writeDouble(curTrip.getPickupLong());
                     writeStream.writeDouble(curTrip.getDestinationLat());

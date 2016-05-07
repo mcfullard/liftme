@@ -6,6 +6,7 @@ import java.sql.Time;
  */
 public class Trip {
 
+    private int tripID;
     private double pickupLat;
     private double pickupLong;
     private double destinationLat;
@@ -72,5 +73,13 @@ public class Trip {
 
     public void setDestinationLong(double destinationLong) {
         this.destinationLong = destinationLong;
+    }
+
+    public int getTripID() {
+        return tripID;
+    }
+
+    public void setTripID(int tripID) {
+        this.tripID = tripID;
     }
 }
