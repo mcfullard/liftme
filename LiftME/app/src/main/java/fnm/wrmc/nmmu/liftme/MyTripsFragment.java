@@ -41,14 +41,6 @@ public class MyTripsFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static MyTripsFragment newInstance(int sectionNumber) {
-        MyTripsFragment fragment = new MyTripsFragment();
-        Bundle args = new Bundle();
-        args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
