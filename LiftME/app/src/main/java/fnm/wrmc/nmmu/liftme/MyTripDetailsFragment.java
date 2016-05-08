@@ -79,6 +79,7 @@ public class MyTripDetailsFragment extends TripDetailsFragment {
                                 OnRetrieveFailure("Could not successfully connect to server to retrieve interested users. Please check your network connection and try again.");
                                 break;
                         }
+                        break;
                     default:
                         super.handleMessage(inputMessage);
                         break;

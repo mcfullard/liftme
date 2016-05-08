@@ -407,9 +407,9 @@ public class DatabaseHandler {
             if(userResult.next()) {
                 int userID = userResult.getInt("userID");
 
-                String localizedTripSql = "SELECT trip.* FROM trip AS curTrip WHERE trip.pickUpLat <= ? AND trip.pickUpLat >= ? AND trip.pickUpLong <= ? AND trip.pickUpLong >= ?" +
-                                            "AND trip.dropOffLat <= ? AND trip.dropOffLat >= ? AND trip.dropOffLong <= ? AND trip.dropOffLong >= ? AND userID != ? " +
-                                                "AND (userID NOT IN (SELECT userID FROM interesteduser WHERE tripID = curTrip.tripID AND userID = ?)) ;";
+                String localizedTripSql = "SELECT curTrip.* FROM trip AS curTrip WHERE curTrip.pickUpLat <= ? AND curTrip.pickUpLat >= ? AND curTrip.pickUpLong <= ? AND curTrip.pickUpLong >= ?" +
+                                            "AND curTrip.dropOffLat <= ? AND curTrip.dropOffLat >= ? AND curTrip.dropOffLong <= ? AND curTrip.dropOffLong >= ? AND curTrip.userID != ? " +
+                                                "AND (? NOT IN (SELECT interesteduser.userID FROM interesteduser WHERE tripID = curTrip.tripID)) ;";
                 stmt = conn.prepareStatement(localizedTripSql);
 
                 stmt.setDouble(1, pickupLat + TRIP_SEARCH_DB_TOLERANCE);
