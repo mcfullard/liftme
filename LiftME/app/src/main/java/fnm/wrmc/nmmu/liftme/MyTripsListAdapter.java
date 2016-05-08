@@ -2,7 +2,6 @@ package fnm.wrmc.nmmu.liftme;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.media.Image;
 import android.os.AsyncTask;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,8 +12,9 @@ import android.widget.TextView;
 
 import java.io.InputStream;
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.List;
+
+import fnm.wrmc.nmmu.liftme.Data_Objects.Trip;
 
 /**
  * Created by Francois on 2016/04/13.

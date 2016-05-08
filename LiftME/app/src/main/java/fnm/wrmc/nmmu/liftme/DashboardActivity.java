@@ -19,6 +19,8 @@ import android.view.MenuItem;
 
 import java.io.Serializable;
 
+import fnm.wrmc.nmmu.liftme.Data_Objects.Trip;
+
 public class DashboardActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, MyTripsFragment.IMyTripsCallback, UserProfileFragment.AcceptChangeClickListener {
 
@@ -84,8 +86,8 @@ public class DashboardActivity extends AppCompatActivity
             case "fnm.wrmc.nmmu.liftme.UserProfileFragment":
                 newFragment = new UserProfileFragment();
                 break;
-            case "fnm.wrmc.nmmu.liftme.TripDetailsFragment":
-                newFragment = new TripDetailsFragment();
+            case "fnm.wrmc.nmmu.liftme.MyTripDetailsFragment":
+                newFragment = new MyTripDetailsFragment();
                 break;
             case "fnm.wrmc.nmmu.liftme.MyTripsFragment":
             default:
@@ -160,8 +162,7 @@ public class DashboardActivity extends AppCompatActivity
     public void onMyTripClick(Trip clickedTrip) {
         Bundle B = new Bundle();
         B.putSerializable(TripDetailsFragment.ARG_TRIP, ((Serializable) clickedTrip));
-        B.putString(TripDetailsFragment.ARG_TRIP_TYPE,TripDetailsFragment.MY_TRIP_DETAILS);
-        Fragment newFragment = getFragmentFromContext(TripDetailsFragment.FRAG_IDENTIFYER,B);
+        Fragment newFragment = getFragmentFromContext(MyTripDetailsFragment.FRAG_IDENTIFYER,B);
         AddFragmentToContainer(R.id.container,newFragment);
     }
 

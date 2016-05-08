@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package fnm.wrmc.nmmu.liftme;
+package fnm.wrmc.nmmu.liftme.Utilities;
 
 
 import android.content.Context;

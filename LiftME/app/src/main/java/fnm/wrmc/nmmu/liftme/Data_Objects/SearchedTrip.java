@@ -1,4 +1,4 @@
-package fnm.wrmc.nmmu.liftme;
+package fnm.wrmc.nmmu.liftme.Data_Objects;
 
 /**
  * Created by Francois on 2016/05/08.

@@ -7,9 +7,9 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-
 import java.util.List;
+
+import fnm.wrmc.nmmu.liftme.Data_Objects.User;
 
 /**
  * Created by Francois on 2016/05/07.

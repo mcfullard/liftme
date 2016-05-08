@@ -17,6 +17,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import fnm.wrmc.nmmu.liftme.Data_Objects.Trip;
 import fnm.wrmc.nmmu.liftme.ServerConnection.PostedUserTripsRunner.UserPostedTripsTask;
 
 

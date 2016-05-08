@@ -1,4 +1,4 @@
-package fnm.wrmc.nmmu.liftme;
+package fnm.wrmc.nmmu.liftme.Data_Objects;
 import java.io.Serializable;
 import java.sql.Date;
 import java.sql.Time;

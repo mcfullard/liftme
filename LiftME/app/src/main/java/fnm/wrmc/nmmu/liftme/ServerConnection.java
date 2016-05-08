@@ -14,12 +14,14 @@ import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.URL;
-import java.sql.Date;
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
+import fnm.wrmc.nmmu.liftme.Data_Objects.SearchedTrip;
+import fnm.wrmc.nmmu.liftme.Data_Objects.Trip;
+import fnm.wrmc.nmmu.liftme.Data_Objects.User;
 
 /**
  * Created by Francois on 2016/03/25.
@@ -721,14 +723,14 @@ public class ServerConnection {
 
             public List<SearchedTrip> searchedTripResults;
 
-            public SearchTripsTask(String authKey,double pickupLat, double pickupLong, double dropOffLat, double dropOffLong, double searchTolerance,  Handler handler) {
+            public SearchTripsTask(String authKey,double pickupLat, double pickupLong, double dropOffLat, double dropOffLong, double searchToleranceInKM,  Handler handler) {
                 this.authKey = authKey;
                 this.handler = handler;
                 this.pickupLat = pickupLat;
                 this.pickupLong = pickupLong;
                 this.dropOffLat = dropOffLat;
                 this.dropOffLong = dropOffLong;
-                this.searchTolerance = searchTolerance;
+                this.searchTolerance = searchToleranceInKM;
             }
 
             public void HandleSearchTripsTask() {
