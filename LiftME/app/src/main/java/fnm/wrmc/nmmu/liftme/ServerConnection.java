@@ -39,6 +39,7 @@ public class ServerConnection {
     public static final String SET_USER_DETAILS = "#SET_USER_DETAILS";
     public static final String GET_INTERESTED_USERS = "#GET_INTERESTED_USERS";
     public static final String INTERESTED_USER_TOGGLE = "#INTERESTED_USER_TOGGLE";
+    public static final String SEARCH_TRIPS = "#SEARCH_TRIPS";
 
     public static final String STATUS_SUCCESS = "#SUCCESS";
     public static final String STATUS_FAILED = "#FAILED";
@@ -49,6 +50,7 @@ public class ServerConnection {
     public static final int GET_INTERESTED_USER_TASK = 4;
     public static final int GET_ADDRESS_TASK = 5;
     public static final int TOGGLE_INTERESTED_USER_TASK = 6;
+    public static final int SEARCH_TRIPS_TASK = 7;
 
     private static final String SERVER_IP = "192.168.1.82";
     private static final int SERVER_PORT = 5050;
@@ -422,7 +424,7 @@ public class ServerConnection {
         }
     }
 
-    static public class GetAddressFromLatLongRunner implements Runnable {
+    static class GetAddressFromLatLongRunner implements Runnable {
 
         private GetAddressTask getAddressTask;
 
@@ -638,5 +640,101 @@ public class ServerConnection {
                 handler.obtainMessage(TOGGLE_INTERESTED_USER_TASK, this).sendToTarget();
             }
         }
+    }
+
+    static class SearchTripsRunner implements Runnable {
+
+        SearchTripsTask searchTripsTask;
+
+        public SearchTripsRunner(SearchTripsTask searchTripsTask) {
+            this.searchTripsTask = searchTripsTask;
+        }
+
+        @Override
+        public void run() {
+            Socket socket = null;
+
+            try {
+                socket = new Socket();
+                socket.connect(new InetSocketAddress(SERVER_IP, SERVER_PORT), CONNECTION_TIMEOUT);
+
+                DataOutputStream writeStream = new DataOutputStream(socket.getOutputStream());
+                DataInputStream readStream = new DataInputStream(socket.getInputStream());
+
+                writeStream.writeUTF(SEARCH_TRIPS);
+                writeStream.writeUTF(searchTripsTask.authKey);
+                writeStream.writeDouble(searchTripsTask.pickupLat);
+                writeStream.writeDouble(searchTripsTask.pickupLong);
+                writeStream.writeDouble(searchTripsTask.dropOffLat);
+                writeStream.writeDouble(searchTripsTask.dropOffLong);
+                writeStream.writeDouble(searchTripsTask.searchTolerance);
+                writeStream.flush();
+
+                searchTripsTask.authStatus = readStream.readUTF();
+
+                if (searchTripsTask.authStatus.equals(AUTHENTICATION_SUCCESS)) {
+                    int tripCount = readStream.readInt();
+                    List<SearchedTrip> trips = new ArrayList<>();
+                    for (int x = 0; x < tripCount; x++) {
+                        SearchedTrip curTrip = new SearchedTrip();
+                        curTrip.setTripID(readStream.readInt());
+                        curTrip.setPickupLat(readStream.readDouble());
+                        curTrip.setPickupLong(readStream.readDouble());
+                        curTrip.setDestinationLat(readStream.readDouble());
+                        curTrip.setDestinationLong(readStream.readDouble());
+                        Timestamp pickUpTime = new Timestamp(readStream.readLong());
+                        curTrip.setPickupTime(pickUpTime);
+                        curTrip.setDistanceBetweenPickups(readStream.readDouble());
+                        curTrip.setDistanceBetweenDropOffs(readStream.readDouble());
+
+                        trips.add(curTrip);
+                    }
+
+                    searchTripsTask.searchedTripResults = trips;
+                }
+
+                writeStream.writeUTF(QUIT_MESSAGE);
+
+                writeStream.close();
+                readStream.close();
+                socket.close();
+
+
+            } catch (IOException e) {
+                Log.e("Comms | GetTrips", "Error Getting posted trips.");
+                e.printStackTrace();
+            }
+
+            searchTripsTask.HandleSearchTripsTask();
+        }
+
+        public static class SearchTripsTask {
+
+            public String authKey;
+            public String authStatus = AUTHENTICATION_INCOMPLETE;
+            private Handler handler;
+            double pickupLat;
+            double pickupLong;
+            double dropOffLat;
+            double dropOffLong;
+            double searchTolerance;
+
+            public List<SearchedTrip> searchedTripResults;
+
+            public SearchTripsTask(String authKey,double pickupLat, double pickupLong, double dropOffLat, double dropOffLong, double searchTolerance,  Handler handler) {
+                this.authKey = authKey;
+                this.handler = handler;
+                this.pickupLat = pickupLat;
+                this.pickupLong = pickupLong;
+                this.dropOffLat = dropOffLat;
+                this.dropOffLong = dropOffLong;
+                this.searchTolerance = searchTolerance;
+            }
+
+            public void HandleSearchTripsTask() {
+                handler.obtainMessage(SEARCH_TRIPS_TASK, this).sendToTarget();
+            }
+        }
+
     }
 }
