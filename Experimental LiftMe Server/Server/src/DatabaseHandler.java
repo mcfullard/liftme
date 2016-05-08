@@ -16,6 +16,8 @@ public class DatabaseHandler {
     static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
     static final String DB_URL = "jdbc:mysql://localhost:3306/liftme";
 
+    static final double TRIP_SEARCH_DB_TOLERANCE = 0.5;
+
     static boolean UpdateUser(User user, String authKey){
         writeLock.lock();
         Connection conn = null;
@@ -31,8 +33,8 @@ public class DatabaseHandler {
             String updateSQL = "UPDATE user SET name = ? , surname = ? , password = ?, email = ?, contactNum = ?, availableAsDriver = ?, numberOfPassengers = ? WHERE authenticationToken = ?;";
             stmt = conn.prepareStatement(updateSQL);
 
-            stmt.setString(1,user.getName());
-            stmt.setString(2,user.getSurname());
+            stmt.setString(1, user.getName());
+            stmt.setString(2, user.getSurname());
             stmt.setString(3,user.getPassword());
             stmt.setString(4,user.getEmail());
             stmt.setString(5, user.getContactNum());
@@ -336,7 +338,7 @@ public class DatabaseHandler {
         try{
 
             Class.forName("com.mysql.jdbc.Driver");
-            System.out.println("Connecting to database to retrieve interested users for tripID: " + tripID + ";");
+            System.out.println("Connecting to database to toggel interested user for tripID: " + tripID + ";");
             PropertyManager pm = PropertyManager.getInstance();
             conn = DriverManager.getConnection(DB_URL, pm.getProperty("USER"), pm.getProperty("PASSWORD"));
 
@@ -381,6 +383,108 @@ public class DatabaseHandler {
             writeLock.unlock();
         }
         return affectedRows;
+    }
+
+    static List<SearchedTrip> SearchTripInDatabase(String authKey, double pickupLat, double pickupLong, double dropOffLat, double dropOffLong,double searchToleranceInKM){
+        writeLock.lock();
+        Connection conn = null;
+        PreparedStatement stmt = null;
+
+        List<SearchedTrip> searchTrips = null;
+
+        try{
+
+            Class.forName("com.mysql.jdbc.Driver");
+            System.out.println("Connecting to database to retrieve search results for user : " + authKey + ";");
+            PropertyManager pm = PropertyManager.getInstance();
+            conn = DriverManager.getConnection(DB_URL, pm.getProperty("USER"), pm.getProperty("PASSWORD"));
+
+            String getUserIDSQL = "SELECT userID FROM user WHERE authenticationToken = ?;";
+            stmt = conn.prepareStatement(getUserIDSQL);
+            stmt.setString(1, authKey);
+
+            ResultSet userResult = stmt.executeQuery();
+            if(userResult.next()) {
+                int userID = userResult.getInt("userID");
+
+                String localizedTripSql = "SELECT trip.* FROM trip AS curTrip WHERE trip.pickUpLat <= ? AND trip.pickUpLat >= ? AND trip.pickUpLong <= ? AND trip.pickUpLong >= ?" +
+                                            "AND trip.dropOffLat <= ? AND trip.dropOffLat >= ? AND trip.dropOffLong <= ? AND trip.dropOffLong >= ? AND userID != ? " +
+                                                "AND (userID NOT IN (SELECT userID FROM interesteduser WHERE tripID = curTrip.tripID AND userID = ?)) ;";
+                stmt = conn.prepareStatement(localizedTripSql);
+
+                stmt.setDouble(1, pickupLat + TRIP_SEARCH_DB_TOLERANCE);
+                stmt.setDouble(2, pickupLat - TRIP_SEARCH_DB_TOLERANCE);
+                stmt.setDouble(3, pickupLong + TRIP_SEARCH_DB_TOLERANCE);
+                stmt.setDouble(4, pickupLong - TRIP_SEARCH_DB_TOLERANCE);
+                stmt.setDouble(5, dropOffLat + TRIP_SEARCH_DB_TOLERANCE);
+                stmt.setDouble(6, dropOffLat - TRIP_SEARCH_DB_TOLERANCE);
+                stmt.setDouble(7, dropOffLong + TRIP_SEARCH_DB_TOLERANCE);
+                stmt.setDouble(8, dropOffLong - TRIP_SEARCH_DB_TOLERANCE);
+                stmt.setInt(9, userID);
+                stmt.setInt(10,userID);
+
+                ResultSet matchingSearchSet = stmt.executeQuery();
+
+                List<Trip> searchResults = new ArrayList<>();
+                while (matchingSearchSet.next()) {
+                    Trip curTrip = new Trip();
+                    curTrip.setTripID(matchingSearchSet.getInt("tripID"));
+                    curTrip.setPickupLat(matchingSearchSet.getDouble("pickUpLat"));
+                    curTrip.setPickupLong(matchingSearchSet.getDouble("pickUpLong"));
+                    curTrip.setDestinationLat(matchingSearchSet.getDouble("dropOffLat"));
+                    curTrip.setDestinationLong(matchingSearchSet.getDouble("dropOffLong"));
+                    curTrip.setPickupTime(matchingSearchSet.getTimestamp("pickUpTime"));
+                    searchResults.add(curTrip);
+                }
+
+                searchTrips = DetermineTripDistance(searchResults, pickupLat, pickupLong, dropOffLat, dropOffLong, searchToleranceInKM);
+
+            }
+
+            stmt.close();
+            conn.close();
+        }catch(SQLException e){
+            System.out.println("SQL error occurred whilst querying search for " + authKey + " .");
+            System.out.println(e);
+        }catch(Exception e){
+            System.out.println("Unexpected error occurred whilst querying search for " + authKey + " .");
+            System.out.println(e);
+        }
+        finally {
+            writeLock.unlock();
+        }
+
+        return searchTrips;
+    }
+
+    private static List<SearchedTrip> DetermineTripDistance(List<Trip> trips, double pickupLat, double pickupLong, double dropOffLat, double dropOffLong,double searchToleranceInKM){
+
+        List<SearchedTrip> searchTrips = new ArrayList<>();
+        for(Trip curTrip : trips) {
+            double distanceBetweenPickups = HaversineFormula(pickupLat,curTrip.getPickupLat(),pickupLong,curTrip.getPickupLong());
+            double distanceBetweenDropOffs = HaversineFormula(dropOffLat,curTrip.getDestinationLat(),dropOffLong,curTrip.getDestinationLong());
+
+            if(distanceBetweenPickups <= searchToleranceInKM && distanceBetweenDropOffs <= searchToleranceInKM){
+                searchTrips.add(new SearchedTrip(curTrip,distanceBetweenPickups,distanceBetweenDropOffs));
+            }
+        }
+
+        return searchTrips;
+    }
+
+    private static double HaversineFormula(double lat1, double lat2, double long1, double long2){
+        double earthRadiusInKM = 6371;
+        double angle1 = Math.toRadians(lat1);
+        double angle2 = Math.toRadians(lat2);
+        double deltaAngle1 = Math.toRadians(lat2 - lat1);
+        double deltaAngle2 = Math.toRadians(long2 - long1);
+
+        double a = Math.pow(Math.sin(deltaAngle1/2),2) + Math.cos(angle1) * Math.cos(angle2) * Math.pow(Math.sin(deltaAngle2/2),2);
+        double c = 2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+
+        double distance = earthRadiusInKM*c;
+
+        return distance;
     }
 
 }

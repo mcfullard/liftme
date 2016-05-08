@@ -23,6 +23,7 @@ public class ClientConnectionThread extends Thread {
     private final String SET_USER_DETAILS = "#SET_USER_DETAILS";
     private final String GET_INTERESTED_USERS = "#GET_INTERESTED_USERS";
     private final String INTERESTED_USER_TOGGLE = "#INTERESTED_USER_TOGGLE";
+    private final String SEARCH_TRIPS = "#SEARCH_TRIPS";
 
     public ClientConnectionThread(mainServer theServer, Socket newSocket) {
         this.theServer = theServer;
@@ -59,6 +60,9 @@ public class ClientConnectionThread extends Thread {
                         break;
                     case INTERESTED_USER_TOGGLE:
                         InterestedUserToggle();
+                        break;
+                    case SEARCH_TRIPS:
+                        SearchTrips();
                         break;
                 }
 
@@ -240,6 +244,41 @@ public class ClientConnectionThread extends Thread {
             }
             writeStream.flush();
             System.out.println("CLIENT THREAD : Getting interested users for tripID " + tripID);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void SearchTrips() {
+        try {
+            String authKey = readStream.readUTF();
+            double pickupLat = readStream.readDouble();
+            double pickupLong = readStream.readDouble();
+            double dropOffLat = readStream.readDouble();
+            double dropOffLong = readStream.readDouble();
+            double searchTolerance = readStream.readDouble();
+
+
+            List<SearchedTrip> searchResults = DatabaseHandler.SearchTripInDatabase(authKey, pickupLat, pickupLong, dropOffLat, dropOffLong, searchTolerance);
+
+            if (searchResults != null) {
+                writeStream.writeUTF(AUTHENTICATION_SUCCESS);
+                writeStream.writeInt(searchResults.size());
+                for (SearchedTrip curTrip : searchResults) {
+                    writeStream.writeInt(curTrip.getTripID());
+                    writeStream.writeDouble(curTrip.getPickupLat());
+                    writeStream.writeDouble(curTrip.getPickupLong());
+                    writeStream.writeDouble(curTrip.getDestinationLat());
+                    writeStream.writeDouble(curTrip.getDestinationLong());
+                    writeStream.writeLong(curTrip.getPickupTime().getTime());
+                    writeStream.writeDouble(curTrip.getDistanceBetweenPickups());
+                    writeStream.writeDouble(curTrip.getDistanceBetweenDropOffs());
+                }
+            } else {
+                writeStream.writeUTF(AUTHENTICATION_FAIL);
+            }
+            writeStream.flush();
+            System.out.println("CLIENT THREAD : Searching trips for authKey " + authKey);
         } catch (IOException e) {
             e.printStackTrace();
         }
