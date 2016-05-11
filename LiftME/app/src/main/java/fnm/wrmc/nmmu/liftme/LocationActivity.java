@@ -19,6 +19,8 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -30,10 +32,14 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -63,15 +69,20 @@ public class LocationActivity extends AppCompatActivity implements
     private boolean mPermissionDenied = false;
 
     private GoogleMap mMap;
+    private Marker locationMarker;
+    private ImageView customMapPin;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location);
-
+        ImageView customMapPin = (ImageView) findViewById(R.id.customMapPin);
+        customMapPin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) { showMarkerAddress(); }
+        });
         Toolbar searchToolbar = (Toolbar) findViewById(R.id.searchToolbar);
         setSupportActionBar(searchToolbar);
-
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -125,6 +136,8 @@ public class LocationActivity extends AppCompatActivity implements
                 case RESULT_OK:
                     Place place = PlaceAutocomplete.getPlace(this, data);
                     panAndZoomCam(place.getLatLng());
+                    locationMarker.setTitle(place.getAddress().toString());
+                    locationMarker.showInfoWindow();
                     break;
                 case PlaceAutocomplete.RESULT_ERROR:
                     break;
@@ -188,7 +201,6 @@ public class LocationActivity extends AppCompatActivity implements
             {
                 LatLng locationPos = new LatLng(location.getLatitude(), location.getLongitude());
                 panAndZoomCam(locationPos);
-
             }
         }
     }
@@ -205,11 +217,7 @@ public class LocationActivity extends AppCompatActivity implements
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
 
-    // method to place marker
-    private Marker placeMarker(LatLng latLng, String title) {
-        mMap.clear();
-        return mMap.addMarker(new MarkerOptions().position(latLng).title(title));
-    }
+
 
     public static ArrayList<String> getAddressFromLatLng(Context context, LatLng latLng) throws IOException {
         ArrayList<String> address = new ArrayList<>();
@@ -244,15 +252,23 @@ public class LocationActivity extends AppCompatActivity implements
 
     @Override
     public void onCameraChange(CameraPosition cameraPosition) {
-       try {
-           mMap.clear();
-           Marker marker = placeMarker(
-                   cameraPosition.target,
-                   TextUtils.join(", ", getAddressFromLatLng(this, cameraPosition.target))
-           );
-           marker.showInfoWindow();
-       } catch (IOException e) {
-           e.printStackTrace();
-       }
+        if(locationMarker != null) {
+            locationMarker.setPosition(cameraPosition.target);
+            locationMarker.hideInfoWindow();
+        } else {
+            locationMarker = mMap.addMarker(new MarkerOptions().position(cameraPosition.target));
+            locationMarker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.translucent_pixel));
+        }
     }
+
+    private void showMarkerAddress() {
+        try {
+            ArrayList<String> address = getAddressFromLatLng(LocationActivity.this, mMap.getCameraPosition().target);
+            locationMarker.setTitle(TextUtils.join(", ", address));
+        } catch (IOException e) {
+            locationMarker.setTitle("");
+        }
+        locationMarker.showInfoWindow();
+    }
+
 }
