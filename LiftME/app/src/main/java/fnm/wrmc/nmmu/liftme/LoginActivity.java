@@ -88,13 +88,13 @@ public class LoginActivity extends AppCompatActivity {
         editor.putString(ServerConnection.AUTHENTICATION_TOKEN, authTask.authKey);
         editor.commit();
 
-        /*
+
         // may want to send the dashboard useful data here... or perhaps that should be done asynchronously?
         Intent intent = new Intent(this, DashboardActivity.class);
         startActivity(intent);
-        */
-        Intent intent = new Intent(this, LocationActivity.class);
-        startActivity(intent);
+
+//        Intent intent = new Intent(this, LocationActivity.class);
+//        startActivity(intent);
     }
 
     private void OnAuthenticationFailure(String message){

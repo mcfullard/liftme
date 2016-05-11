@@ -29,12 +29,10 @@
             android:layout_gravity="center_horizontal"
             android:layout_weight="4" >
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="Enter your email:"
-                android:id="@+id/tVRegisterEmail" />
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/input_layout_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
             <EditText
                 android:layout_width="match_parent"
@@ -44,13 +42,12 @@
                 android:id="@+id/edtRegisterEmail"
                 android:layout_gravity="center_horizontal"
                 android:hint="Email" />
+            </android.support.design.widget.TextInputLayout>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="Enter your password:"
-                android:id="@+id/tvRegisterPassword" />
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/input_layout_password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
             <EditText
                 android:layout_width="match_parent"
@@ -60,13 +57,12 @@
                 android:id="@+id/edtRegisterPassword"
                 android:layout_gravity="center_horizontal"
                 android:hint="Password" />
+            </android.support.design.widget.TextInputLayout>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:text="Confirm your password:"
-                android:id="@+id/tVRegisterPasswordConf" />
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/input_layout_confpassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
             <EditText
                 android:layout_width="match_parent"
@@ -75,6 +71,7 @@
                 android:ems="10"
                 android:id="@+id/edtRegisterPasswordConf"
                 android:hint="Confirmation Password" />
+            </android.support.design.widget.TextInputLayout>
 
             <FrameLayout
                 android:layout_width="match_parent"
