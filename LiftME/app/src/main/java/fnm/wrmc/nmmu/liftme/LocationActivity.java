@@ -140,8 +140,6 @@ public class LocationActivity extends AppCompatActivity implements
                 case RESULT_OK:
                     Place place = PlaceAutocomplete.getPlace(this, data);
                     panAndZoomCam(place.getLatLng());
-                    locationMarker.setTitle(place.getAddress().toString());
-                    locationMarker.showInfoWindow();
                     break;
                 case PlaceAutocomplete.RESULT_ERROR:
                     break;
@@ -205,8 +203,6 @@ public class LocationActivity extends AppCompatActivity implements
             {
                 LatLng locationPos = new LatLng(location.getLatitude(), location.getLongitude());
                 panAndZoomCam(locationPos);
-                resetMarker(locationPos);
-                showMarkerAddress();
             }
         }
     }
@@ -258,7 +254,8 @@ public class LocationActivity extends AppCompatActivity implements
 
     @Override
     public void onCameraChange(CameraPosition cameraPosition) {
-        mMap.clear();
+        resetMarker(cameraPosition.target);
+        showMarkerAddress();
     }
 
     private void resetMarker(LatLng latLng) {
