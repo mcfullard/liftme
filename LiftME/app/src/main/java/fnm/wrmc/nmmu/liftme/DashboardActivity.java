@@ -21,8 +21,10 @@ import java.io.Serializable;
 
 import fnm.wrmc.nmmu.liftme.Data_Objects.Trip;
 
-public class DashboardActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, MyTripsFragment.IMyTripsCallback, UserProfileFragment.AcceptChangeClickListener {
+public class DashboardActivity extends AppCompatActivity implements
+        NavigationView.OnNavigationItemSelectedListener,
+        MyTripsFragment.IMyTripsCallback,
+        UserProfileFragment.AcceptChangeClickListener {
 
     static public String USER_PROFILE_FRAGMENT = "fnm.wrmc.nmmu.liftme.UserProfileFragment";
 
@@ -34,15 +36,6 @@ public class DashboardActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
         final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -51,7 +44,6 @@ public class DashboardActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
 
         Fragment mainFragment = getFragmentFromContext("",null);
 

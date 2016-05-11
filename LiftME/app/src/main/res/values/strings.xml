@@ -17,4 +17,5 @@
     <string name="permission_required_toast">Permission to access your location is required.</string>
     <string name="permission_rationale_location">Would you like to permit access to your location?</string>
     <string name="pickup_location">Pickup Location</string>
+    <string name="action_search">Search</string>
 </resources>

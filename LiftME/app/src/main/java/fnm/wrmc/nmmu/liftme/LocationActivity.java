@@ -2,6 +2,7 @@ package fnm.wrmc.nmmu.liftme;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Criteria;
@@ -13,14 +14,25 @@ import android.support.v4.app.ActivityCompat.OnRequestPermissionsResultCallback;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.Toast;
 
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.IOException;
@@ -30,7 +42,12 @@ import java.util.Locale;
 
 import fnm.wrmc.nmmu.liftme.Utilities.PermissionUtils;
 
-public class LocationActivity extends AppCompatActivity implements OnMapReadyCallback, OnRequestPermissionsResultCallback {
+public class LocationActivity extends AppCompatActivity implements
+        OnMapReadyCallback,
+        GoogleMap.OnCameraChangeListener,
+        OnRequestPermissionsResultCallback {
+
+    private static final int REQUEST_CODE_AUTOCOMPLETE = 1;
 
     /**
      * Request code for location permission request.
@@ -51,12 +68,71 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location);
+
+        Toolbar searchToolbar = (Toolbar) findViewById(R.id.searchToolbar);
+        setSupportActionBar(searchToolbar);
+
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.map_search_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_search:
+                try {
+                    // The autocomplete activity requires Google Play Services to be available. The intent
+                    // builder checks this and throws an exception if it is not the case.
+                        Intent intent = new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_FULLSCREEN)
+                            .build(this);
+                        startActivityForResult(intent, REQUEST_CODE_AUTOCOMPLETE);
+                } catch (GooglePlayServicesRepairableException e) {
+                    // Indicates that Google Play Services is either not installed or not up to date. Prompt
+                    // the user to correct the issue.
+                    GoogleApiAvailability.getInstance().getErrorDialog(this, e.getConnectionStatusCode(),
+                        0 /* requestCode */).show();
+                } catch (GooglePlayServicesNotAvailableException e) {
+                    // Indicates that Google Play Services is not available and the problem is not easily
+                    // resolvable.
+                    String message = "Google Play Services is not available: " +
+                        GoogleApiAvailability.getInstance().getErrorString(e.errorCode);
+
+                    Log.e("LocationActivity", message);
+                    Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+                }
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == REQUEST_CODE_AUTOCOMPLETE) {
+            switch (resultCode) {
+                case RESULT_OK:
+                    Place place = PlaceAutocomplete.getPlace(this, data);
+                    panAndZoomCam(place.getLatLng());
+                    break;
+                case PlaceAutocomplete.RESULT_ERROR:
+                    break;
+                case RESULT_CANCELED:
+                    break;
+            }
+        }
+    }
 
     /**
      * Manipulates the map once available.
@@ -70,6 +146,7 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mMap.setOnCameraChangeListener(this);
         enableMyLocation();
     }
 
@@ -110,24 +187,28 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
             if (location != null)
             {
                 LatLng locationPos = new LatLng(location.getLatitude(), location.getLongitude());
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(locationPos, 13));
+                panAndZoomCam(locationPos);
 
-                CameraPosition cameraPosition = new CameraPosition.Builder()
-                        .target(locationPos)
-                        .zoom(17)
-                        .bearing(0)
-                        .tilt(30)
-                        .build();
-                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-
-                try {
-                    ArrayList<String> address = getAddressFromLatLng(this, locationPos);
-                    mMap.addMarker(new MarkerOptions().position(locationPos).title(TextUtils.join(", ", address)));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
             }
         }
+    }
+
+    // method to move camera
+    private void panAndZoomCam(LatLng latLng) {
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 13));
+        CameraPosition cameraPosition = new CameraPosition.Builder()
+            .target(latLng)
+            .zoom(17)
+            .bearing(0)
+            .tilt(30)
+            .build();
+        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+    }
+
+    // method to place marker
+    private Marker placeMarker(LatLng latLng, String title) {
+        mMap.clear();
+        return mMap.addMarker(new MarkerOptions().position(latLng).title(title));
     }
 
     public static ArrayList<String> getAddressFromLatLng(Context context, LatLng latLng) throws IOException {
@@ -137,7 +218,7 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
         geocoder = new Geocoder(context, Locale.getDefault());
         addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
         int maxIndex = addresses.get(0).getMaxAddressLineIndex();
-        for(int i = 0; i <= maxIndex; i++) {
+        for(int i = 0; i <= 1; i++) {
             address.add(i, addresses.get(0).getAddressLine(i));
         }
         return address;
@@ -159,5 +240,19 @@ public class LocationActivity extends AppCompatActivity implements OnMapReadyCal
     private void showMissingPermissionError() {
         PermissionUtils.PermissionDeniedDialog
                 .newInstance(true).show(getSupportFragmentManager(), "dialog");
+    }
+
+    @Override
+    public void onCameraChange(CameraPosition cameraPosition) {
+       try {
+           mMap.clear();
+           Marker marker = placeMarker(
+                   cameraPosition.target,
+                   TextUtils.join(", ", getAddressFromLatLng(this, cameraPosition.target))
+           );
+           marker.showInfoWindow();
+       } catch (IOException e) {
+           e.printStackTrace();
+       }
     }
 }

@@ -88,6 +88,7 @@ public class LoginActivity extends AppCompatActivity {
         editor.putString(ServerConnection.AUTHENTICATION_TOKEN, authTask.authKey);
         editor.commit();
 
+
         /*
         // may want to send the dashboard useful data here... or perhaps that should be done asynchronously?
         Intent intent = new Intent(this, DashboardActivity.class);
@@ -102,9 +103,13 @@ public class LoginActivity extends AppCompatActivity {
 
 
         //TODO remove this!!!!!!
-        Toast.makeText(this,"FOR DEBUGGIN PURPOSES ONLY YOU CAN LOGIN WITHOUT THE SERVER WORKING!!!!!!!!!",Toast.LENGTH_LONG).show();
+        Toast.makeText(this,"FOR DEBUGGING PURPOSES ONLY YOU CAN LOGIN WITHOUT THE SERVER WORKING!!!!!!!!!",Toast.LENGTH_LONG).show();
         Intent intent = new Intent(this, DashboardActivity.class);
         startActivity(intent);
+        /*
+        Intent intent = new Intent(this, LocationActivity.class);
+        startActivity(intent);
+        */
     }
 
     public void OnLoginClick(View view){
