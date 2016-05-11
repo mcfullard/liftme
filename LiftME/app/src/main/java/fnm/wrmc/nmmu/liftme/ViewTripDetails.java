@@ -52,6 +52,8 @@ public class ViewTripDetails extends TripDetailsFragment {
             }
         });
 
+        fabInterestedToggle.setImageResource(R.drawable.interested_user);
+
         handler = new Handler() {
             @Override
             public void handleMessage(Message inputMessage) {
