@@ -20,6 +20,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -32,14 +33,11 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-
-import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -71,16 +69,22 @@ public class LocationActivity extends AppCompatActivity implements
     private GoogleMap mMap;
     private Marker locationMarker;
     private ImageView customMapPin;
+    private Button setLocationButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location);
+        Button setLocationButton = (Button) findViewById(R.id.setLocationButton);
         ImageView customMapPin = (ImageView) findViewById(R.id.customMapPin);
         customMapPin.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) { showMarkerAddress(); }
+            public void onClick(View v) {
+                resetMarker(mMap.getCameraPosition().target);
+                showMarkerAddress();
+            }
         });
+
         Toolbar searchToolbar = (Toolbar) findViewById(R.id.searchToolbar);
         setSupportActionBar(searchToolbar);
 
@@ -201,6 +205,8 @@ public class LocationActivity extends AppCompatActivity implements
             {
                 LatLng locationPos = new LatLng(location.getLatitude(), location.getLongitude());
                 panAndZoomCam(locationPos);
+                resetMarker(locationPos);
+                showMarkerAddress();
             }
         }
     }
@@ -252,18 +258,22 @@ public class LocationActivity extends AppCompatActivity implements
 
     @Override
     public void onCameraChange(CameraPosition cameraPosition) {
+        mMap.clear();
+    }
+
+    private void resetMarker(LatLng latLng) {
         if(locationMarker != null) {
-            locationMarker.setPosition(cameraPosition.target);
+            locationMarker.setPosition(latLng);
             locationMarker.hideInfoWindow();
         } else {
-            locationMarker = mMap.addMarker(new MarkerOptions().position(cameraPosition.target));
+            locationMarker = mMap.addMarker(new MarkerOptions().position(latLng));
             locationMarker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.translucent_pixel));
         }
     }
 
     private void showMarkerAddress() {
         try {
-            ArrayList<String> address = getAddressFromLatLng(LocationActivity.this, mMap.getCameraPosition().target);
+            ArrayList<String> address = getAddressFromLatLng(LocationActivity.this, locationMarker.getPosition());
             locationMarker.setTitle(TextUtils.join(", ", address));
         } catch (IOException e) {
             locationMarker.setTitle("");

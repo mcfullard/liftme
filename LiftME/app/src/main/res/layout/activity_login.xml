@@ -104,7 +104,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:text="Loggin in..."
+                    android:text="Logging in..."
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:visibility="invisible" />
             </FrameLayout>
