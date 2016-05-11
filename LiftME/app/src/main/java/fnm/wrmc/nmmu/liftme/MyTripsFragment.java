@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,6 +38,7 @@ public class MyTripsFragment extends Fragment {
     private ListView myTripsList;
     private List<Trip> trips;
     private Handler tripsHandler;
+    private SwipeRefreshLayout myTripsSwipeRefresh;
 
     public MyTripsFragment() {
         // Required empty public constructor
@@ -49,6 +51,7 @@ public class MyTripsFragment extends Fragment {
         View curView = inflater.inflate(R.layout.fragment_my_trips, container, false);
 
         myTripsList =  (ListView)curView.findViewById(R.id.lVMyTrips);
+        myTripsSwipeRefresh = (SwipeRefreshLayout)curView.findViewById(R.id.my_trips_swipe_refresh_layout);
 
         return curView;
     }
@@ -93,12 +96,26 @@ public class MyTripsFragment extends Fragment {
         myTripsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Trip clickedTrip = (Trip)myTripsList.getItemAtPosition(position);
+                Trip clickedTrip = (Trip) myTripsList.getItemAtPosition(position);
                 OnMyTripClick(clickedTrip);
             }
         });
 
-        GetUserTrips();
+        myTripsSwipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                GetUserTrips();
+            }
+        });
+
+        myTripsSwipeRefresh.setColorSchemeResources(R.color.colorAccent,R.color.colorPrimary,R.color.colorPrimaryDark);
+        myTripsSwipeRefresh.post(new Runnable() {
+            @Override
+            public void run() {
+                myTripsSwipeRefresh.setRefreshing(true);
+                GetUserTrips();
+            }
+        });
     }
 
     private void GetUserTrips(){
@@ -118,10 +135,12 @@ public class MyTripsFragment extends Fragment {
     private void OnUserTripRetrievalSuccess(UserPostedTripsTask tripsTask){
         adapter.clear();
         adapter.addAll(tripsTask.trips);
+        myTripsSwipeRefresh.setRefreshing(false);
     }
 
     private void OnUserTripRetrievalFailure(String message) {
         Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+        myTripsSwipeRefresh.setRefreshing(false);
     }
 
     public void OnMyTripClick(Trip trip){
