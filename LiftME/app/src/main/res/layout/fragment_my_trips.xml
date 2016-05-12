@@ -16,7 +16,6 @@
             android:layout_gravity="center_horizontal|top"
             android:divider="@android:color/transparent"
             android:dividerHeight="0dp"
-            android:overScrollFooter="@drawable/pickup_destination_dots"
             android:overScrollMode="always"/>
     </android.support.v4.widget.SwipeRefreshLayout>
 
