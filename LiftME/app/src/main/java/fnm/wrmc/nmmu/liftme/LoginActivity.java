@@ -32,6 +32,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        quickLogin();
 
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
@@ -76,6 +77,15 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
+    private void quickLogin(){
+        SharedPreferences sharedPref = this.getSharedPreferences("GlobalPref", Context.MODE_PRIVATE);
+        String authKey = sharedPref.getString(ServerConnection.AUTHENTICATION_TOKEN,"");
+
+        if(!authKey.isEmpty()){
+            GoToDashBoard();
+        }
+    }
+
     public void HandleAuthentication(AuthenticationTask authTask){
         Message completeMessage =
                 authenticationHandler.obtainMessage(AUTH_MESSAGE, authTask);
@@ -87,7 +97,11 @@ public class LoginActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString(ServerConnection.AUTHENTICATION_TOKEN, authTask.authKey);
         editor.commit();
+        GoToDashBoard();
 
+    }
+
+    private void GoToDashBoard(){
 
         /*
         // may want to send the dashboard useful data here... or perhaps that should be done asynchronously?
