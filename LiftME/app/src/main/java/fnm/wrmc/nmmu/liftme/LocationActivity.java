@@ -13,6 +13,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat.OnRequestPermissionsResultCallback;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -51,6 +52,7 @@ public class LocationActivity extends AppCompatActivity implements
         GoogleMap.OnCameraChangeListener,
         OnRequestPermissionsResultCallback {
 
+    private static int IS_PICKUP = 1;
     private static final int REQUEST_CODE_AUTOCOMPLETE = 1;
 
     /**
@@ -88,10 +90,36 @@ public class LocationActivity extends AppCompatActivity implements
         Toolbar searchToolbar = (Toolbar) findViewById(R.id.searchToolbar);
         setSupportActionBar(searchToolbar);
 
+        handleIntent();
+        updateToolbarTitle();
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+    }
+
+    private void handleIntent() {
+        Intent intent = getIntent();
+        if(intent != null) {
+            Bundle extras = intent.getExtras();
+            if(extras != null) {
+                IS_PICKUP = extras.getInt("IS_PICKUP");
+            }
+        }
+    }
+
+    private void updateToolbarTitle() {
+        ActionBar toolbar = getSupportActionBar();
+        switch (IS_PICKUP) {
+            case 2:
+                toolbar.setTitle("Destination");
+                break;
+            case 1:
+            default:
+                toolbar.setTitle("Pickup");
+                break;
+        }
     }
 
     @Override
