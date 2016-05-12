@@ -4,6 +4,8 @@ import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 /**
  * Created by Francois on 2016/04/13.
@@ -87,6 +89,20 @@ public class Trip implements Serializable {
 
     public void setTripID(int tripID) {
         this.tripID = tripID;
+    }
+
+    public static Timestamp getTimestamp(int minute, int hour, int day, int month, int year) {
+        GregorianCalendar cal = new GregorianCalendar();
+        cal.set(Calendar.MINUTE, minute);
+        cal.set(Calendar.HOUR_OF_DAY, hour);
+        cal.set(Calendar.DAY_OF_MONTH, day);
+        cal.set(Calendar.MONTH, month);
+        cal.set(Calendar.YEAR, year);
+        return new Timestamp(cal.getTimeInMillis());
+    }
+
+    public static Timestamp addTimestamps(Timestamp a, Timestamp b) {
+        return new Timestamp(a.getTime() + b.getTime());
     }
 
 }

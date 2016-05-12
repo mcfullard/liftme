@@ -8,13 +8,32 @@ import android.support.v4.app.DialogFragment;
 import android.text.format.DateFormat;
 import android.widget.TimePicker;
 
+import java.sql.Timestamp;
 import java.util.Calendar;
+
+import fnm.wrmc.nmmu.liftme.Data_Objects.Trip;
 
 /**
  * Created by minnaar on 2016/05/12.
  */
 public class TimePickerFragment extends DialogFragment
         implements TimePickerDialog.OnTimeSetListener {
+
+    public interface TimePickedListener {
+        public void onTimePicked(Timestamp ts);
+    }
+
+    TimePickedListener listener;
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        try {
+            listener = (TimePickedListener) getActivity();
+        } catch (ClassCastException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -30,5 +49,6 @@ public class TimePickerFragment extends DialogFragment
 
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
         // Do something with the time chosen by the user
+        listener.onTimePicked(Trip.getTimestamp(minute, hourOfDay, 0, 0, 0));
     }
 }

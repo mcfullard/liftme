@@ -42,16 +42,21 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import fnm.wrmc.nmmu.liftme.Data_Objects.Trip;
 import fnm.wrmc.nmmu.liftme.Utilities.PermissionUtils;
 
 public class LocationActivity extends AppCompatActivity implements
         OnMapReadyCallback,
         GoogleMap.OnCameraChangeListener,
-        OnRequestPermissionsResultCallback {
+        OnRequestPermissionsResultCallback,
+        DatePickerFragment.DatePickedListener,
+        TimePickerFragment.TimePickedListener
+{
 
     private static int IS_PICKUP = 1;
     private static final int REQUEST_CODE_AUTOCOMPLETE = 1;
@@ -73,18 +78,14 @@ public class LocationActivity extends AppCompatActivity implements
     private Marker locationMarker;
     private ImageView customMapPin;
     private Button setLocationButton;
+    private Trip userTrip;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location);
-        Button setLocationButton = (Button) findViewById(R.id.setLocationButton);
-        setLocationButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showDatePickerDialog(v);
-            }
-        });
+        setLocationButton = (Button) findViewById(R.id.setLocationButton);
+
         ImageView customMapPin = (ImageView) findViewById(R.id.customMapPin);
         customMapPin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -98,12 +99,31 @@ public class LocationActivity extends AppCompatActivity implements
         setSupportActionBar(searchToolbar);
 
         handleIntent();
-        updateToolbarTitle();
+        updateBasedOnIntent();
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+    }
+
+    private View.OnClickListener gettLocationListenerPickup() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDatePickerDialog(v);
+            }
+        };
+    }
+
+    private View.OnClickListener getLocationListenerDestination() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // intent to store user trip and move to search result list activity
+                Toast.makeText(LocationActivity.this, userTrip.getTime(), Toast.LENGTH_LONG).show();
+            }
+        };
     }
 
     private void handleIntent() {
@@ -112,19 +132,24 @@ public class LocationActivity extends AppCompatActivity implements
             Bundle extras = intent.getExtras();
             if(extras != null) {
                 IS_PICKUP = extras.getInt("IS_PICKUP");
+                if(extras.containsKey("TRIP"))
+                    userTrip = (Trip) extras.getSerializable("TRIP");
             }
         }
     }
 
-    private void updateToolbarTitle() {
+    private void updateBasedOnIntent() {
         ActionBar toolbar = getSupportActionBar();
         switch (IS_PICKUP) {
             case 2:
                 toolbar.setTitle("Destination");
+                setLocationButton.setText(getResources().getString(R.string.set_destination_location));
+                setLocationButton.setOnClickListener(getLocationListenerDestination());
                 break;
             case 1:
             default:
                 toolbar.setTitle("Pickup");
+                setLocationButton.setOnClickListener(gettLocationListenerPickup());
                 break;
         }
     }
@@ -230,14 +255,21 @@ public class LocationActivity extends AppCompatActivity implements
             // Access to the location has been granted to the app.
             mMap.setMyLocationEnabled(true);
 
-            LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-            Criteria criteria = new Criteria();
+            switch (IS_PICKUP) {
+                case 1:
+                    LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+                    Criteria criteria = new Criteria();
 
-            Location location = locationManager.getLastKnownLocation(locationManager.getBestProvider(criteria, false));
-            if (location != null)
-            {
-                LatLng locationPos = new LatLng(location.getLatitude(), location.getLongitude());
-                panAndZoomCam(locationPos);
+                    Location location = locationManager.getLastKnownLocation(locationManager.getBestProvider(criteria, false));
+                    if (location != null)
+                    {
+                        LatLng locationPos = new LatLng(location.getLatitude(), location.getLongitude());
+                        panAndZoomCam(locationPos);
+                    }
+                    break;
+                case 2:
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(userTrip.getPickupLat(), userTrip.getPickupLong()), 17));
+                    break;
             }
         }
     }
@@ -263,7 +295,7 @@ public class LocationActivity extends AppCompatActivity implements
         geocoder = new Geocoder(context, Locale.getDefault());
         addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
         int maxIndex = addresses.get(0).getMaxAddressLineIndex();
-        for(int i = 0; i <= 1; i++) {
+        for(int i = 0; i <= 1 && i < maxIndex; i++) {
             address.add(i, addresses.get(0).getAddressLine(i));
         }
         return address;
@@ -323,4 +355,21 @@ public class LocationActivity extends AppCompatActivity implements
         newFragment.show(getSupportFragmentManager(), "datePicker");
     }
 
+    @Override
+    public void onDatePicked(Timestamp ts, View v) {
+        userTrip = new Trip();
+        userTrip.setPickupLat(locationMarker.getPosition().latitude);
+        userTrip.setPickupLong(locationMarker.getPosition().longitude);
+        userTrip.setPickupTime(ts);
+        showTimePickerDialog(v);
+    }
+
+    @Override
+    public void onTimePicked(Timestamp ts) {
+        userTrip.setPickupTime(Trip.addTimestamps(userTrip.getPickupTime(), ts));
+        Intent intent = new Intent(LocationActivity.this, LocationActivity.class);
+        intent.putExtra("IS_PICKUP", 2);
+        intent.putExtra("TRIP", userTrip);
+        startActivity(intent);
+    }
 }
