@@ -103,13 +103,13 @@ public class LoginActivity extends AppCompatActivity {
 
     private void GoToDashBoard(){
 
-        /*
+
         // may want to send the dashboard useful data here... or perhaps that should be done asynchronously?
         Intent intent = new Intent(this, DashboardActivity.class);
         startActivity(intent);
-        */
-        Intent intent = new Intent(this, LocationActivity.class);
-        startActivity(intent);
+
+//        Intent intent = new Intent(this, LocationActivity.class);
+//        startActivity(intent);
     }
 
     private void OnAuthenticationFailure(String message){

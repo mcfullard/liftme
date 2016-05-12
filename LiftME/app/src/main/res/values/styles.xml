@@ -14,8 +14,8 @@
         <item name="android:colorButtonNormal">@color/colorPrimary</item>
     </style>
 
-    <style name="SecondaryButtonStyle" parent="Base.Widget.AppCompat.Button.Colored">
-        <item name="android:colorButtonNormal">@color/white</item>
+    <style name="SecondaryButtonStyle" parent="Base.Widget.AppCompat.Button.Borderless">
+        <item name="android:textColor">#ffffff</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
@@ -29,6 +29,13 @@
 
     <style name="MyDialogTheme" parent="android:Theme.Material.Light.Dialog">
         <item name="android:colorAccent">@color/colorPrimary</item>
+    </style>
+
+    <style name="LoginTextStyle" parent="TextAppearance.AppCompat">
+        <!-- Hint color and label color in FALSE state -->
+        <item name="android:textColorHint">#ffffff</item>
+        <!-- Label color in TRUE state and bar color FALSE and TRUE State -->
+        <item name="android:textSize">20sp</item>
     </style>
 
 </resources>

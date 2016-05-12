@@ -15,6 +15,18 @@
             android:layout_height="fill_parent"
             android:layout_gravity="center_horizontal|top"
             android:divider="@android:color/transparent"
-            android:dividerHeight="0dp" />
+            android:dividerHeight="0dp"
+            android:overScrollFooter="@drawable/pickup_destination_dots"
+            android:overScrollMode="always"/>
     </android.support.v4.widget.SwipeRefreshLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fabAddTrip"
+        style="@style/Widget.Design.FloatingActionButton"
+        android:src="@drawable/add_trip_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:layout_gravity="bottom|right" />
+
 </FrameLayout>

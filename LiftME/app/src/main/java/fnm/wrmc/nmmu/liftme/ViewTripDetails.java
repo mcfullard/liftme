@@ -52,8 +52,6 @@ public class ViewTripDetails extends TripDetailsFragment {
             }
         });
 
-        fabInterestedToggle.setImageResource(R.drawable.interested_user);
-
         handler = new Handler() {
             @Override
             public void handleMessage(Message inputMessage) {
@@ -100,8 +98,10 @@ public class ViewTripDetails extends TripDetailsFragment {
     private void OnInterestedUserToggleSuccess(ServerConnection.ToggleInterestedUserRunner.ToggleInterestedUserTask tglTask){
         if(tglTask.toggleStatus == 2) {
             fabInterestedToggle.setBackgroundColor(Color.GRAY);
+            fabInterestedToggle.setImageResource(R.drawable.is_interested);
         }else{
             fabInterestedToggle.setBackgroundColor(getResources().getColor(R.color.colorAccent));
+            fabInterestedToggle.setImageResource(R.drawable.not_interested);
         }
     }
 

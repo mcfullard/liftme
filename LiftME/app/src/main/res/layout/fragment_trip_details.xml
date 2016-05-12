@@ -139,11 +139,10 @@
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fab"
             style="@style/Widget.Design.FloatingActionButton"
+            android:src="@drawable/not_interested"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            app:layout_anchor="@id/app_bar_layout"
-            app:layout_anchorGravity="bottom|right|end" />
+            android:layout_margin="10dp" />
 
     </android.support.design.widget.CoordinatorLayout>
 
