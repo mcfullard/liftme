@@ -143,7 +143,7 @@ public class LocationActivity extends AppCompatActivity implements
                 try {
                     // The autocomplete activity requires Google Play Services to be available. The intent
                     // builder checks this and throws an exception if it is not the case.
-                        Intent intent = new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_FULLSCREEN)
+                        Intent intent = new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_OVERLAY)
                             .build(this);
                         startActivityForResult(intent, REQUEST_CODE_AUTOCOMPLETE);
                 } catch (GooglePlayServicesRepairableException e) {
