@@ -5,132 +5,140 @@
     android:layout_height="match_parent"
     tools:context="fnm.wrmc.nmmu.liftme.LoginActivity">
 
-    <ImageView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/login_background"
-        android:scaleType="centerCrop"
-        android:id="@+id/iVLoginBackground" />
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:orientation="vertical">
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:background="@color/colorPrimary"
+            android:padding="21dp"
+            android:elevation="5dp">
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="@android:style/TextAppearance.DeviceDefault.Large"
+                android:text="Welcome!"
+                android:id="@+id/tVWelcomeBanner"
+                android:layout_weight="2"
+                android:textColor="#ffffff"
+                android:layout_gravity="bottom"
+                android:layout_marginLeft="0dp"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentStart="true"
+                android:textSize="50sp"
+                android:fontFamily="sans-serif"
+                android:textStyle="bold"/>
+        </RelativeLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:orientation="vertical">
-
-            <Space
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_weight="1" />
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:orientation="vertical"
+            android:padding="16dp">
 
             <LinearLayout
+                android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_weight="4"
-                android:orientation="vertical"
-                android:padding="16dp">
+                android:background="@drawable/login_border"
+                android:padding="5dp">
 
-                <LinearLayout
-                    android:orientation="vertical"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/login_border"
-                    android:padding="5dp">
-
-                    <android.support.design.widget.TextInputLayout
-                        android:id="@+id/input_layout_email"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <EditText
-                            android:id="@+id/edtLoginEmail"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_horizontal"
-                            android:ems="10"
-                            android:hint="Email"
-                            android:inputType="textEmailAddress"
-                            />
-                    </android.support.design.widget.TextInputLayout>
-
-                    <android.support.design.widget.TextInputLayout
-                        android:id="@+id/input_layout_password"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-
-                        <EditText
-                            android:id="@+id/edtLoginPassword"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_horizontal"
-                            android:ems="10"
-                            android:hint="Password"
-                            android:inputType="textPassword"
-                            android:textColorHint="#ffffff" />
-                    </android.support.design.widget.TextInputLayout>
-                </LinearLayout>
-
-                <FrameLayout
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/input_layout_email"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
-                    <LinearLayout
+                    <EditText
+                        android:id="@+id/edtLoginEmail"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_gravity="left|top"
-                        android:orientation="horizontal"
-                        android:layout_margin="10dp">
-
-                        <Button
-                            android:id="@+id/btnLogin"
-                            style="@style/PrimaryButtonStyle"
-                            android:layout_width="fill_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_horizontal"
-                            android:layout_margin="20dp"
-                            android:layout_marginTop="20dp"
-                            android:onClick="OnLoginClick"
-                            android:text="Login"
-                            android:layout_weight="1" />
-
-                        <Button
-                            android:id="@+id/btnRegister"
-                            style="@style/SecondaryButtonStyle"
-                            android:layout_width="fill_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_horizontal"
-                            android:onClick="OnRegisterClick"
-                            android:text="Register"
-                            android:layout_weight="1" />
-
-                    </LinearLayout>
-
-                    <ProgressBar
-                        android:id="@+id/pBLoginSpinner"
-                        style="?android:attr/progressBarStyleLarge"
-                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:visibility="invisible" />
+                        android:layout_gravity="center_horizontal"
+                        android:ems="10"
+                        android:hint="Email"
+                        android:inputType="textEmailAddress"
+                        />
 
-                    <TextView
-                        android:id="@+id/tVLogin"
-                        android:layout_width="wrap_content"
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/input_layout_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <EditText
+                        android:id="@+id/edtLoginPassword"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:text="Logging in..."
-                        android:textAppearance="?android:attr/textAppearanceLarge"
-                        android:visibility="invisible" />
-                </FrameLayout>
-
+                        android:layout_gravity="center_horizontal"
+                        android:ems="10"
+                        android:hint="Password"
+                        android:inputType="textPassword"
+                        android:textColorHint="#ffffff" />
+                </android.support.design.widget.TextInputLayout>
             </LinearLayout>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="left|top"
+                    android:orientation="horizontal"
+                    android:layout_margin="10dp">
+
+                    <Button
+                        android:id="@+id/btnLogin"
+                        style="@style/PrimaryButtonStyle"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_margin="20dp"
+                        android:layout_marginTop="20dp"
+                        android:onClick="OnLoginClick"
+                        android:text="Login"
+                        android:layout_weight="1"
+                        android:elevation="0dp"/>
+
+                    <Button
+                        android:id="@+id/btnRegister"
+                        style="@style/SecondaryButtonStyleDark"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:onClick="OnRegisterClick"
+                        android:text="...OR Register"
+                        android:layout_weight="1" />
+
+                </LinearLayout>
+
+                <ProgressBar
+                    android:id="@+id/pBLoginSpinner"
+                    style="?android:attr/progressBarStyleLarge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:visibility="invisible" />
+
+                <TextView
+                    android:id="@+id/tVLogin"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Logging in..."
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:visibility="invisible" />
+            </FrameLayout>
+
         </LinearLayout>
-    </FrameLayout>
+
+    </LinearLayout>
 </RelativeLayout>

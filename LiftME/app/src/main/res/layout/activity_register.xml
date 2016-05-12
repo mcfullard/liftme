@@ -87,16 +87,32 @@
                     android:visibility="invisible"
                     android:indeterminate="false" />
 
-                <Button
-                    android:layout_width="170dp"
-                    android:layout_height="wrap_content"
-                    android:text="Register"
-                    android:id="@+id/btnRegRegister"
-                    android:layout_gravity="center"
-                    android:onClick="OnRegisterClick"
-                    android:layout_margin="20dp"
-                    style="@style/PrimaryButtonStyle"
-                    />
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <Button
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Register"
+                        android:id="@+id/btnRegRegister"
+                        android:layout_gravity="center"
+                        android:onClick="OnRegisterClick"
+                        android:layout_margin="20dp"
+                        style="@style/PrimaryButtonStyle"
+                        android:layout_weight="1" />
+
+                    <Button
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Cancel"
+                        android:id="@+id/btnCancelReg"
+                        android:layout_weight="1"
+                        android:layout_gravity="center"
+                        android:theme="@style/SecondaryButtonStyleDark" />
+
+                </LinearLayout>
 
                 <TextView
                     android:layout_width="wrap_content"
