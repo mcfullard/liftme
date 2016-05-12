@@ -20,7 +20,7 @@ public class TimePickerFragment extends DialogFragment
         implements TimePickerDialog.OnTimeSetListener {
 
     public interface TimePickedListener {
-        public void onTimePicked(Timestamp ts);
+        public void onTimePicked(long ms);
     }
 
     TimePickedListener listener;
@@ -49,6 +49,6 @@ public class TimePickerFragment extends DialogFragment
 
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
         // Do something with the time chosen by the user
-        listener.onTimePicked(Trip.getTimestamp(minute, hourOfDay, 1, 1, 0));
+        listener.onTimePicked((hourOfDay * 60 + minute) * 60000);
     }
 }

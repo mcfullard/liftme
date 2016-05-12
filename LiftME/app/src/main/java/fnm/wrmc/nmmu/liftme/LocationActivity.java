@@ -365,8 +365,8 @@ public class LocationActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onTimePicked(Timestamp ts) {
-        userTrip.setPickupTime(Trip.addTimestamps(userTrip.getPickupTime(), ts));
+    public void onTimePicked(long ms) {
+        userTrip.setPickupTime(Trip.addToTimestamp(userTrip.getPickupTime(), ms));
         Intent intent = new Intent(LocationActivity.this, LocationActivity.class);
         intent.putExtra("IS_PICKUP", 2);
         intent.putExtra("TRIP", userTrip);

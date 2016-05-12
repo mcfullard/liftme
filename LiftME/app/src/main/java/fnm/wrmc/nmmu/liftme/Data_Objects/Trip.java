@@ -101,8 +101,8 @@ public class Trip implements Serializable {
         return new Timestamp(cal.getTimeInMillis());
     }
 
-    public static Timestamp addTimestamps(Timestamp a, Timestamp b) {
-        return new Timestamp(a.getTime() + b.getTime());
+    public static Timestamp addToTimestamp(Timestamp a, long milliseconds) {
+        return new Timestamp(a.getTime() + milliseconds);
     }
 
 }
