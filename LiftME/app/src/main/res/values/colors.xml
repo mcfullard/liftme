@@ -4,12 +4,13 @@
     <!--<color name="colorPrimaryDark">#bf360c</color>-->
     <!--<color name="colorAccent">#f57c00</color>-->
     <!--<color name="white">#ffffff</color>-->
-    <color name="colorPrimary">#FF5722</color>
-    <color name="colorPrimaryDark">#E64A19</color>
-    <color name="primary_light">#FFCCBC</color>
-    <color name="colorAccent">#FF4081</color>
-    <color name="primary_text">#212121</color>
-    <color name="secondary_text">#727272</color>
+    <color name="colorPrimary">#4CAF50</color>
+    <color name="colorPrimaryDark">#388E3C</color>
+    <color name="primaryLight">#C8E6C9</color>
+    <color name="colorAccent">#FF9800</color>
+    <color name="colorPrimaryText">#212121</color>
+    <color name="colorSecondaryText">#727272</color>
     <color name="icons">#FFFFFF</color>
     <color name="divider">#B6B6B6</color>
+    <color name="colorBlueGreyLight">#eceff1</color>
 </resources>
