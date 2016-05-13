@@ -37,13 +37,17 @@ public class MyTripsListAdapter extends ArrayAdapter<Trip> {
         Trip curTrip = getItem(position);
 
         ImageView destinationMapView = (ImageView)curView.findViewById(R.id.iVMyTripMap);
-        TextView tVTripTitle = (TextView)curView.findViewById(R.id.tVMyTripTitle);
+        TextView tVTripMonth = (TextView)curView.findViewById(R.id.tVMyTripMonth);
+        TextView tVTripDay = (TextView)curView.findViewById(R.id.tVMyTripDay);
         TextView tVTripTime = (TextView)curView.findViewById(R.id.tVMyTripTime);
+        TextView tVInterestedNum = (TextView)curView.findViewById(R.id.tVNumInterstedUsr);
 
 
         destinationMapView.animate().alpha(0.0f);
-        tVTripTitle.setText(curTrip.getDayOfWeek());
-        tVTripTime.setText(curTrip.getTime());
+        tVTripMonth.setText(curTrip.getMonth());
+        tVTripDay.setText(curTrip.getDay());
+        tVTripTime.setText("Departure time: " + curTrip.getTime());
+        tVInterestedNum.setText("" + curTrip.getNumInterested());
 
         DownloadImageTask dlImageTask = new DownloadImageTask();
 

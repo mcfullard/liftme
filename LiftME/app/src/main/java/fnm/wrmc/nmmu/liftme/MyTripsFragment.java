@@ -2,10 +2,12 @@ package fnm.wrmc.nmmu.liftme;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
@@ -39,6 +41,7 @@ public class MyTripsFragment extends Fragment {
     private List<Trip> trips;
     private Handler tripsHandler;
     private SwipeRefreshLayout myTripsSwipeRefresh;
+    private FloatingActionButton addTripFab;
 
     public MyTripsFragment() {
         // Required empty public constructor
@@ -52,6 +55,8 @@ public class MyTripsFragment extends Fragment {
 
         myTripsList =  (ListView)curView.findViewById(R.id.lVMyTrips);
         myTripsSwipeRefresh = (SwipeRefreshLayout)curView.findViewById(R.id.my_trips_swipe_refresh_layout);
+        addTripFab = (FloatingActionButton)curView.findViewById(R.id.fabAddTrip);
+
 
         return curView;
     }
@@ -63,6 +68,12 @@ public class MyTripsFragment extends Fragment {
         trips = new ArrayList<>();
         adapter = new MyTripsListAdapter(getContext(),trips);
         myTripsList.setAdapter(adapter);
+        addTripFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AddTripClick();
+            }
+        });
 
         tripsHandler = new Handler(){
             @Override
@@ -147,6 +158,11 @@ public class MyTripsFragment extends Fragment {
         if(callbackListener != null){
             callbackListener.onMyTripClick(trip);
         }
+    }
+
+    private void AddTripClick(){
+        Intent intent = new Intent(getContext(), LocationActivity.class);
+        startActivity(intent);
     }
 
 }

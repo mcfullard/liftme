@@ -13,6 +13,7 @@ public class Trip {
     private double destinationLat;
     private double destinationLong;
     private Timestamp pickupTime;
+    private int numInterested = 0;
 
     public Trip(){
 
@@ -64,5 +65,13 @@ public class Trip {
 
     public void setTripID(int tripID) {
         this.tripID = tripID;
+    }
+
+    public int getNumInterested() {
+        return numInterested;
+    }
+
+    public void setNumInterested(int numInterested) {
+        this.numInterested = numInterested;
     }
 }

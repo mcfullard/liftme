@@ -9,7 +9,7 @@
         android:id="@+id/cardViewMyTrip"
         android:layout_gravity="center"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="250dp"
         android:layout_margin="8dp"
         card_view:cardCornerRadius="8dp">
 
@@ -18,39 +18,129 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <ImageView
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:scaleType="centerCrop"
-                android:id="@+id/iVMyTripMap"
-                android:layout_gravity="center_horizontal"
-                android:layout_weight="4" />
-
             <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/colorPrimary"
+                android:contextClickable="false"
+                android:elevation="5dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:text="Some Title"
+                    android:id="@+id/tVMyTripMonth"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
+                    android:textColor="#ffffff"
+                    android:textStyle="bold"
+                    android:textSize="30sp"
+                    android:layout_alignParentTop="true"
+                    android:layout_toEndOf="@+id/space" />
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_centerVertical="true"
+                    android:layout_centerHorizontal="true"
+                    android:id="@+id/space" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:text="Some Title"
+                    android:id="@+id/tVMyTripDay"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
+                    android:textColor="#ffffff"
+                    android:textStyle="bold"
+                    android:textSize="30sp"
+                    android:layout_alignParentTop="true"
+                    android:layout_toStartOf="@+id/space" />
+
+            </RelativeLayout>
+
+            <LinearLayout
+                android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <TextView
+            </LinearLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="4">
+
+                <ImageView
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:scaleType="centerCrop"
+                    android:id="@+id/iVMyTripMap"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_weight="2" />
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:id="@+id/space2"
+                    android:layout_centerVertical="true"
+                    android:layout_centerHorizontal="true" />
+
+                <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:text="Some Title"
-                    android:id="@+id/tVMyTripTitle"
-                    android:layout_weight="1"
-                    android:layout_margin="5dp" />
+                    android:id="@+id/iVlocationPin"
+                    android:layout_alignBottom="@+id/space2"
+                    android:layout_centerHorizontal="true"
+                    android:src="@drawable/ic_place"
+                    android:tint="@color/colorAccent" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/iVInterested"
+                    android:src="@drawable/is_interested"
+                    android:tint="@color/colorAccent"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:text="Some Title"
-                    android:id="@+id/tVMyTripTime"
-                    android:layout_weight="4"
-                    android:layout_gravity="right"
-                    android:layout_below="@+id/tVMyTripTitle"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="0"
+                    android:id="@+id/tVNumInterstedUsr"
+                    android:layout_alignStart="@+id/iVInterested"
+                    android:layout_alignBottom="@+id/iVInterested"
                     android:layout_alignParentEnd="true"
-                    android:layout_margin="5dp" />
+                    android:layout_alignParentTop="true"
+                    android:layout_centerInParent="true"
+                    android:textAlignment="gravity"
+                    android:gravity="center_vertical|center_horizontal"
+                    android:textColor="#ffffff" />
             </RelativeLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="Some Title"
+                android:id="@+id/tVMyTripTime"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginEnd="69dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentEnd="true"
+                android:layout_margin="10dp" />
+
 
         </LinearLayout>
 

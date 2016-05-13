@@ -81,11 +81,11 @@ public abstract class TripDetailsFragment extends Fragment {
         mImageGenerator.setMonthSize(50);
 
         // Set the position of the date and month in dip.
-        mImageGenerator.setDatePosition(160);
+        mImageGenerator.setDatePosition(170);
         mImageGenerator.setMonthPosition(80);
 
         // Set the color of the font to be generated
-        mImageGenerator.setDateColor(Color.YELLOW);
+        mImageGenerator.setDateColor(getResources().getColor(R.color.colorAccent));
         mImageGenerator.setMonthColor(Color.WHITE);
 
 

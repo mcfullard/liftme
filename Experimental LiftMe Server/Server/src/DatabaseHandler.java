@@ -245,7 +245,7 @@ public class DatabaseHandler {
             PropertyManager pm = PropertyManager.getInstance();
             conn = DriverManager.getConnection(DB_URL, pm.getProperty("USER"), pm.getProperty("PASSWORD"));
 
-            String authSql = "SELECT * FROM trip WHERE userID = (SELECT userID FROM user WHERE authenticationToken = ?)";
+            String authSql = "SELECT curTrip.*, (SELECT COUNT(*) FROM interesteduser WHERE  interesteduser.tripID = curTrip.tripID) AS numinterested FROM trip AS curTrip WHERE curTrip.userID = (SELECT userID FROM user WHERE authenticationToken = ?);";
             stmt = conn.prepareStatement(authSql);
 
             stmt.setString(1, authKey);
@@ -261,6 +261,7 @@ public class DatabaseHandler {
                 curTrip.setDestinationLat(tripSet.getDouble("dropOffLat"));
                 curTrip.setDestinationLong(tripSet.getDouble("dropOffLong"));
                 curTrip.setPickupTime(tripSet.getTimestamp("pickUpTime"));
+                curTrip.setNumInterested(tripSet.getInt("numinterested"));
                 trips.add(curTrip);
             }
 
