@@ -20,4 +20,6 @@
     <string name="action_search">Search</string>
     <string name="set_pickup_location">Set as pickup location</string>
     <string name="set_destination_location">Set as destination</string>
+    <string name="title_activity_search_results">SearchResultsActivity</string>
+    <string name="confirm_trip_interest">Confirm trip interest</string>
 </resources>

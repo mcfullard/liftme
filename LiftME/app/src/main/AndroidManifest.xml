@@ -57,6 +57,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="fnm.wrmc.nmmu.liftme.DashboardActivity" />
         </activity>
+        <activity
+            android:name=".SearchResultsActivity"
+            android:label="@string/title_activity_search_results"
+            android:parentActivityName=".LocationActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="fnm.wrmc.nmmu.liftme.LocationActivity" />
+        </activity>
     </application>
 
 </manifest>

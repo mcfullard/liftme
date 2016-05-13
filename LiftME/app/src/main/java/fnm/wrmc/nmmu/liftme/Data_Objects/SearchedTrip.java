@@ -1,9 +1,11 @@
 package fnm.wrmc.nmmu.liftme.Data_Objects;
 
+import java.io.Serializable;
+
 /**
  * Created by Francois on 2016/05/08.
  */
-public class SearchedTrip extends Trip{
+public class SearchedTrip extends Trip implements Serializable {
 
     double distanceBetweenPickups;
     double distanceBetweenDropOffs;

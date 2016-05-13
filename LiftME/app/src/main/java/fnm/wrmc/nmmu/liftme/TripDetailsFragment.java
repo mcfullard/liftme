@@ -35,8 +35,6 @@ public abstract class TripDetailsFragment extends Fragment {
     protected Handler handler;
     protected Trip trip;
 
-
-
     public TripDetailsFragment() {
         // Required empty public constructor
     }
