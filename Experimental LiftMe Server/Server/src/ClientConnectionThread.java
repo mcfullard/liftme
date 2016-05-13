@@ -188,6 +188,7 @@ public class ClientConnectionThread extends Thread {
                     writeStream.writeDouble(curTrip.getDestinationLat());
                     writeStream.writeDouble(curTrip.getDestinationLong());
                     writeStream.writeLong(curTrip.getPickupTime().getTime());
+                    writeStream.writeInt(curTrip.getNumInterested());
                 }
 
             } else {

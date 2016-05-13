@@ -18,6 +18,7 @@ public class Trip implements Serializable {
     private double destinationLat;
     private double destinationLong;
     private Timestamp pickupTime;
+    private int numInterested = 0;
 
     public Trip(){
 
@@ -63,13 +64,21 @@ public class Trip implements Serializable {
         this.destinationLong = destinationLong;
     }
 
-    public String getDayOfWeek(){
+    public String getMonth(){
         if(pickupTime == null){
             return "";
         }
-
         SimpleDateFormat formatter = new SimpleDateFormat(
-                "EEEE");
+                "MMM");
+        return formatter.format(pickupTime);
+    }
+
+    public String getDay(){
+        if(pickupTime == null){
+            return "";
+        }
+        SimpleDateFormat formatter = new SimpleDateFormat(
+                "dd");
         return formatter.format(pickupTime);
     }
 
@@ -80,6 +89,16 @@ public class Trip implements Serializable {
 
         SimpleDateFormat formatter = new SimpleDateFormat(
                 "HH:mm");
+        return formatter.format(pickupTime);
+    }
+
+    public String getDayOfWeek(){
+        if(pickupTime == null){
+            return "";
+        }
+
+        SimpleDateFormat formatter = new SimpleDateFormat(
+                "EEEE");
         return formatter.format(pickupTime);
     }
 
@@ -105,4 +124,11 @@ public class Trip implements Serializable {
         return new Timestamp(a.getTime() + milliseconds);
     }
 
+    public int getNumInterested() {
+        return numInterested;
+    }
+
+    public void setNumInterested(int numInterested) {
+        this.numInterested = numInterested;
+    }
 }
