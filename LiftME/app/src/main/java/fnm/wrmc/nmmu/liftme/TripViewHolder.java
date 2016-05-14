@@ -9,6 +9,7 @@ import android.widget.TextView;
  * Created by minnaar on 2016/05/14.
  */
 public class TripViewHolder extends RecyclerView.ViewHolder {
+    public boolean interested = false;
     public TextView title;
     public TextView subTitle1;
     public TextView subTitle2;
@@ -27,20 +28,25 @@ public class TripViewHolder extends RecyclerView.ViewHolder {
         textArea.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                listener.onTextAreaClicked(v);
+                listener.onTextAreaClicked(v, getLayoutPosition());
             }
         });
         star.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                listener.onStarClicked(v);
+                if(interested)
+                    star.setBackgroundResource(R.drawable.ic_action_star_0);
+                else
+                    star.setBackgroundResource(R.drawable.ic_action_star_10);
+                interested = !interested;
+                listener.onStarClicked(v, getLayoutPosition());
             }
         });
     }
 
     public interface TripClickedListener {
-        public void onTextAreaClicked(View caller);
-        public void onStarClicked(View caller);
+        public void onTextAreaClicked(View caller, int pos);
+        public void onStarClicked(View caller, int pos);
     }
 
 }
