@@ -488,4 +488,46 @@ public class DatabaseHandler {
         return distance;
     }
 
+    static boolean DeleteTrip(String authKey,int tripID){
+        writeLock.lock();
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        User userObj = null;
+        boolean deleteSuccess = false;
+
+        try{
+
+            Class.forName("com.mysql.jdbc.Driver");
+            System.out.println("Connecting to database to delete trip for " + authKey + " tripID " + tripID + ".");
+            PropertyManager pm = PropertyManager.getInstance();
+            conn = DriverManager.getConnection(DB_URL, pm.getProperty("USER"), pm.getProperty("PASSWORD"));
+
+            String deleteTripSQL = "DELETE FROM trip WHERE tripID = ? AND userID = (SELECT userID FROM user WHERE authenticationToken = ?);";
+            stmt = conn.prepareStatement(deleteTripSQL);
+
+            stmt.setInt(1,tripID);
+            stmt.setString(2, authKey);
+
+            int resultCount = stmt.executeUpdate();
+
+            if(resultCount > 0){
+                deleteSuccess = true;
+            }
+
+            stmt.close();
+            conn.close();
+
+        }catch(SQLException e){
+            System.out.println("SQL error occurred whilst deleting trip " + tripID + " .");
+            System.out.println(e);
+        }catch(Exception e){
+            System.out.println("Unexpected error occurred whilst deleting trip " + tripID  + " .");
+            System.out.println(e);
+        }
+        finally {
+            writeLock.unlock();
+        }
+        return deleteSuccess;
+    }
+
 }

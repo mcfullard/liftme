@@ -42,6 +42,7 @@ public class ServerConnection {
     public static final String GET_INTERESTED_USERS = "#GET_INTERESTED_USERS";
     public static final String INTERESTED_USER_TOGGLE = "#INTERESTED_USER_TOGGLE";
     public static final String SEARCH_TRIPS = "#SEARCH_TRIPS";
+    public static final String DELETE_TRIP = "#DELETE_TRIP";
 
     public static final String STATUS_SUCCESS = "#SUCCESS";
     public static final String STATUS_FAILED = "#FAILED";
@@ -53,8 +54,9 @@ public class ServerConnection {
     public static final int GET_ADDRESS_TASK = 5;
     public static final int TOGGLE_INTERESTED_USER_TASK = 6;
     public static final int SEARCH_TRIPS_TASK = 7;
+    public static final int DELETE_TRIP_TASK = 8;
 
-    private static final String SERVER_IP = "10.0.0.104";
+    private static final String SERVER_IP = "192.168.1.65";
     private static final int SERVER_PORT = 5050;
     private static final int CONNECTION_TIMEOUT = 5000;
 
@@ -735,6 +737,67 @@ public class ServerConnection {
 
             public void HandleSearchTripsTask() {
                 handler.obtainMessage(SEARCH_TRIPS_TASK, this).sendToTarget();
+            }
+        }
+
+    }
+
+    static class DeleteTripRunner implements Runnable {
+
+        DeleteTripTask deleteTripTask;
+
+        public DeleteTripRunner(DeleteTripTask deleteTripTask) {
+            this.deleteTripTask = deleteTripTask;
+        }
+
+        @Override
+        public void run() {
+            Socket socket = null;
+
+            try {
+                socket = new Socket();
+                socket.connect(new InetSocketAddress(SERVER_IP, SERVER_PORT), CONNECTION_TIMEOUT);
+
+                DataOutputStream writeStream = new DataOutputStream(socket.getOutputStream());
+                DataInputStream readStream = new DataInputStream(socket.getInputStream());
+
+                writeStream.writeUTF(DELETE_TRIP);
+                writeStream.writeUTF(deleteTripTask.authKey);
+                writeStream.writeInt(deleteTripTask.tripID);
+                writeStream.flush();
+
+                deleteTripTask.authStatus = readStream.readUTF();
+
+                writeStream.writeUTF(QUIT_MESSAGE);
+
+                writeStream.close();
+                readStream.close();
+                socket.close();
+
+
+            } catch (IOException e) {
+                Log.e("Comms | GetTrips", "Error Getting posted trips.");
+                e.printStackTrace();
+            }
+
+            deleteTripTask.HandleDeleteTripTask();
+        }
+
+        public static class DeleteTripTask {
+
+            public String authKey;
+            public String authStatus = AUTHENTICATION_INCOMPLETE;
+            private Handler handler;
+            public int tripID;
+
+            public DeleteTripTask(String authKey,int tripID,  Handler handler) {
+                this.authKey = authKey;
+                this.handler = handler;
+                this.tripID = tripID;
+            }
+
+            public void HandleDeleteTripTask() {
+                handler.obtainMessage(DELETE_TRIP_TASK, this).sendToTarget();
             }
         }
 

@@ -24,6 +24,7 @@ public class ClientConnectionThread extends Thread {
     private final String GET_INTERESTED_USERS = "#GET_INTERESTED_USERS";
     private final String INTERESTED_USER_TOGGLE = "#INTERESTED_USER_TOGGLE";
     private final String SEARCH_TRIPS = "#SEARCH_TRIPS";
+    private final String DELETE_TRIP = "#DELETE_TRIP";
 
     public ClientConnectionThread(mainServer theServer, Socket newSocket) {
         this.theServer = theServer;
@@ -63,6 +64,9 @@ public class ClientConnectionThread extends Thread {
                         break;
                     case SEARCH_TRIPS:
                         SearchTrips();
+                        break;
+                    case DELETE_TRIP:
+                        DeleteTrip();
                         break;
                 }
 
@@ -285,5 +289,24 @@ public class ClientConnectionThread extends Thread {
         }
     }
 
+    private void DeleteTrip() {
+        try {
+
+            String authKey = readStream.readUTF();
+            int tripID = readStream.readInt();
+
+            boolean successfulDelete = DatabaseHandler.DeleteTrip(authKey, tripID);
+
+            if (successfulDelete) {
+                writeStream.writeUTF(AUTHENTICATION_SUCCESS);
+            } else {
+                writeStream.writeUTF(AUTHENTICATION_FAIL);
+            }
+            writeStream.flush();
+            System.out.println("CLIENT THREAD : Deleting trip " + tripID);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 }
