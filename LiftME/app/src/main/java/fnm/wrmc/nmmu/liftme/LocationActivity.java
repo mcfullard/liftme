@@ -124,6 +124,8 @@ public class LocationActivity extends AppCompatActivity implements
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                userTrip.setDestinationLat(locationMarker.getPosition().latitude);
+                userTrip.setDestinationLong(locationMarker.getPosition().longitude);
                 Intent intent = new Intent(LocationActivity.this, SearchResultsActivity.class);
                 intent.putExtra("TRIP", userTrip);
                 startActivity(intent);
@@ -273,7 +275,8 @@ public class LocationActivity extends AppCompatActivity implements
                     }
                     break;
                 case 2:
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(userTrip.getPickupLat(), userTrip.getPickupLong()), 17));
+                    LatLng latLng = new LatLng(userTrip.getPickupLat(), userTrip.getPickupLong());
+                    panAndZoomCam(latLng);
                     break;
             }
         }
@@ -281,14 +284,13 @@ public class LocationActivity extends AppCompatActivity implements
 
     // method to move camera
     private void panAndZoomCam(LatLng latLng) {
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 13));
         CameraPosition cameraPosition = new CameraPosition.Builder()
             .target(latLng)
-            .zoom(17)
             .bearing(0)
             .tilt(30)
+            .zoom(17)
             .build();
-        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        mMap.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
 
 

@@ -7,14 +7,20 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.model.LatLng;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,13 +32,15 @@ import fnm.wrmc.nmmu.liftme.ServerConnection.SearchTripsRunner;
 import fnm.wrmc.nmmu.liftme.ServerConnection.SearchTripsRunner.SearchTripsTask;
 
 public class SearchResultsActivity extends AppCompatActivity
-    implements TripViewHolder.TripClickedListener
+    implements MatchedTripViewHolder.TripClickedListener
 {
 
     private static final int SEARCH_TOLERANCE_KM = 2;
     private Map<Integer, Integer> interestedTripIds = new HashMap<>();
     private Trip userTrip;
     private Handler searchResultsHandler;
+    private TextView userTripTitle;
+    private CardView matchedTripsCard;
     private List<SearchedTrip> matchingTrips = new ArrayList<>();
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
@@ -42,6 +50,8 @@ public class SearchResultsActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_results);
+        userTripTitle = (TextView) findViewById(R.id.user_trip_title);
+        matchedTripsCard = (CardView) findViewById(R.id.matched_trips_card);
         mRecyclerView = (RecyclerView) findViewById(R.id.search_results_recycler);
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(this);
@@ -63,6 +73,9 @@ public class SearchResultsActivity extends AppCompatActivity
                             case ServerConnection.AUTHENTICATION_SUCCESS:
                                 matchingTrips.addAll(task.searchedTripResults);
                                 break;
+                            case ServerConnection.AUTHENTICATION_FAIL:
+                                matchedTripsCard.setVisibility(View.INVISIBLE);
+                                break;
                         }
                         break;
                     default:
@@ -82,6 +95,22 @@ public class SearchResultsActivity extends AppCompatActivity
             Bundle extras = intent.getExtras();
             if(extras != null) {
                 userTrip = (Trip) extras.getSerializable("TRIP");
+                if(userTrip != null) {
+                    String pickupString = "", dropoffString = "";
+                    try {
+                        List<String> pickupAddress = LocationActivity.getAddressFromLatLng(this,
+                                new LatLng(userTrip.getPickupLat(), userTrip.getPickupLong())
+                        );
+                        pickupString = pickupAddress.get(0);
+                        List<String> dropoffAddress = LocationActivity.getAddressFromLatLng(this,
+                                new LatLng(userTrip.getDestinationLat(), userTrip.getDestinationLong())
+                        );
+                        dropoffString = dropoffAddress.get(0);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    userTripTitle.setText(String.format("%s to %s", pickupString, dropoffString));
+                }
             }
         }
     }

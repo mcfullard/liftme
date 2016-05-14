@@ -10,18 +10,14 @@ import android.view.ViewGroup;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import fnm.wrmc.nmmu.liftme.Data_Objects.SearchedTrip;
 
 /**
  * Created by minnaar on 2016/05/13.
  */
-public class SearchResultsAdapter extends RecyclerView.Adapter<TripViewHolder>
+public class SearchResultsAdapter extends RecyclerView.Adapter<MatchedTripViewHolder>
 {
     private Context context;
     private List<SearchedTrip> matchingTrips;
@@ -32,21 +28,21 @@ public class SearchResultsAdapter extends RecyclerView.Adapter<TripViewHolder>
     }
 
     @Override
-    public TripViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.searched_trip_holder, parent, false);
-        TripViewHolder.TripClickedListener listener = null;
+    public MatchedTripViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.matched_trip_holder, parent, false);
+        MatchedTripViewHolder.TripClickedListener listener = null;
         try {
-            listener = (TripViewHolder.TripClickedListener) context;
+            listener = (MatchedTripViewHolder.TripClickedListener) context;
         } catch (ClassCastException e) {
             e.printStackTrace();
         }
-        TripViewHolder vh = new TripViewHolder(v, listener);
+        MatchedTripViewHolder vh = new MatchedTripViewHolder(v, listener);
         return vh;
     }
 
     // Replace the contents of a view (invoked by the layout manager)
     @Override
-    public void onBindViewHolder(TripViewHolder holder, int position) {
+    public void onBindViewHolder(MatchedTripViewHolder holder, int position) {
         // change the views based on the position in the matchedTrips list
         SearchedTrip trip = matchingTrips.get(position);
         String pickupAddress = "", dropoffAddress = "";

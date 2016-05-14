@@ -8,7 +8,7 @@ import android.widget.TextView;
 /**
  * Created by minnaar on 2016/05/14.
  */
-public class TripViewHolder extends RecyclerView.ViewHolder {
+public class MatchedTripViewHolder extends RecyclerView.ViewHolder {
     public boolean interested = false;
     public TextView title;
     public TextView subTitle1;
@@ -17,7 +17,7 @@ public class TripViewHolder extends RecyclerView.ViewHolder {
     public View textArea;
     private TripClickedListener listener;
 
-    public TripViewHolder(View holder, final TripClickedListener listener) {
+    public MatchedTripViewHolder(View holder, final TripClickedListener listener) {
         super(holder);
         this.listener = listener;
         title = (TextView) holder.findViewById(R.id.tripTitle);
