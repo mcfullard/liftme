@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.List;
@@ -22,9 +23,15 @@ import fnm.wrmc.nmmu.liftme.Data_Objects.User;
 public class InterestedUsersListAdapter extends RecyclerView.Adapter<InterestedUsersListAdapter.InterestedUserHolder> {
 
     private List<User> interestedUsers;
+    private IInterestedUserCallback listener;
 
-    public InterestedUsersListAdapter(List<User> interestedUsers) {
+    public interface IInterestedUserCallback{
+        void onUserClicked(User clickedUser);
+    }
+
+    public InterestedUsersListAdapter(List<User> interestedUsers,IInterestedUserCallback listener) {
         this.interestedUsers = interestedUsers;
+        this.listener = listener;
     }
 
     @Override
@@ -35,7 +42,7 @@ public class InterestedUsersListAdapter extends RecyclerView.Adapter<InterestedU
 
         //view.setOnClickListener(MainActivity.myOnClickListener);
 
-        InterestedUserHolder interestedUserHolder = new InterestedUserHolder(view);
+        InterestedUserHolder interestedUserHolder = new InterestedUserHolder(view,listener);
         return interestedUserHolder;
     }
 
@@ -46,9 +53,11 @@ public class InterestedUsersListAdapter extends RecyclerView.Adapter<InterestedU
         TextView userEmail = holder.userEmail;
         TextView userPhone = holder.userPhone;
         TextView firstLetter = holder.firstLetter;
+        View divider = holder.divider;
         ImageView iVCircleImage = holder.iVCircleImage;
 
         User curUser = interestedUsers.get(listPosition);
+        holder.user = curUser;
 
         firstLetter.setText("" + curUser.getName().charAt(0));
         iVCircleImage.setBackgroundTintList(ColorStateList.valueOf(RandomColor()));
@@ -64,6 +73,12 @@ public class InterestedUsersListAdapter extends RecyclerView.Adapter<InterestedU
             userPhone.setText("No Phone number.");
         }else{
             userPhone.setText(curUser.getContactNum());
+        }
+
+        if(listPosition == interestedUsers.size() - 1){
+            divider.setVisibility(View.INVISIBLE);
+        }else{
+            divider.setVisibility(View.VISIBLE);
         }
     }
 
@@ -92,21 +107,38 @@ public class InterestedUsersListAdapter extends RecyclerView.Adapter<InterestedU
         return interestedUsers.size();
     }
 
-    public static class InterestedUserHolder extends RecyclerView.ViewHolder {
+    public static class InterestedUserHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         TextView userName;
         TextView userEmail;
         TextView userPhone;
         TextView firstLetter;
         ImageView iVCircleImage;
+        RelativeLayout rLayout;
+        View divider;
+        User user;
 
-        public InterestedUserHolder(View itemView) {
+        IInterestedUserCallback listener;
+
+        public InterestedUserHolder(View itemView,IInterestedUserCallback listener) {
             super(itemView);
             this.userName = (TextView) itemView.findViewById(R.id.tVInterestedUserName);
             this.userEmail = (TextView) itemView.findViewById(R.id.tVInterestedUserEmail);
             this.userPhone = (TextView) itemView.findViewById(R.id.tVInterestedUserPhone);
             this.firstLetter = (TextView) itemView.findViewById(R.id.tVFirstLetter);
             this.iVCircleImage = (ImageView) itemView.findViewById(R.id.iVInterestedCircle);
+            this.rLayout = (RelativeLayout) itemView.findViewById(R.id.rLInterestedUsrLayout);
+            this.divider = itemView.findViewById(R.id.interestedUserDividor);
+            rLayout.setOnClickListener(this);
+            this.listener = listener;
+        }
+
+
+        @Override
+        public void onClick(View v) {
+            if(user != null && listener != null){
+                listener.onUserClicked(user);
+            }
         }
     }
 }
