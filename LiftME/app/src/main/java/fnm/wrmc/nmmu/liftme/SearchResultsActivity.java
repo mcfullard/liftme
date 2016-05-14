@@ -6,37 +6,34 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import com.google.android.gms.common.GoogleApiAvailability;
-import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
-import com.google.android.gms.common.GooglePlayServicesRepairableException;
-import com.google.android.gms.location.places.ui.PlaceAutocomplete;
-
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import fnm.wrmc.nmmu.liftme.Data_Objects.SearchedTrip;
 import fnm.wrmc.nmmu.liftme.Data_Objects.Trip;
 import fnm.wrmc.nmmu.liftme.ServerConnection.SearchTripsRunner;
 import fnm.wrmc.nmmu.liftme.ServerConnection.SearchTripsRunner.SearchTripsTask;
 
-public class SearchResultsActivity extends AppCompatActivity {
+public class SearchResultsActivity extends AppCompatActivity
+    implements TripViewHolder.TripClickedListener
+{
 
     private static final int SEARCH_TOLERANCE_KM = 2;
-
+    private Map<Integer, Integer> interestedTripIds = new HashMap<>();
     private Trip userTrip;
     private Handler searchResultsHandler;
-    private List<SearchedTrip> matchingTrips;
+    private List<SearchedTrip> matchingTrips = new ArrayList<>();
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
@@ -49,7 +46,7 @@ public class SearchResultsActivity extends AppCompatActivity {
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
-        mAdapter = new SearchResultsAdapter(matchingTrips);
+        mAdapter = new SearchResultsAdapter(matchingTrips, this);
         mRecyclerView.setAdapter(mAdapter);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -64,7 +61,7 @@ public class SearchResultsActivity extends AppCompatActivity {
                         SearchTripsTask task = (SearchTripsTask) msg.obj;
                         switch(task.authStatus) {
                             case ServerConnection.AUTHENTICATION_SUCCESS:
-                                matchingTrips = task.searchedTripResults;
+                                matchingTrips.addAll(task.searchedTripResults);
                                 break;
                         }
                         break;
@@ -130,4 +127,17 @@ public class SearchResultsActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onTextAreaClicked(View caller, int pos) {
+
+    }
+
+    @Override
+    public void onStarClicked(View caller, int pos) {
+        if(interestedTripIds.containsKey(pos)) {
+            interestedTripIds.remove(pos);
+        } else {
+            interestedTripIds.put(pos, matchingTrips.get(pos).getTripID());
+        }
+    }
 }
