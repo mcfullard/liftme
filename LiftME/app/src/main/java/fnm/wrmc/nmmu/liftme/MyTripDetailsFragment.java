@@ -3,6 +3,9 @@ package fnm.wrmc.nmmu.liftme;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +14,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import fnm.wrmc.nmmu.liftme.Data_Objects.Trip;
 import fnm.wrmc.nmmu.liftme.Data_Objects.User;
@@ -23,7 +27,9 @@ public class MyTripDetailsFragment extends TripDetailsFragment {
     public static final String FRAG_IDENTIFYER = "fnm.wrmc.nmmu.liftme.MyTripDetailsFragment";
 
     private InterestedUsersListAdapter adapter;
-    private ListView lVinterestedUser;
+    private RecyclerView rVinterestedUser;
+    private RecyclerView.LayoutManager interestedUserslayoutManager;
+    private List<User> interestedUsers;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -44,12 +50,7 @@ public class MyTripDetailsFragment extends TripDetailsFragment {
         detailImage = (ImageView) curView.findViewById(R.id.iVMyTripDetailsImage);
         tVPUDetails = (TextView) curView.findViewById(R.id.tVPickupDescription);
         tVDesDetails = (TextView) curView.findViewById(R.id.tVDestinationDescription);
-
-
-        adapter = new InterestedUsersListAdapter(getContext(), (new ArrayList<User>()));
-        lVinterestedUser = (ListView) curView.findViewById(R.id.lvTripDetailsInterestedUsers);
-        lVinterestedUser.setAdapter(adapter);
-
+        rVinterestedUser = (RecyclerView)curView.findViewById(R.id.rVTripDetailsInterestedUsers);
 
         handler = new Handler() {
             @Override
@@ -95,9 +96,22 @@ public class MyTripDetailsFragment extends TripDetailsFragment {
         return curView;
     }
 
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        interestedUserslayoutManager = new LinearLayoutManager(getContext());
+        rVinterestedUser.setLayoutManager(interestedUserslayoutManager);
+        rVinterestedUser.setItemAnimator(new DefaultItemAnimator());
+
+        interestedUsers = new ArrayList<>();
+        adapter = new InterestedUsersListAdapter(interestedUsers);
+        rVinterestedUser.setAdapter(adapter);
+
+    }
+
     private void OnInterestedUsersSuccess(ServerConnection.GetInterestedUsersRunner.GetInterestedUsersTask IUTask){
-        adapter.clear();
-        adapter.addAll(IUTask.interestedUsers);
+        interestedUsers.addAll(IUTask.interestedUsers);
+        adapter.notifyDataSetChanged();
     }
 
     private void RetrieveInterestedUsers(){

@@ -131,7 +131,7 @@
 
                 <android.support.v7.widget.CardView
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="fill_parent"
                     android:paddingTop="10dp"
                     app:cardUseCompatPadding="true">
 
@@ -149,12 +149,11 @@
                             android:text="Interested Users"
                             android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
 
-                        <ListView
-                            android:layout_width="match_parent"
-                            android:layout_height="300dp"
-                            android:id="@+id/lvTripDetailsInterestedUsers"
-                            android:layout_gravity="center_horizontal"
-                            android:nestedScrollingEnabled="true"/>
+                        <android.support.v7.widget.RecyclerView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/rVTripDetailsInterestedUsers"
+                            android:layout_gravity="center_horizontal" />
 
 
                     </LinearLayout>
