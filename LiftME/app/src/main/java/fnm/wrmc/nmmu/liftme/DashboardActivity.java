@@ -91,12 +91,15 @@ public class DashboardActivity extends AppCompatActivity implements
             case "fnm.wrmc.nmmu.liftme.MyTripDetailsFragment":
                 newFragment = new MyTripDetailsFragment();
                 break;
+            case "fnm.wrmc.nmmu.liftme.MyInterestedTripsFragment":
+                newFragment = new MyInterestedTripsFragment();
+                break;
             case "fnm.wrmc.nmmu.liftme.ViewTripDetails":
                 newFragment = new ViewTripDetails();
                 break;
             case "fnm.wrmc.nmmu.liftme.MyTripsFragment":
             default:
-                newFragment = new MyInterestedTripsFragment();
+                newFragment = new MyTripsFragment();
         }
 
         if (fragmentArguments != null) {

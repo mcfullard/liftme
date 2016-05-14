@@ -95,6 +95,7 @@ public class ViewTripDetails extends TripDetailsFragment {
 
         RetrieveAddressFromLatLong();
         GenerateImage();
+        DisplayDistances();
 
         return curView;
 
