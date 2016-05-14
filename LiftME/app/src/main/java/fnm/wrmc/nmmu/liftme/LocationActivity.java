@@ -3,12 +3,15 @@ package fnm.wrmc.nmmu.liftme;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Criteria;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat.OnRequestPermissionsResultCallback;
 import android.os.Bundle;
@@ -47,6 +50,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import fnm.wrmc.nmmu.liftme.Data_Objects.SearchedTrip;
 import fnm.wrmc.nmmu.liftme.Data_Objects.Trip;
 import fnm.wrmc.nmmu.liftme.Utilities.PermissionUtils;
 
@@ -107,7 +111,7 @@ public class LocationActivity extends AppCompatActivity implements
         mapFragment.getMapAsync(this);
     }
 
-    private View.OnClickListener gettLocationListenerPickup() {
+    private View.OnClickListener getLocationListenerPickup() {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -120,8 +124,9 @@ public class LocationActivity extends AppCompatActivity implements
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // intent to store user trip and move to search result list activity
-                Toast.makeText(LocationActivity.this, userTrip.getTime(), Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(LocationActivity.this, SearchResultsActivity.class);
+                intent.putExtra("TRIP", userTrip);
+                startActivity(intent);
             }
         };
     }
@@ -149,7 +154,7 @@ public class LocationActivity extends AppCompatActivity implements
             case 1:
             default:
                 toolbar.setTitle("Pickup");
-                setLocationButton.setOnClickListener(gettLocationListenerPickup());
+                setLocationButton.setOnClickListener(getLocationListenerPickup());
                 break;
         }
     }
