@@ -24,13 +24,15 @@ import android.widget.Toast;
 
 import java.io.Serializable;
 
+import fnm.wrmc.nmmu.liftme.Data_Objects.SearchedTrip;
 import fnm.wrmc.nmmu.liftme.Data_Objects.Trip;
 
 public class DashboardActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener,
         MyTripsFragment.IMyTripsCallback,
         MyTripDetailsFragment.IMyTripsDetailsCallback,
-        UserProfileFragment.AcceptChangeClickListener {
+        UserProfileFragment.AcceptChangeClickListener,
+        MyInterestedTripsFragment.IMyinterstedTripsCallback{
 
     static public String USER_PROFILE_FRAGMENT = "fnm.wrmc.nmmu.liftme.UserProfileFragment";
     private int currentMenuResource = R.menu.dashboard;
@@ -89,9 +91,12 @@ public class DashboardActivity extends AppCompatActivity implements
             case "fnm.wrmc.nmmu.liftme.MyTripDetailsFragment":
                 newFragment = new MyTripDetailsFragment();
                 break;
+            case "fnm.wrmc.nmmu.liftme.ViewTripDetails":
+                newFragment = new ViewTripDetails();
+                break;
             case "fnm.wrmc.nmmu.liftme.MyTripsFragment":
             default:
-                newFragment = new MyTripsFragment();
+                newFragment = new MyInterestedTripsFragment();
         }
 
         if (fragmentArguments != null) {
@@ -234,4 +239,11 @@ public class DashboardActivity extends AppCompatActivity implements
     }
 
 
+    @Override
+    public void onMyInterestedTripClick(Trip clickedTrip) {
+        Bundle B = new Bundle();
+        B.putSerializable(TripDetailsFragment.ARG_TRIP, ((Serializable) new SearchedTrip(clickedTrip,0,0)));
+        Fragment newFragment = getFragmentFromContext(ViewTripDetails.FRAG_IDENTIFYER, B);
+        AddFragmentToContainer(R.id.container, newFragment);
+    }
 }
