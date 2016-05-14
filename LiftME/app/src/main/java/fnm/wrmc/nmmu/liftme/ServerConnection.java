@@ -54,7 +54,7 @@ public class ServerConnection {
     public static final int TOGGLE_INTERESTED_USER_TASK = 6;
     public static final int SEARCH_TRIPS_TASK = 7;
 
-    private static final String SERVER_IP = "192.168.1.64";
+    private static final String SERVER_IP = "10.0.0.104";
     private static final int SERVER_PORT = 5050;
     private static final int CONNECTION_TIMEOUT = 5000;
 
