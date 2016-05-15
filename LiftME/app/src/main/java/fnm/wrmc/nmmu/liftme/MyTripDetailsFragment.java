@@ -31,7 +31,7 @@ import fnm.wrmc.nmmu.liftme.Data_Objects.User;
  */
 public class MyTripDetailsFragment extends TripDetailsFragment implements InterestedUsersListAdapter.IInterestedUserCallback{
 
-    public static final String FRAG_IDENTIFYER = "fnm.wrmc.nmmu.liftme.MyTripDetailsFragment";
+    public static final String FRAG_IDENTIFIER = "fnm.wrmc.nmmu.liftme.MyTripDetailsFragment";
 
     private InterestedUsersListAdapter adapter;
     private RecyclerView rVinterestedUser;

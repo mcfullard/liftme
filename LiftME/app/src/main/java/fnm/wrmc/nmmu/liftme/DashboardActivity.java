@@ -1,16 +1,12 @@
 package fnm.wrmc.nmmu.liftme;
 
-import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -19,8 +15,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.DatePicker;
-import android.widget.Toast;
 
 import java.io.Serializable;
 
@@ -208,7 +202,7 @@ public class DashboardActivity extends AppCompatActivity implements
     public void onMyTripClick(Trip clickedTrip) {
         Bundle B = new Bundle();
         B.putSerializable(TripDetailsFragment.ARG_TRIP, ((Serializable) clickedTrip));
-        Fragment newFragment = getFragmentFromContext(MyTripDetailsFragment.FRAG_IDENTIFYER, B);
+        Fragment newFragment = getFragmentFromContext(MyTripDetailsFragment.FRAG_IDENTIFIER, B);
         AddFragmentToContainer(R.id.container, newFragment);
     }
 

@@ -25,7 +25,6 @@ public class ViewTripDetails extends TripDetailsFragment {
     public static final String FRAG_IDENTIFYER = "fnm.wrmc.nmmu.liftme.ViewTripDetails";
 
     private SearchedTrip searchedTrip;
-    private FloatingActionButton fabInterestedToggle;
     private TextView tVPickUpDistance, tVDestinationDistance;
 
     @Override
@@ -49,14 +48,6 @@ public class ViewTripDetails extends TripDetailsFragment {
         tVPickUpDistance = (TextView) curView.findViewById(R.id.tvPickUpDistance);
         tVDestinationDistance = (TextView) curView.findViewById(R.id.tVDestinationDistance);
 
-        fabInterestedToggle = (FloatingActionButton)curView.findViewById(R.id.fab);
-        fabInterestedToggle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                OnInterestedUserToggle();
-            }
-        });
-
         handler = new Handler() {
             @Override
             public void handleMessage(Message inputMessage) {
@@ -72,23 +63,9 @@ public class ViewTripDetails extends TripDetailsFragment {
                                 break;
                         }
                         break;
-                    case ServerConnection.TOGGLE_INTERESTED_USER_TASK:
-                        ServerConnection.ToggleInterestedUserRunner.ToggleInterestedUserTask tglTask = (ServerConnection.ToggleInterestedUserRunner.ToggleInterestedUserTask) inputMessage.obj;
-                        switch (tglTask.authStatus) {
-                            case ServerConnection.AUTHENTICATION_SUCCESS:
-                                OnInterestedUserToggleSuccess(tglTask);
-                                break;
-                            case ServerConnection.AUTHENTICATION_FAIL:
-                                OnRetrieveFailure("Unable to authenticate you. Are you logged in?");
-                                break;
-                            case ServerConnection.AUTHENTICATION_INCOMPLETE:
-                                OnRetrieveFailure("Could not connect to server. Please check internet connection and try again.");
-                                break;
-                        }
                     default:
                         super.handleMessage(inputMessage);
                         break;
-
                 }
             }
         };
@@ -113,31 +90,5 @@ public class ViewTripDetails extends TripDetailsFragment {
         }else{
             tVDestinationDistance.setText(searchedTrip.getDistanceBetweenDropOffs() + " km from desired destination.");
         }
-    }
-
-
-
-    private void OnInterestedUserToggleSuccess(ServerConnection.ToggleInterestedUserRunner.ToggleInterestedUserTask tglTask){
-        if(tglTask.toggleStatus == 2) {
-            fabInterestedToggle.setBackgroundColor(Color.GRAY);
-            fabInterestedToggle.setImageResource(R.drawable.is_interested);
-        }else{
-            fabInterestedToggle.setBackgroundColor(getResources().getColor(R.color.colorAccent));
-            fabInterestedToggle.setImageResource(R.drawable.not_interested);
-        }
-    }
-
-    private void OnInterestedUserToggle(){
-        SharedPreferences sharedPref = getActivity().getSharedPreferences("GlobalPref", Context.MODE_PRIVATE);
-        String authKey = sharedPref.getString(ServerConnection.AUTHENTICATION_TOKEN,"");
-
-        if(authKey.isEmpty()){
-            OnRetrieveFailure("You never logged in previously. Please login.");
-            return;
-        }
-
-        ServerConnection.ToggleInterestedUserRunner.ToggleInterestedUserTask tglTask = new ServerConnection.ToggleInterestedUserRunner.ToggleInterestedUserTask(authKey,trip.getTripID(),handler);
-        Thread tglThread = new Thread(new ServerConnection.ToggleInterestedUserRunner(tglTask));
-        tglThread.start();
     }
 }

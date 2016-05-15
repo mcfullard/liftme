@@ -269,18 +269,18 @@ public class ClientConnectionThread extends Thread {
     private void InterestedUserToggle() {
         try {
             String authKey = readStream.readUTF();
-            int tripID = readStream.readInt();
-
-            int interestedUsers = DatabaseHandler.InterestedUserToggle(authKey, tripID);
-
-            if (interestedUsers != 0) {
+            User user = DatabaseHandler.GetUserDetails(authKey);
+            if(user != null) {
                 writeStream.writeUTF(AUTHENTICATION_SUCCESS);
-                writeStream.writeInt(interestedUsers);
+                int listSize = readStream.readInt();
+                for (int i = 0; i < listSize; i++) {
+                    DatabaseHandler.InterestedUserToggle(authKey, readStream.readInt());
+                }
             } else {
                 writeStream.writeUTF(AUTHENTICATION_FAIL);
             }
             writeStream.flush();
-            System.out.println("CLIENT THREAD : Getting interested users for tripID " + tripID);
+            System.out.println("CLIENT THREAD : Getting toggling user interest");
         } catch (IOException e) {
             e.printStackTrace();
         }

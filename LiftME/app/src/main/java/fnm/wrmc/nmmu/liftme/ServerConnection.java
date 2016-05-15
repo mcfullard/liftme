@@ -16,6 +16,7 @@ import java.net.Socket;
 import java.net.URL;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
@@ -608,23 +609,21 @@ public class ServerConnection {
 
                 writeStream.writeUTF(INTERESTED_USER_TOGGLE);
                 writeStream.writeUTF(toggleInterestedUserTask.authKey);
-                writeStream.writeInt(toggleInterestedUserTask.tripID);
                 writeStream.flush();
-
                 toggleInterestedUserTask.authStatus = readStream.readUTF();
-                if(toggleInterestedUserTask.authStatus.equals(AUTHENTICATION_SUCCESS)){
-                    toggleInterestedUserTask.toggleStatus = readStream.readInt();
+                if(toggleInterestedUserTask.authStatus.equals(AUTHENTICATION_SUCCESS)) {
+                    writeStream.writeInt(toggleInterestedUserTask.tripIDs.size());
+                    for (int tripID : toggleInterestedUserTask.tripIDs) {
+                        writeStream.writeUTF(String.valueOf(tripID));
+                    }
+                    writeStream.flush();
                 }
-
                 writeStream.writeUTF(QUIT_MESSAGE);
-
                 writeStream.close();
                 readStream.close();
                 socket.close();
-
-
             } catch (IOException e) {
-                Log.e("Comms |TgLInterestedUsr", "Error toggleing interested interested users for tripID " + toggleInterestedUserTask.tripID + ".");
+                Log.e("Comms |TgLInterestedUsr", "Error sending trip favorites for AuthKey " + toggleInterestedUserTask.authKey + ".");
                 e.printStackTrace();
             }
 
@@ -632,15 +631,15 @@ public class ServerConnection {
         }
 
         public static class ToggleInterestedUserTask {
-            public int tripID;
+            public Collection<Integer> tripIDs;
             public int toggleStatus;
             public String authKey;
             public String authStatus = AUTHENTICATION_INCOMPLETE;
             private Handler handler;
 
-            public ToggleInterestedUserTask(String authKey, int tripID, Handler handler) {
+            public ToggleInterestedUserTask(String authKey, Collection<Integer> tripIDs, Handler handler) {
                 this.authKey = authKey;
-                this.tripID = tripID;
+                this.tripIDs = tripIDs;
                 this.handler = handler;
             }
 

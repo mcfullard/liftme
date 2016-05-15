@@ -11,7 +11,6 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -33,6 +32,8 @@ import fnm.wrmc.nmmu.liftme.ServerConnection.SearchTripsRunner;
 import fnm.wrmc.nmmu.liftme.ServerConnection.SearchTripsRunner.SearchTripsTask;
 import fnm.wrmc.nmmu.liftme.ServerConnection.AddNewTripRunner;
 import fnm.wrmc.nmmu.liftme.ServerConnection.AddNewTripRunner.AddNewTripTask;
+import fnm.wrmc.nmmu.liftme.ServerConnection.ToggleInterestedUserRunner.ToggleInterestedUserTask;
+import fnm.wrmc.nmmu.liftme.ServerConnection.ToggleInterestedUserRunner;
 
 public class SearchResultsActivity extends AppCompatActivity
     implements MatchedTripViewHolder.TripClickedListener
@@ -41,7 +42,7 @@ public class SearchResultsActivity extends AppCompatActivity
     private static final int SEARCH_TOLERANCE_KM = 2;
     private Map<Integer, Integer> interestedTripIds = new HashMap<>();
     private Trip userTrip;
-    private Handler searchResultsHandler;
+    private static Handler handler;
     private Button btnAddTrip;
     private TextView userTripTitle;
     private TextView instructions;
@@ -50,7 +51,7 @@ public class SearchResultsActivity extends AppCompatActivity
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
-    private MenuItem confirmTripInterest;
+    private MenuItem confirmInterestAction;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,29 +72,7 @@ public class SearchResultsActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        searchResultsHandler = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-                switch(msg.what) {
-                    case ServerConnection.SEARCH_TRIPS_TASK:
-                        SearchTripsTask task = (SearchTripsTask) msg.obj;
-                        switch(task.authStatus) {
-                            case ServerConnection.AUTHENTICATION_SUCCESS:
-                                matchingTrips.addAll(task.searchedTripResults);
-                                mAdapter.notifyDataSetChanged();
-                                if(matchingTrips.size() == 0) {
-                                    matchedTripsCard.setVisibility(View.INVISIBLE);
-                                    instructions.setVisibility(View.INVISIBLE);
-                                }
-                                break;
-                        }
-                        break;
-                    default:
-                        super.handleMessage(msg);
-                        break;
-                }
-            }
-        };
+        createHandler();
 
         btnAddTrip.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -105,6 +84,47 @@ public class SearchResultsActivity extends AppCompatActivity
 
         handleIntent();
         getMatchingTrips();
+    }
+
+    private void createHandler() {
+        handler = new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                switch(msg.what) {
+                    case ServerConnection.SEARCH_TRIPS_TASK:
+                        SearchTripsTask searchTripsTask = (SearchTripsTask) msg.obj;
+                        switch(searchTripsTask.authStatus) {
+                            case ServerConnection.AUTHENTICATION_SUCCESS:
+                                matchingTrips.addAll(searchTripsTask.searchedTripResults);
+                                mAdapter.notifyDataSetChanged();
+                                if(matchingTrips.size() == 0) {
+                                    matchedTripsCard.setVisibility(View.INVISIBLE);
+                                    instructions.setVisibility(View.INVISIBLE);
+                                }
+                                break;
+                        }
+                        break;
+                    case ServerConnection.TOGGLE_INTERESTED_USER_TASK:
+                        ToggleInterestedUserTask tglTask = (ToggleInterestedUserTask) msg.obj;
+                        switch (tglTask.authStatus) {
+                            case ServerConnection.AUTHENTICATION_SUCCESS:
+                                Intent intent = new Intent(SearchResultsActivity.this, DashboardActivity.class);
+                                intent.putExtra("fragment_context", "fnm.wrmc.nmmu.liftme.MyInterestedTripsFragment");
+                                startActivity(intent);
+                                break;
+                            case ServerConnection.AUTHENTICATION_FAIL:
+                                Toast.makeText(SearchResultsActivity.this, "Unable to authenticate you. Are you logged in?", Toast.LENGTH_LONG);
+                                break;
+                            case ServerConnection.AUTHENTICATION_INCOMPLETE:
+                                Toast.makeText(SearchResultsActivity.this, "Could not connect to server. Please check internet connection and try again.", Toast.LENGTH_LONG);
+                                break;
+                        }
+                    default:
+                        super.handleMessage(msg);
+                        break;
+                }
+            }
+        };
     }
 
     private void handleIntent() {
@@ -141,7 +161,7 @@ public class SearchResultsActivity extends AppCompatActivity
                 userTrip.getDestinationLat(),
                 userTrip.getDestinationLong(),
                 SEARCH_TOLERANCE_KM,
-                searchResultsHandler
+                handler
         );
         Thread matchingTripsThread = new Thread(new SearchTripsRunner(matchingTripsTask));
         matchingTripsThread.start();
@@ -162,8 +182,8 @@ public class SearchResultsActivity extends AppCompatActivity
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.search_results_menu, menu);
         getSupportActionBar().setTitle("Trips");
-        confirmTripInterest = menu.findItem(R.id.action_confirm_trip_interest);
-        confirmTripInterest.setVisible(interestedTripIds.size() > 0);
+        confirmInterestAction = menu.findItem(R.id.action_confirm_trip_interest);
+        confirmInterestAction.setVisible(interestedTripIds.size() > 0);
         return true;
     }
 
@@ -171,7 +191,11 @@ public class SearchResultsActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_confirm_trip_interest:
-                return false;
+                OnInterestedUserToggle();
+                Toast.makeText(SearchResultsActivity.this,
+                        String.format("%d trips favourited", interestedTripIds.size()),
+                        Toast.LENGTH_LONG).show();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -227,5 +251,20 @@ public class SearchResultsActivity extends AppCompatActivity
     protected void onSaveInstanceState(Bundle outState) {
         outState.putSerializable("TRIP", userTrip);
         super.onSaveInstanceState(outState);
+    }
+
+    private void OnInterestedUserToggle(){
+        String authKey = getAuthKey();
+        if(authKey.isEmpty()){
+            Toast.makeText(SearchResultsActivity.this, "You never logged in previously. Please login.", Toast.LENGTH_LONG);
+            return;
+        }
+        ToggleInterestedUserTask tglTask = new ToggleInterestedUserTask(
+                authKey,
+                interestedTripIds.values(),
+                handler
+        );
+        Thread tglThread = new Thread(new ToggleInterestedUserRunner(tglTask));
+        tglThread.start();
     }
 }
