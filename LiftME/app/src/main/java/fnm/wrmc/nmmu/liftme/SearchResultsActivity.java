@@ -50,6 +50,7 @@ public class SearchResultsActivity extends AppCompatActivity
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
+    private MenuItem confirmTripInterest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -161,6 +162,8 @@ public class SearchResultsActivity extends AppCompatActivity
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.search_results_menu, menu);
         getSupportActionBar().setTitle("Trips");
+        confirmTripInterest = menu.findItem(R.id.action_confirm_trip_interest);
+        confirmTripInterest.setVisible(interestedTripIds.size() > 0);
         return true;
     }
 
@@ -189,6 +192,7 @@ public class SearchResultsActivity extends AppCompatActivity
         } else {
             interestedTripIds.put(pos, matchingTrips.get(pos).getTripID());
         }
+        supportInvalidateOptionsMenu();
     }
 
     private void addUserTrip() {
