@@ -1,5 +1,6 @@
 package fnm.wrmc.nmmu.liftme;
 
+import android.content.res.ColorStateList;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
@@ -25,6 +26,7 @@ public class MatchedTripViewHolder extends RecyclerView.ViewHolder {
         subTitle2 = (TextView) holder.findViewById(R.id.tripSubtitle2);
         star = (ImageView) holder.findViewById(R.id.search_trip_star);
         textArea = (View) holder.findViewById(R.id.search_trip_text);
+        final View holderFinal = holder;
         textArea.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -34,10 +36,12 @@ public class MatchedTripViewHolder extends RecyclerView.ViewHolder {
         star.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(interested)
+                if(interested) {
                     star.setBackgroundResource(R.drawable.ic_action_star_0);
-                else
+                } else {
                     star.setBackgroundResource(R.drawable.ic_action_star_10);
+                }
+                star.setBackgroundTintList(ColorStateList.valueOf(holderFinal.getResources().getColor(R.color.colorAccent)));
                 interested = !interested;
                 listener.onStarClicked(v, getLayoutPosition());
             }

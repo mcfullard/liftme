@@ -21,7 +21,7 @@
             android:layout_height="wrap_content"
             android:padding="25dp"
             android:textAlignment="center"
-            android:text="Add your trip or star similar trips for feedback"
+            android:text="Add your trip or favorite similar trips for feedback"
             />
 
         <include layout="@layout/user_trip_holder"

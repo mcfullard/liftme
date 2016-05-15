@@ -79,10 +79,11 @@ public class SearchResultsActivity extends AppCompatActivity
                         switch(task.authStatus) {
                             case ServerConnection.AUTHENTICATION_SUCCESS:
                                 matchingTrips.addAll(task.searchedTripResults);
-                                break;
-                            case ServerConnection.AUTHENTICATION_FAIL:
-                                matchedTripsCard.setVisibility(View.INVISIBLE);
-                                instructions.setVisibility(View.INVISIBLE);
+                                mAdapter.notifyDataSetChanged();
+                                if(matchingTrips.size() == 0) {
+                                    matchedTripsCard.setVisibility(View.INVISIBLE);
+                                    instructions.setVisibility(View.INVISIBLE);
+                                }
                                 break;
                         }
                         break;
@@ -96,8 +97,8 @@ public class SearchResultsActivity extends AppCompatActivity
         btnAddTrip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-            // add the userTrip to the DB and redirect to dashboard
-            addUserTrip();
+                // add the userTrip to the DB and redirect to dashboard
+                addUserTrip();
             }
         });
 
@@ -216,5 +217,11 @@ public class SearchResultsActivity extends AppCompatActivity
         });
         Thread newTripThread = new Thread(new AddNewTripRunner(addNewTripTask));
         newTripThread.start();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putSerializable("TRIP", userTrip);
+        super.onSaveInstanceState(outState);
     }
 }

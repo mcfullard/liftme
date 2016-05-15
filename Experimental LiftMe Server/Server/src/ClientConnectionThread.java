@@ -311,6 +311,7 @@ public class ClientConnectionThread extends Thread {
                     writeStream.writeDouble(curTrip.getDistanceBetweenPickups());
                     writeStream.writeDouble(curTrip.getDistanceBetweenDropOffs());
                 }
+                System.out.println(String.format("CLIENT THREAD: Found %d similar trips for %s", searchResults.size(), authKey));
             } else {
                 writeStream.writeUTF(AUTHENTICATION_FAIL);
             }
