@@ -15,6 +15,7 @@ import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,7 +40,9 @@ public class SearchResultsActivity extends AppCompatActivity
     private Map<Integer, Integer> interestedTripIds = new HashMap<>();
     private Trip userTrip;
     private Handler searchResultsHandler;
+    private Button btnAddTrip;
     private TextView userTripTitle;
+    private TextView instructions;
     private CardView matchedTripsCard;
     private List<SearchedTrip> matchingTrips = new ArrayList<>();
     private RecyclerView mRecyclerView;
@@ -52,6 +55,8 @@ public class SearchResultsActivity extends AppCompatActivity
         setContentView(R.layout.activity_search_results);
         userTripTitle = (TextView) findViewById(R.id.user_trip_title);
         matchedTripsCard = (CardView) findViewById(R.id.matched_trips_card);
+        instructions = (TextView) findViewById(R.id.instructions);
+        btnAddTrip = (Button) findViewById(R.id.btnAddTrip);
         mRecyclerView = (RecyclerView) findViewById(R.id.search_results_recycler);
         mRecyclerView.setHasFixedSize(true);
         mLayoutManager = new LinearLayoutManager(this);
@@ -75,6 +80,7 @@ public class SearchResultsActivity extends AppCompatActivity
                                 break;
                             case ServerConnection.AUTHENTICATION_FAIL:
                                 matchedTripsCard.setVisibility(View.INVISIBLE);
+                                instructions.setVisibility(View.INVISIBLE);
                                 break;
                         }
                         break;
@@ -84,6 +90,13 @@ public class SearchResultsActivity extends AppCompatActivity
                 }
             }
         };
+
+        btnAddTrip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // add the userTrip to the DB and redirect to dashboard
+            }
+        });
 
         handleIntent();
         getMatchingTrips();
@@ -143,6 +156,7 @@ public class SearchResultsActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.search_results_menu, menu);
+        getSupportActionBar().setTitle("Trips");
         return true;
     }
 

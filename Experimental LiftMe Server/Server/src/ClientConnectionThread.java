@@ -24,6 +24,7 @@ public class ClientConnectionThread extends Thread {
     private final String GET_INTERESTED_USERS = "#GET_INTERESTED_USERS";
     private final String INTERESTED_USER_TOGGLE = "#INTERESTED_USER_TOGGLE";
     private final String SEARCH_TRIPS = "#SEARCH_TRIPS";
+    private final String POST_NEW_TRIP = "#POST_NEW_TRIP";
 
     public ClientConnectionThread(mainServer theServer, Socket newSocket) {
         this.theServer = theServer;
@@ -64,6 +65,9 @@ public class ClientConnectionThread extends Thread {
                     case SEARCH_TRIPS:
                         SearchTrips();
                         break;
+                    case POST_NEW_TRIP:
+                        postNewTrip();
+                        break;
                 }
 
                 response = readStream.readUTF();
@@ -79,6 +83,10 @@ public class ClientConnectionThread extends Thread {
                 System.out.println("Error closing client connections.");
             }
         }
+    }
+
+    private void postNewTrip() {
+
     }
 
     private void setUserDetails() {
