@@ -31,6 +31,8 @@ import fnm.wrmc.nmmu.liftme.Data_Objects.SearchedTrip;
 import fnm.wrmc.nmmu.liftme.Data_Objects.Trip;
 import fnm.wrmc.nmmu.liftme.ServerConnection.SearchTripsRunner;
 import fnm.wrmc.nmmu.liftme.ServerConnection.SearchTripsRunner.SearchTripsTask;
+import fnm.wrmc.nmmu.liftme.ServerConnection.AddNewTripRunner;
+import fnm.wrmc.nmmu.liftme.ServerConnection.AddNewTripRunner.AddNewTripTask;
 
 public class SearchResultsActivity extends AppCompatActivity
     implements MatchedTripViewHolder.TripClickedListener
@@ -94,7 +96,8 @@ public class SearchResultsActivity extends AppCompatActivity
         btnAddTrip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // add the userTrip to the DB and redirect to dashboard
+            // add the userTrip to the DB and redirect to dashboard
+            addUserTrip();
             }
         });
 
@@ -182,5 +185,33 @@ public class SearchResultsActivity extends AppCompatActivity
         } else {
             interestedTripIds.put(pos, matchingTrips.get(pos).getTripID());
         }
+    }
+
+    private void addUserTrip() {
+        // handler doesn't do anything at the moment
+        AddNewTripTask addNewTripTask = new AddNewTripTask(getAuthKey(), userTrip, new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                switch (msg.what) {
+                    case ServerConnection.ADD_NEW_TRIP_TASK:
+                        AddNewTripTask task = (AddNewTripTask) msg.obj;
+                        switch (task.authStatus) {
+                            case ServerConnection.AUTHENTICATION_SUCCESS:
+                                Toast.makeText(SearchResultsActivity.this, "Trip added.", Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(SearchResultsActivity.this, DashboardActivity.class);
+                                startActivity(intent);
+                                break;
+                            case ServerConnection.AUTHENTICATION_FAIL:
+                                Toast.makeText(SearchResultsActivity.this, "Failed to add trip to database. Please try again.", Toast.LENGTH_LONG).show();
+                                break;
+                        }
+                        break;
+                    default:
+                        super.handleMessage(msg);
+                }
+            }
+        });
+        Thread newTripThread = new Thread(new AddNewTripRunner(addNewTripTask));
+        newTripThread.start();
     }
 }

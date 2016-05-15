@@ -579,4 +579,40 @@ public class DatabaseHandler {
         return trips;
     }
 
+    public static void postNewTrip(User user, Trip userTrip) {
+        writeLock.lock();
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        try{
+
+            Class.forName("com.mysql.jdbc.Driver");
+            System.out.println("Connecting to database to post new trip. Email: " + user.getEmail());
+            PropertyManager pm = PropertyManager.getInstance();
+            conn = DriverManager.getConnection(DB_URL, pm.getProperty("USER"), pm.getProperty("PASSWORD"));
+
+            String registerSql = "INSERT INTO trip (pickUpLat, pickUpLong, dropOffLat, dropOffLong, pickUpTime) VALUES (?, ?, ?, ?, ?);";
+            stmt = conn.prepareStatement(registerSql);
+
+            stmt.setDouble(1, userTrip.getPickupLat());
+            stmt.setDouble(2, userTrip.getPickupLong());
+            stmt.setDouble(3, userTrip.getDestinationLat());
+            stmt.setDouble(4, userTrip.getDestinationLong());
+            stmt.setTimestamp(5, userTrip.getPickupTime());
+
+            stmt.execute();
+
+            stmt.close();
+            conn.close();
+
+        }catch(SQLException e){
+            System.out.println("SQL error occurred whilst registering " + user.getEmail() + ".");
+            System.out.println(e);
+        }catch(Exception e){
+            System.out.println("Unexpected error occurred whilst registering " + user.getEmail() + ".");
+            System.out.println(e);
+        }
+        finally {
+            writeLock.unlock();
+        }
+    }
 }

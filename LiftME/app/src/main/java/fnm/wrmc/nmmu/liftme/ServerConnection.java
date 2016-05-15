@@ -44,6 +44,7 @@ public class ServerConnection {
     public static final String SEARCH_TRIPS = "#SEARCH_TRIPS";
     public static final String DELETE_TRIP = "#DELETE_TRIP";
     public static final String GET_USER_INTERESTED_TRIPS = "#GET_USER_INTERESTED_TRIPS";
+    public static final String POST_NEW_TRIP = "#POST_NEW_TRIP";
 
     public static final String STATUS_SUCCESS = "#SUCCESS";
     public static final String STATUS_FAILED = "#FAILED";
@@ -57,6 +58,7 @@ public class ServerConnection {
     public static final int SEARCH_TRIPS_TASK = 7;
     public static final int DELETE_TRIP_TASK = 8;
     public static final int GET_USER_INTERESTED_TRIP_TASK = 9;
+    public static final int ADD_NEW_TRIP_TASK = 10;
 
     private static final String SERVER_IP = "192.168.1.65";
     private static final int SERVER_PORT = 5050;
@@ -883,5 +885,69 @@ public class ServerConnection {
             }
         }
 
+    }
+
+    static class AddNewTripRunner implements Runnable {
+
+        AddNewTripTask addNewTripTask;
+
+        public AddNewTripRunner(AddNewTripTask addNewTripTask) {
+            this.addNewTripTask = addNewTripTask;
+        }
+
+        @Override
+        public void run() {
+            try {
+                Socket socket = new Socket();
+                socket.connect(new InetSocketAddress(SERVER_IP, SERVER_PORT), CONNECTION_TIMEOUT);
+
+                DataOutputStream writeStream = new DataOutputStream(socket.getOutputStream());
+                DataInputStream readStream = new DataInputStream(socket.getInputStream());
+
+                writeStream.writeUTF(POST_NEW_TRIP);
+                writeStream.writeUTF(addNewTripTask.authKey);
+                writeStream.flush();
+
+                addNewTripTask.authStatus = readStream.readUTF();
+
+                if (addNewTripTask.authStatus.equals(AUTHENTICATION_SUCCESS)) {
+                    writeStream.writeUTF(String.valueOf(addNewTripTask.userTrip.getPickupLat()));
+                    writeStream.writeUTF(String.valueOf(addNewTripTask.userTrip.getPickupLong()));
+                    writeStream.writeUTF(String.valueOf(addNewTripTask.userTrip.getDestinationLat()));
+                    writeStream.writeUTF(String.valueOf(addNewTripTask.userTrip.getDestinationLong()));
+                    writeStream.writeUTF(String.valueOf(addNewTripTask.userTrip.getPickupTime()));
+                }
+
+                writeStream.writeUTF(QUIT_MESSAGE);
+
+                writeStream.close();
+                readStream.close();
+                socket.close();
+
+
+            } catch (IOException e) {
+                Log.e("Comms | GetUserDetails", "Error getting user details.");
+                e.printStackTrace();
+            }
+
+            addNewTripTask.handleAddNewTrip();
+        }
+
+        public static class AddNewTripTask {
+            public String authKey;
+            public String authStatus = AUTHENTICATION_INCOMPLETE;
+            private Handler handler;
+            private Trip userTrip;
+
+            public AddNewTripTask(String authKey, Trip userTrip, Handler handler) {
+                this.authKey = authKey;
+                this.userTrip = userTrip;
+                this.handler = handler;
+            }
+
+            public void handleAddNewTrip() {
+                handler.obtainMessage(ADD_NEW_TRIP_TASK, this).sendToTarget();
+            }
+        }
     }
 }

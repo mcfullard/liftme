@@ -2,6 +2,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.sql.Timestamp;
 import java.util.List;
 
 /**
@@ -93,7 +94,27 @@ public class ClientConnectionThread extends Thread {
     }
 
     private void postNewTrip() {
-
+        try {
+            String authKey = readStream.readUTF();
+            User user = DatabaseHandler.GetUserDetails(authKey);
+            if (user != null) {
+                Trip userTrip = new Trip();
+                writeStream.writeUTF(AUTHENTICATION_SUCCESS);
+                writeStream.flush();
+                userTrip.setPickupLat(Double.parseDouble(readStream.readUTF()));
+                userTrip.setPickupLong(Double.parseDouble(readStream.readUTF()));
+                userTrip.setDestinationLat(Double.parseDouble(readStream.readUTF()));
+                userTrip.setDestinationLong(Double.parseDouble(readStream.readUTF()));
+                userTrip.setPickupTime(new Timestamp(Long.parseLong(readStream.readUTF())));
+                DatabaseHandler.postNewTrip(user, userTrip);
+            } else {
+                writeStream.writeUTF(AUTHENTICATION_FAIL);
+                writeStream.flush();
+            }
+            System.out.println("CLIENT THREAD : Posting user trip. AuthKey " + authKey);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void setUserDetails() {
