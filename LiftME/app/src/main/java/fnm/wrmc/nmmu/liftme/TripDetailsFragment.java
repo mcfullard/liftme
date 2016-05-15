@@ -72,15 +72,15 @@ public abstract class TripDetailsFragment extends Fragment {
         ImageGenerator mImageGenerator = new ImageGenerator(getContext());
 
         // Set the icon size to the generated in dip.
-        mImageGenerator.setIconSize(500, 300);
+        mImageGenerator.setIconSize(600, 150);
 
         // Set the size of the date and month font in dip.
         mImageGenerator.setDateSize(100);
         mImageGenerator.setMonthSize(50);
 
         // Set the position of the date and month in dip.
-        mImageGenerator.setDatePosition(170);
-        mImageGenerator.setMonthPosition(80);
+        mImageGenerator.setDatePosition(130);
+        mImageGenerator.setMonthPosition(40);
 
         // Set the color of the font to be generated
         mImageGenerator.setDateColor(getResources().getColor(R.color.colorAccent));

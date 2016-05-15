@@ -488,4 +488,95 @@ public class DatabaseHandler {
         return distance;
     }
 
+    static boolean DeleteTrip(String authKey,int tripID){
+        writeLock.lock();
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        User userObj = null;
+        boolean deleteSuccess = false;
+
+        try{
+
+            Class.forName("com.mysql.jdbc.Driver");
+            System.out.println("Connecting to database to delete trip for " + authKey + " tripID " + tripID + ".");
+            PropertyManager pm = PropertyManager.getInstance();
+            conn = DriverManager.getConnection(DB_URL, pm.getProperty("USER"), pm.getProperty("PASSWORD"));
+
+            String deleteTripSQL = "DELETE FROM trip WHERE tripID = ? AND userID = (SELECT userID FROM user WHERE authenticationToken = ?);";
+            stmt = conn.prepareStatement(deleteTripSQL);
+
+            stmt.setInt(1,tripID);
+            stmt.setString(2, authKey);
+
+            int resultCount = stmt.executeUpdate();
+
+            if(resultCount > 0){
+                deleteSuccess = true;
+            }
+
+            stmt.close();
+            conn.close();
+
+        }catch(SQLException e){
+            System.out.println("SQL error occurred whilst deleting trip " + tripID + " .");
+            System.out.println(e);
+        }catch(Exception e){
+            System.out.println("Unexpected error occurred whilst deleting trip " + tripID  + " .");
+            System.out.println(e);
+        }
+        finally {
+            writeLock.unlock();
+        }
+        return deleteSuccess;
+    }
+
+    static List<Trip> GetUserInterestedTrips(String authKey){
+        writeLock.lock();
+        Connection conn = null;
+        PreparedStatement stmt = null;
+
+        List<Trip> trips = null;
+
+        try{
+
+            Class.forName("com.mysql.jdbc.Driver");
+            System.out.println("Connecting to database to retrieve interested trips for authKey " + authKey + ".");
+            PropertyManager pm = PropertyManager.getInstance();
+            conn = DriverManager.getConnection(DB_URL, pm.getProperty("USER"), pm.getProperty("PASSWORD"));
+
+            String authSql = "SELECT curTrip.*, (SELECT COUNT(*) FROM interesteduser WHERE  interesteduser.tripID = curTrip.tripID) AS numinterested FROM interesteduser,trip AS curTrip WHERE interesteduser.userID = (SELECT userID FROM user WHERE authenticationToken = ?) AND curTrip.tripID = interesteduser.tripID;;";
+            stmt = conn.prepareStatement(authSql);
+
+            stmt.setString(1, authKey);
+
+            ResultSet tripSet = stmt.executeQuery();
+
+            trips = new ArrayList<>();
+            while(tripSet.next()){
+                Trip curTrip = new Trip();
+                curTrip.setTripID(tripSet.getInt("tripID"));
+                curTrip.setPickupLat(tripSet.getDouble("pickUpLat"));
+                curTrip.setPickupLong(tripSet.getDouble("pickUpLong"));
+                curTrip.setDestinationLat(tripSet.getDouble("dropOffLat"));
+                curTrip.setDestinationLong(tripSet.getDouble("dropOffLong"));
+                curTrip.setPickupTime(tripSet.getTimestamp("pickUpTime"));
+                curTrip.setNumInterested(tripSet.getInt("numinterested"));
+                trips.add(curTrip);
+            }
+
+            stmt.close();
+            conn.close();
+        }catch(SQLException e){
+            System.out.println("SQL error occurred whilst retrieving interested trips for authKey " + authKey + " .");
+            System.out.println(e);
+        }catch(Exception e){
+            System.out.println("Unexpected error occurred whilst retrieving interested trips for authKey " + authKey + " .");
+            System.out.println(e);
+        }
+        finally {
+            writeLock.unlock();
+        }
+        return trips;
+    }
+
 }

@@ -25,6 +25,8 @@ public class ClientConnectionThread extends Thread {
     private final String INTERESTED_USER_TOGGLE = "#INTERESTED_USER_TOGGLE";
     private final String SEARCH_TRIPS = "#SEARCH_TRIPS";
     private final String POST_NEW_TRIP = "#POST_NEW_TRIP";
+    private final String DELETE_TRIP = "#DELETE_TRIP";
+    private final String GET_USER_INTERESTED_TRIPS = "#GET_USER_INTERESTED_TRIPS";
 
     public ClientConnectionThread(mainServer theServer, Socket newSocket) {
         this.theServer = theServer;
@@ -68,6 +70,11 @@ public class ClientConnectionThread extends Thread {
                     case POST_NEW_TRIP:
                         postNewTrip();
                         break;
+                    case DELETE_TRIP:
+                        DeleteTrip();
+                        break;
+                    case GET_USER_INTERESTED_TRIPS:
+                        GetUserInterestedTrips();
                 }
 
                 response = readStream.readUTF();
@@ -293,5 +300,54 @@ public class ClientConnectionThread extends Thread {
         }
     }
 
+    private void DeleteTrip() {
+        try {
+
+            String authKey = readStream.readUTF();
+            int tripID = readStream.readInt();
+
+            boolean successfulDelete = DatabaseHandler.DeleteTrip(authKey, tripID);
+
+            if (successfulDelete) {
+                writeStream.writeUTF(AUTHENTICATION_SUCCESS);
+            } else {
+                writeStream.writeUTF(AUTHENTICATION_FAIL);
+            }
+            writeStream.flush();
+            System.out.println("CLIENT THREAD : Deleting trip " + tripID);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void GetUserInterestedTrips() {
+        try {
+
+            String authKey = readStream.readUTF();
+
+            List<Trip> userTrips = DatabaseHandler.GetUserInterestedTrips(authKey);
+
+            if (userTrips != null) {
+                writeStream.writeUTF(AUTHENTICATION_SUCCESS);
+                writeStream.writeInt(userTrips.size());
+                for (Trip curTrip : userTrips) {
+                    writeStream.writeInt(curTrip.getTripID());
+                    writeStream.writeDouble(curTrip.getPickupLat());
+                    writeStream.writeDouble(curTrip.getPickupLong());
+                    writeStream.writeDouble(curTrip.getDestinationLat());
+                    writeStream.writeDouble(curTrip.getDestinationLong());
+                    writeStream.writeLong(curTrip.getPickupTime().getTime());
+                    writeStream.writeInt(curTrip.getNumInterested());
+                }
+
+            } else {
+                writeStream.writeUTF(AUTHENTICATION_FAIL);
+            }
+            writeStream.flush();
+            System.out.println("CLIENT THREAD : Getting user interested trips. AuthKey " + authKey);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 }

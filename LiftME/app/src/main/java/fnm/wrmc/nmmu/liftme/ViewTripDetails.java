@@ -13,6 +13,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.w3c.dom.Text;
+
 import fnm.wrmc.nmmu.liftme.Data_Objects.SearchedTrip;
 
 /**
@@ -24,6 +26,7 @@ public class ViewTripDetails extends TripDetailsFragment {
 
     private SearchedTrip searchedTrip;
     private FloatingActionButton fabInterestedToggle;
+    private TextView tVPickUpDistance, tVDestinationDistance;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -43,6 +46,8 @@ public class ViewTripDetails extends TripDetailsFragment {
         detailImage = (ImageView) curView.findViewById(R.id.iVMyTripDetailsImage);
         tVPUDetails = (TextView) curView.findViewById(R.id.tVPickupDescription);
         tVDesDetails = (TextView) curView.findViewById(R.id.tVDestinationDescription);
+        tVPickUpDistance = (TextView) curView.findViewById(R.id.tvPickUpDistance);
+        tVDestinationDistance = (TextView) curView.findViewById(R.id.tVDestinationDistance);
 
         fabInterestedToggle = (FloatingActionButton)curView.findViewById(R.id.fab);
         fabInterestedToggle.setOnClickListener(new View.OnClickListener() {
@@ -90,10 +95,27 @@ public class ViewTripDetails extends TripDetailsFragment {
 
         RetrieveAddressFromLatLong();
         GenerateImage();
+        DisplayDistances();
 
         return curView;
 
     }
+
+    private void DisplayDistances(){
+        if(searchedTrip.getDistanceBetweenPickups() == 0 ){
+            tVPickUpDistance.setText("");
+        }else{
+            tVPickUpDistance.setText(searchedTrip.getDistanceBetweenPickups() + " km from desired pickup.");
+        }
+
+        if(searchedTrip.getDistanceBetweenPickups() == 0 ){
+            tVDestinationDistance.setText("");
+        }else{
+            tVDestinationDistance.setText(searchedTrip.getDistanceBetweenDropOffs() + " km from desired destination.");
+        }
+    }
+
+
 
     private void OnInterestedUserToggleSuccess(ServerConnection.ToggleInterestedUserRunner.ToggleInterestedUserTask tglTask){
         if(tglTask.toggleStatus == 2) {

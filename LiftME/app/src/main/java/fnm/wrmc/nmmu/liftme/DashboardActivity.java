@@ -1,6 +1,7 @@
 package fnm.wrmc.nmmu.liftme;
 
 import android.app.DatePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -8,6 +9,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -18,17 +20,23 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.DatePicker;
+import android.widget.Toast;
 
 import java.io.Serializable;
 
+import fnm.wrmc.nmmu.liftme.Data_Objects.SearchedTrip;
 import fnm.wrmc.nmmu.liftme.Data_Objects.Trip;
 
 public class DashboardActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener,
         MyTripsFragment.IMyTripsCallback,
-        UserProfileFragment.AcceptChangeClickListener {
+        MyTripDetailsFragment.IMyTripsDetailsCallback,
+        UserProfileFragment.AcceptChangeClickListener,
+        MyInterestedTripsFragment.IMyinterstedTripsCallback{
 
     static public String USER_PROFILE_FRAGMENT = "fnm.wrmc.nmmu.liftme.UserProfileFragment";
+    private int currentMenuResource = R.menu.dashboard;
+    private Fragment activeFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,25 +55,25 @@ public class DashboardActivity extends AppCompatActivity implements
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        Fragment mainFragment = getFragmentFromContext("",null);
+        Fragment mainFragment = getFragmentFromContext("", null);
 
         Intent intent = getIntent();
-        if(intent != null) {
+        if (intent != null) {
             Bundle extras = intent.getExtras();
-            if(extras != null) {
+            if (extras != null) {
                 String fragment_context = extras.getString("fragment_context");
                 mainFragment = getFragmentFromContext(fragment_context, null);
             }
         }
 
-        AddFragmentToContainer(R.id.container,mainFragment);
+        AddFragmentToContainer(R.id.container, mainFragment);
 
     }
 
-    private void AddFragmentToContainer(int container,Fragment fragment){
+    private void AddFragmentToContainer(int container, Fragment fragment) {
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction transaction = fm.beginTransaction();
-        if(fm.findFragmentById(container) != null) {
+        if (fm.findFragmentById(container) != null) {
             transaction.replace(container, fragment);
             transaction.addToBackStack("");
         } else {
@@ -74,7 +82,7 @@ public class DashboardActivity extends AppCompatActivity implements
         transaction.commit();
     }
 
-    private Fragment getFragmentFromContext(String fragment_context,Bundle fragmentArguments) {
+    private Fragment getFragmentFromContext(String fragment_context, Bundle fragmentArguments) {
         Fragment newFragment;
         switch (fragment_context) {
             case "fnm.wrmc.nmmu.liftme.UserProfileFragment":
@@ -83,12 +91,18 @@ public class DashboardActivity extends AppCompatActivity implements
             case "fnm.wrmc.nmmu.liftme.MyTripDetailsFragment":
                 newFragment = new MyTripDetailsFragment();
                 break;
+            case "fnm.wrmc.nmmu.liftme.MyInterestedTripsFragment":
+                newFragment = new MyInterestedTripsFragment();
+                break;
+            case "fnm.wrmc.nmmu.liftme.ViewTripDetails":
+                newFragment = new ViewTripDetails();
+                break;
             case "fnm.wrmc.nmmu.liftme.MyTripsFragment":
             default:
                 newFragment = new MyTripsFragment();
         }
 
-        if(fragmentArguments != null){
+        if (fragmentArguments != null) {
             newFragment.setArguments(fragmentArguments);
         }
 
@@ -108,7 +122,7 @@ public class DashboardActivity extends AppCompatActivity implements
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.dashboard, menu);
+        getMenuInflater().inflate(currentMenuResource, menu);
         return true;
     }
 
@@ -120,11 +134,49 @@ public class DashboardActivity extends AppCompatActivity implements
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (currentMenuResource) {  //Allows for the action menu to change depending on current context
+            case R.menu.dashboard:
+                if (id == R.id.action_settings) {
+                return true;
+            }
+                break;
+            case R.menu.my_trip_delete_menu:
+                if(id == R.id.action_delete_trip){
+                    if(activeFragment instanceof MyTripDetailsFragment) {
+                        onTripDeleteActionClick();
+                    }
+                    return true;
+                }
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void onTripDeleteActionClick(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Are you sure you want to delete this trip?");
+
+        String positiveText = "Delete";
+        builder.setPositiveButton(positiveText,
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        if(activeFragment instanceof MyTripDetailsFragment){
+                            ((MyTripDetailsFragment)activeFragment).DeleteTrip();
+                        }
+                    }
+                });
+
+        String negativeText = getString(android.R.string.cancel);
+        builder.setNegativeButton(negativeText,
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                });
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -156,8 +208,8 @@ public class DashboardActivity extends AppCompatActivity implements
     public void onMyTripClick(Trip clickedTrip) {
         Bundle B = new Bundle();
         B.putSerializable(TripDetailsFragment.ARG_TRIP, ((Serializable) clickedTrip));
-        Fragment newFragment = getFragmentFromContext(MyTripDetailsFragment.FRAG_IDENTIFYER,B);
-        AddFragmentToContainer(R.id.container,newFragment);
+        Fragment newFragment = getFragmentFromContext(MyTripDetailsFragment.FRAG_IDENTIFYER, B);
+        AddFragmentToContainer(R.id.container, newFragment);
     }
 
     @Override
@@ -165,4 +217,36 @@ public class DashboardActivity extends AppCompatActivity implements
         AddFragmentToContainer(R.id.container, getFragmentFromContext("fnm.wrmc.nmmu.liftme.MyTripsFragment", null));
     }
 
+    @Override
+    public void onMyTripDetailsAttach() {
+        currentMenuResource = R.menu.my_trip_delete_menu;
+        invalidateOptionsMenu();
+    }
+
+    @Override
+    public void onMyTripDetailsDetach() {
+        currentMenuResource = R.menu.dashboard;
+        invalidateOptionsMenu();
+    }
+
+    @Override
+    public void onMyTripDetailsDelete() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.popBackStack();
+    }
+
+    @Override
+    public void onAttachFragment(Fragment fragment) {
+        activeFragment = fragment;
+        super.onAttachFragment(fragment);
+    }
+
+
+    @Override
+    public void onMyInterestedTripClick(Trip clickedTrip) {
+        Bundle B = new Bundle();
+        B.putSerializable(TripDetailsFragment.ARG_TRIP, ((Serializable) new SearchedTrip(clickedTrip,0,0)));
+        Fragment newFragment = getFragmentFromContext(ViewTripDetails.FRAG_IDENTIFYER, B);
+        AddFragmentToContainer(R.id.container, newFragment);
+    }
 }
