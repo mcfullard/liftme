@@ -66,6 +66,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="fnm.wrmc.nmmu.liftme.LocationActivity" />
         </activity>
+        <activity
+            android:name=".TripDetailsActivity"
+            android:label="@string/title_activity_trip_details"
+            android:parentActivityName=".SearchResultsActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="fnm.wrmc.nmmu.liftme.SearchResultsActivity" />
+        </activity>
     </application>
 
 </manifest>

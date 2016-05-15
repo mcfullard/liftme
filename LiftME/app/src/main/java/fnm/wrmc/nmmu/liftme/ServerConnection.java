@@ -60,7 +60,7 @@ public class ServerConnection {
     public static final int GET_USER_INTERESTED_TRIP_TASK = 9;
     public static final int ADD_NEW_TRIP_TASK = 10;
 
-    private static final String SERVER_IP = "192.168.1.65";
+    private static final String SERVER_IP = "10.0.0.104";
     private static final int SERVER_PORT = 5050;
     private static final int CONNECTION_TIMEOUT = 5000;
 

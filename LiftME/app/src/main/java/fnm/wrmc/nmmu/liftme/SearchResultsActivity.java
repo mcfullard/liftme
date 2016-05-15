@@ -175,7 +175,10 @@ public class SearchResultsActivity extends AppCompatActivity
 
     @Override
     public void onTextAreaClicked(View caller, int pos) {
-
+        SearchedTrip searchedTrip = matchingTrips.get(pos);
+        Intent intent = new Intent(SearchResultsActivity.this, TripDetailsActivity.class);
+        intent.putExtra(TripDetailsFragment.ARG_TRIP, searchedTrip);
+        startActivity(intent);
     }
 
     @Override
