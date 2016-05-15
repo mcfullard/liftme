@@ -590,7 +590,7 @@ public class DatabaseHandler {
             PropertyManager pm = PropertyManager.getInstance();
             conn = DriverManager.getConnection(DB_URL, pm.getProperty("USER"), pm.getProperty("PASSWORD"));
 
-            String registerSql = "INSERT INTO trip (pickUpLat, pickUpLong, dropOffLat, dropOffLong, pickUpTime) VALUES (?, ?, ?, ?, ?);";
+            String registerSql = "INSERT INTO trip (pickUpLat, pickUpLong, dropOffLat, dropOffLong, pickUpTime, userID) VALUES (?, ?, ?, ?, ?, ?);";
             stmt = conn.prepareStatement(registerSql);
 
             stmt.setDouble(1, userTrip.getPickupLat());
@@ -598,6 +598,7 @@ public class DatabaseHandler {
             stmt.setDouble(3, userTrip.getDestinationLat());
             stmt.setDouble(4, userTrip.getDestinationLong());
             stmt.setTimestamp(5, userTrip.getPickupTime());
+            stmt.setInt(6, user.getUserID());
 
             stmt.execute();
 

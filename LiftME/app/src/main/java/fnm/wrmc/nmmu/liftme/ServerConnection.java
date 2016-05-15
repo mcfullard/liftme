@@ -915,7 +915,7 @@ public class ServerConnection {
                     writeStream.writeUTF(String.valueOf(addNewTripTask.userTrip.getPickupLong()));
                     writeStream.writeUTF(String.valueOf(addNewTripTask.userTrip.getDestinationLat()));
                     writeStream.writeUTF(String.valueOf(addNewTripTask.userTrip.getDestinationLong()));
-                    writeStream.writeUTF(String.valueOf(addNewTripTask.userTrip.getPickupTime()));
+                    writeStream.writeUTF(String.valueOf(addNewTripTask.userTrip.getPickupTime().getTime()));
                 }
 
                 writeStream.writeUTF(QUIT_MESSAGE);
