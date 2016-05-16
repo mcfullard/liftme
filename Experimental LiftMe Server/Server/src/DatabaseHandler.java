@@ -544,7 +544,9 @@ public class DatabaseHandler {
             PropertyManager pm = PropertyManager.getInstance();
             conn = DriverManager.getConnection(DB_URL, pm.getProperty("USER"), pm.getProperty("PASSWORD"));
 
-            String authSql = "SELECT curTrip.*, (SELECT COUNT(*) FROM interesteduser WHERE  interesteduser.tripID = curTrip.tripID) AS numinterested FROM interesteduser,trip AS curTrip WHERE interesteduser.userID = (SELECT userID FROM user WHERE authenticationToken = ?) AND curTrip.tripID = interesteduser.tripID;;";
+            String authSql = "SELECT curTrip.*, (SELECT COUNT(*) FROM interesteduser WHERE  interesteduser.tripID = curTrip.tripID) AS numinterested " +
+                    "FROM interesteduser,trip AS curTrip " +
+                    "WHERE interesteduser.userID = (SELECT userID FROM user WHERE authenticationToken = ?) AND curTrip.tripID = interesteduser.tripID;";
             stmt = conn.prepareStatement(authSql);
 
             stmt.setString(1, authKey);
