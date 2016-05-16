@@ -196,6 +196,12 @@ public class SearchResultsActivity extends AppCompatActivity
                         String.format("%d trips favourited", interestedTripIds.size()),
                         Toast.LENGTH_LONG).show();
                 return true;
+            case android.R.id.home:
+                Intent intent = new Intent(SearchResultsActivity.this, LocationActivity.class);
+                intent.putExtra("TRIP", userTrip);
+                intent.putExtra("IS_PICKUP", 2);
+                startActivity(intent);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -245,12 +251,6 @@ public class SearchResultsActivity extends AppCompatActivity
         });
         Thread newTripThread = new Thread(new AddNewTripRunner(addNewTripTask));
         newTripThread.start();
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        outState.putSerializable("TRIP", userTrip);
-        super.onSaveInstanceState(outState);
     }
 
     private void OnInterestedUserToggle(){
