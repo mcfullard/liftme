@@ -1,6 +1,7 @@
 package fnm.wrmc.nmmu.liftme;
 
 
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -10,11 +11,14 @@ import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -42,6 +46,7 @@ public class MyTripsFragment extends Fragment {
     private Handler tripsHandler;
     private SwipeRefreshLayout myTripsSwipeRefresh;
     private FloatingActionButton addTripFab;
+    private LinearLayout emptyView;
 
     public MyTripsFragment() {
         // Required empty public constructor
@@ -56,7 +61,7 @@ public class MyTripsFragment extends Fragment {
         myTripsList =  (ListView)curView.findViewById(R.id.lVMyTrips);
         myTripsSwipeRefresh = (SwipeRefreshLayout)curView.findViewById(R.id.my_trips_swipe_refresh_layout);
         addTripFab = (FloatingActionButton)curView.findViewById(R.id.fabAddTrip);
-
+        emptyView = (LinearLayout)curView.findViewById(R.id.lLemptyTrip);
 
         return curView;
     }
@@ -117,6 +122,7 @@ public class MyTripsFragment extends Fragment {
             }
         });
 
+        myTripsList.setEmptyView(emptyView);
         myTripsSwipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {

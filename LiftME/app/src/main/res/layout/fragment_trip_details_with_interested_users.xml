@@ -152,12 +152,35 @@
                                 />
                         </LinearLayout>
 
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:layout_marginTop="4dp"
-                            android:background="@color/common_action_bar_splitter"/>
 
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent">
+
+                            <LinearLayout
+                                android:orientation="vertical"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:id="@+id/lLemptyInterestedView" >
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textAppearance="?android:attr/textAppearanceMedium"
+                                    android:text="No users interested in this trip yet."
+                                    android:id="@+id/tVEmptyInterested"
+                                    android:layout_gravity="center"
+                                    android:textAlignment="center"
+                                    android:layout_margin="10dp" />
+                            </LinearLayout>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginTop="4dp"
+                                android:background="@color/common_action_bar_splitter"/>
+                        </FrameLayout>
 
                         <android.support.v7.widget.RecyclerView
                             android:layout_width="wrap_content"

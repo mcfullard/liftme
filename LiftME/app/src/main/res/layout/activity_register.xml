@@ -110,7 +110,7 @@
                         android:id="@+id/btnCancelReg"
                         android:layout_weight="1"
                         android:layout_gravity="center"
-                        android:theme="@style/SecondaryButtonStyleDark" />
+                        style="@style/SecondaryButtonStyleDark" />
 
                 </LinearLayout>
 

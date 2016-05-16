@@ -4,6 +4,31 @@
     android:layout_height="match_parent"
     tools:context="fnm.wrmc.nmmu.liftme.MyTripsFragment">
 
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:id="@+id/lLemptyTrip">
+
+        <ImageView
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:id="@+id/iVEmptyMyTrips"
+            android:src="@drawable/interested_user"
+            android:layout_gravity="center"
+            android:tint="#bdbdbd" />
+
+        <TextView
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="You have not posted any no trips yet."
+            android:id="@+id/tVEmptyMyTrips"
+            android:layout_gravity="center"
+            android:textAlignment="center" />
+    </LinearLayout>
+
     <android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/my_trips_swipe_refresh_layout"
         android:layout_width="match_parent"

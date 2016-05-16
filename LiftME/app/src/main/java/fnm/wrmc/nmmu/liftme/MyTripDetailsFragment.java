@@ -38,6 +38,7 @@ public class MyTripDetailsFragment extends TripDetailsFragment implements Intere
     private RecyclerView.LayoutManager interestedUserslayoutManager;
     private List<User> interestedUsers;
     private IMyTripsDetailsCallback listener;
+    private LinearLayout lLemptyinterestedView;
 
     @Override
     public void onUserClicked(User clickedUser) {
@@ -70,6 +71,7 @@ public class MyTripDetailsFragment extends TripDetailsFragment implements Intere
         tVPUDetails = (TextView) curView.findViewById(R.id.tVPickupDescription);
         tVDesDetails = (TextView) curView.findViewById(R.id.tVDestinationDescription);
         rVinterestedUser = (RecyclerView)curView.findViewById(R.id.rVTripDetailsInterestedUsers);
+        lLemptyinterestedView = (LinearLayout)curView.findViewById(R.id.lLemptyInterestedView);
 
         handler = new Handler() {
             @Override
@@ -129,6 +131,18 @@ public class MyTripDetailsFragment extends TripDetailsFragment implements Intere
         return curView;
     }
 
+    private void checkIfInterestedIsEmpty(){
+        if(adapter != null && adapter.getItemCount() > 0){
+            rVinterestedUser.setVisibility(View.VISIBLE);
+            lLemptyinterestedView.setVisibility(View.GONE);
+        }else{
+            rVinterestedUser.setVisibility(View.GONE);
+            lLemptyinterestedView.setVisibility(View.VISIBLE);
+        }
+
+
+    }
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -144,11 +158,14 @@ public class MyTripDetailsFragment extends TripDetailsFragment implements Intere
             listener = (IMyTripsDetailsCallback)getActivity();
             listener.onMyTripDetailsAttach();
         }
+
+        checkIfInterestedIsEmpty();
     }
 
     private void OnInterestedUsersSuccess(ServerConnection.GetInterestedUsersRunner.GetInterestedUsersTask IUTask){
         interestedUsers.addAll(IUTask.interestedUsers);
         adapter.notifyDataSetChanged();
+        checkIfInterestedIsEmpty();
     }
 
     private void RetrieveInterestedUsers(){

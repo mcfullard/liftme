@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -46,6 +47,8 @@ public class MyInterestedTripsFragment extends Fragment{
     private Handler tripsHandler;
     private SwipeRefreshLayout myTripsSwipeRefresh;
     private FloatingActionButton addTripFab;
+    private LinearLayout emptyView;
+    private TextView tVEmptyView;
 
     public MyInterestedTripsFragment() {
         // Required empty public constructor
@@ -60,7 +63,8 @@ public class MyInterestedTripsFragment extends Fragment{
         myTripsList =  (ListView)curView.findViewById(R.id.lVMyTrips);
         myTripsSwipeRefresh = (SwipeRefreshLayout)curView.findViewById(R.id.my_trips_swipe_refresh_layout);
         addTripFab = (FloatingActionButton)curView.findViewById(R.id.fabAddTrip);
-
+        emptyView = (LinearLayout)curView.findViewById(R.id.lLemptyTrip);
+        tVEmptyView = (TextView)curView.findViewById(R.id.tVEmptyMyTrips);
 
         return curView;
     }
@@ -119,6 +123,8 @@ public class MyInterestedTripsFragment extends Fragment{
             }
         });
 
+        tVEmptyView.setText("You have not shown interest in a trip yet.");
+        myTripsList.setEmptyView(emptyView);
         myTripsSwipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
