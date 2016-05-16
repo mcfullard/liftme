@@ -82,13 +82,13 @@ public class ViewTripDetails extends TripDetailsFragment {
         if(searchedTrip.getDistanceBetweenPickups() == 0 ){
             tVPickUpDistance.setText("");
         }else{
-            tVPickUpDistance.setText(String.format("%.2fkm from desired pickup.", searchedTrip.getDistanceBetweenPickups()));
+            tVPickUpDistance.setText(String.format("%.2fkm from pickup.", searchedTrip.getDistanceBetweenPickups()));
         }
 
         if(searchedTrip.getDistanceBetweenPickups() == 0 ){
             tVDestinationDistance.setText("");
         }else{
-            tVDestinationDistance.setText(String.format("%.2fkm from desired destination.", searchedTrip.getDistanceBetweenDropOffs()));
+            tVDestinationDistance.setText(String.format("%.2fkm from destination.", searchedTrip.getDistanceBetweenDropOffs()));
         }
     }
 }
