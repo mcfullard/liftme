@@ -10,6 +10,7 @@ import android.location.Criteria;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
@@ -308,6 +309,36 @@ public class LocationActivity extends AppCompatActivity implements
         return address;
     }
 
+    private class DownloadAddressTask extends AsyncTask<Object, Void, ArrayList<String>> {
+        /** The system calls this to perform work in a worker thread and
+         * delivers it the parameters given to AsyncTask.execute() */
+
+        protected ArrayList<String> doInBackground(Object... args) {
+            Context c  = (Context)args[0];
+            LatLng latlong  = (LatLng)args[1];
+            try {
+                return getAddressFromLatLng(c, latlong);
+            }catch (IOException e){
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        /** The system calls this to perform work in the UI thread and delivers
+         * the result from doInBackground() */
+        protected void onPostExecute(ArrayList<String> result) {
+            if(result != null) {
+                ArrayList<String> address = result;
+                locationMarker.setTitle(TextUtils.join(", ", address));
+            }
+            else {
+                locationMarker.setTitle("");
+            }
+            locationMarker.showInfoWindow();
+        }
+
+    }
+
     @Override
     protected void onResumeFragments() {
         super.onResumeFragments();
@@ -343,13 +374,15 @@ public class LocationActivity extends AppCompatActivity implements
     }
 
     private void showMarkerAddress() {
-        try {
-            ArrayList<String> address = getAddressFromLatLng(LocationActivity.this, locationMarker.getPosition());
-            locationMarker.setTitle(TextUtils.join(", ", address));
-        } catch (IOException e) {
-            locationMarker.setTitle("");
-        }
-        locationMarker.showInfoWindow();
+//        try {
+//            ArrayList<String> address = getAddressFromLatLng(LocationActivity.this, locationMarker.getPosition());
+//            locationMarker.setTitle(TextUtils.join(", ", address));
+//        } catch (IOException e) {
+//            locationMarker.setTitle("");
+//        }
+//        locationMarker.showInfoWindow();
+        DownloadAddressTask dAt = new DownloadAddressTask();
+        dAt.execute(LocationActivity.this,locationMarker.getPosition());
     }
 
     public void showTimePickerDialog(View v) {
