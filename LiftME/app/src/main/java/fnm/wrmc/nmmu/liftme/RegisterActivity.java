@@ -23,7 +23,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     EditText edtEmail, edtPassword, edtPasswordConf;
     ProgressBar pbRegisterSpinner;
-    Button btnRegister;
+    Button btnRegister,btnCancel;
     TextView tvRegistering;
 
     @Override
@@ -34,6 +34,7 @@ public class RegisterActivity extends AppCompatActivity {
         edtPassword = (EditText) findViewById(R.id.edtRegisterPassword);
         edtPasswordConf = (EditText) findViewById(R.id.edtRegisterPasswordConf);
         btnRegister = (Button) findViewById(R.id.btnRegRegister);
+        btnCancel = (Button) findViewById(R.id.btnCancelReg);
         pbRegisterSpinner = (ProgressBar) findViewById(R.id.pbRegisterSpinner);
         tvRegistering = (TextView)findViewById(R.id.tVRegistering);
 
@@ -68,6 +69,13 @@ public class RegisterActivity extends AppCompatActivity {
                 }
             }
         };
+
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
     }
 
     private void OnRegistrationSuccess(RegistrationTask regTask) {

@@ -55,12 +55,19 @@ public class InterestedUsersListAdapter extends RecyclerView.Adapter<InterestedU
         TextView firstLetter = holder.firstLetter;
         View divider = holder.divider;
         ImageView iVCircleImage = holder.iVCircleImage;
+        ImageView iVhasCar = holder.iVHasCar;
 
         User curUser = interestedUsers.get(listPosition);
         holder.user = curUser;
 
         firstLetter.setText("" + curUser.getName().charAt(0));
         iVCircleImage.setBackgroundTintList(ColorStateList.valueOf(RandomColor()));
+
+        if(curUser.getAvailableAsDriver() == 1){
+            iVhasCar.setVisibility(View.VISIBLE);
+        }else{
+            iVhasCar.setVisibility(View.INVISIBLE);
+        }
 
         userName.setText(String.format("%s %s", curUser.getName(), curUser.getSurname()));
         if(curUser.getEmail().isEmpty()){
@@ -114,6 +121,7 @@ public class InterestedUsersListAdapter extends RecyclerView.Adapter<InterestedU
         TextView userPhone;
         TextView firstLetter;
         ImageView iVCircleImage;
+        ImageView iVHasCar;
         RelativeLayout rLayout;
         View divider;
         User user;
@@ -129,6 +137,7 @@ public class InterestedUsersListAdapter extends RecyclerView.Adapter<InterestedU
             this.iVCircleImage = (ImageView) itemView.findViewById(R.id.iVInterestedCircle);
             this.rLayout = (RelativeLayout) itemView.findViewById(R.id.rLInterestedUsrLayout);
             this.divider = itemView.findViewById(R.id.interestedUserDividor);
+            this.iVHasCar = (ImageView)itemView.findViewById(R.id.iVHasCar);
             rLayout.setOnClickListener(this);
             this.listener = listener;
         }
