@@ -5,9 +5,12 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -17,18 +20,23 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 import java.io.Serializable;
 
 import fnm.wrmc.nmmu.liftme.Data_Objects.SearchedTrip;
 import fnm.wrmc.nmmu.liftme.Data_Objects.Trip;
+import fnm.wrmc.nmmu.liftme.Data_Objects.User;
 
 public class DashboardActivity extends AppCompatActivity implements
         NavigationView.OnNavigationItemSelectedListener,
         MyTripsFragment.IMyTripsCallback,
         MyTripDetailsFragment.IMyTripsDetailsCallback,
         UserProfileFragment.AcceptChangeClickListener,
-        MyInterestedTripsFragment.IMyinterstedTripsCallback{
+        MyInterestedTripsFragment.IMyinterstedTripsCallback,
+        SetToolbarTitleListener
+{
 
     static public String USER_PROFILE_FRAGMENT = "fnm.wrmc.nmmu.liftme.UserProfileFragment";
     private int currentMenuResource = R.menu.dashboard;
@@ -41,6 +49,7 @@ public class DashboardActivity extends AppCompatActivity implements
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setTitle("My Trips");
 
         final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -63,7 +72,29 @@ public class DashboardActivity extends AppCompatActivity implements
         }
 
         AddFragmentToContainer(R.id.container, mainFragment);
-
+        View headerView = navigationView.inflateHeaderView(R.layout.nav_header_dashboard);
+        final TextView drawerTitle = (TextView) headerView.findViewById(R.id.drawer_title);
+        final TextView drawerSubtitle = (TextView) headerView.findViewById(R.id.drawer_subtitle);
+        User currentUser;
+        UserProfileFragment.getUserDetails(this, new Handler() {
+            @Override
+            public void handleMessage(Message msg) {
+                switch (msg.what) {
+                    case ServerConnection.GET_USER_DETAILS_TASK:
+                        ServerConnection.GetUserDetailsRunner.GetUserDetailsTask task = (ServerConnection.GetUserDetailsRunner.GetUserDetailsTask) msg.obj;
+                        switch (task.authStatus){
+                            case ServerConnection.AUTHENTICATION_SUCCESS:
+                                drawerTitle.setText(String.format("%s %s", task.name, task.surname));
+                                drawerSubtitle.setText(task.email);
+                                break;
+                        }
+                        break;
+                    default:
+                        super.handleMessage(msg);
+                        break;
+                }
+            }
+        });
     }
 
     private void AddFragmentToContainer(int container, Fragment fragment) {
@@ -180,21 +211,13 @@ public class DashboardActivity extends AppCompatActivity implements
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
+        Fragment fragment = getFragmentFromContext("fnm.wrmc.nmmu.liftme.MyTripsFragment", null);
+        if (id == R.id.action_favourite_trips) {
+            fragment = getFragmentFromContext("fnm.wrmc.nmmu.liftme.MyInterestedTripsFragment", null);
+        } else if (id == R.id.action_edit_profile) {
+            fragment = getFragmentFromContext("fnm.wrmc.nmmu.liftme.UserProfileFragment", null);
         }
-
+        AddFragmentToContainer(R.id.container, fragment);
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
@@ -252,5 +275,12 @@ public class DashboardActivity extends AppCompatActivity implements
         Intent intent = new Intent(context, LoginActivity.class)
                 .addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
+    }
+
+    @Override
+    public void onSetTitle(String title) {
+        ActionBar actionBar = getSupportActionBar();
+        if(actionBar != null)
+            actionBar.setTitle(title);
     }
 }

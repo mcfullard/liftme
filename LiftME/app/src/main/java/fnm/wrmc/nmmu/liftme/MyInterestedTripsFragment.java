@@ -12,6 +12,8 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -37,6 +39,7 @@ public class MyInterestedTripsFragment extends Fragment{
     }
 
     private IMyinterstedTripsCallback callbackListener;
+    private SetToolbarTitleListener toolbarTitleListener;
     private MyTripsListAdapter adapter;
     private ListView myTripsList;
     private List<Trip> trips;
@@ -65,7 +68,6 @@ public class MyInterestedTripsFragment extends Fragment{
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
         trips = new ArrayList<>();
         adapter = new MyTripsListAdapter(getContext(),trips);
         myTripsList.setAdapter(adapter);
@@ -103,6 +105,10 @@ public class MyInterestedTripsFragment extends Fragment{
 
         if(getActivity() instanceof IMyinterstedTripsCallback){
             callbackListener = (IMyinterstedTripsCallback)getActivity();
+        }
+        if(getActivity() instanceof SetToolbarTitleListener) {
+            toolbarTitleListener = (SetToolbarTitleListener) getActivity();
+            toolbarTitleListener.onSetTitle("Favourite Trips");
         }
 
         myTripsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -167,7 +173,4 @@ public class MyInterestedTripsFragment extends Fragment{
         Intent intent = new Intent(getContext(), LocationActivity.class);
         startActivity(intent);
     }
-
-
-
 }

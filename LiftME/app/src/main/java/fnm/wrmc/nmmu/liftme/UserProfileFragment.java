@@ -37,6 +37,7 @@ public class UserProfileFragment extends Fragment {
     Handler getUserDetailsHandler;
     Handler setUserDetailsHandler;
     AcceptChangeClickListener acceptChangeClickListener;
+    private SetToolbarTitleListener toolbarTitleListener;
 
     public interface AcceptChangeClickListener {
         public void onAcceptChangeClick();
@@ -46,7 +47,6 @@ public class UserProfileFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         setHasOptionsMenu(true);
-
         View view = inflater.inflate(R.layout.fragment_user_profile, container, false);
         editProfileName = (EditText)view.findViewById(R.id.editProfileName);
         editProfileSurname = (EditText)view.findViewById(R.id.editProfileSurname);
@@ -145,15 +145,19 @@ public class UserProfileFragment extends Fragment {
         if(getActivity() instanceof DashboardActivity) {
             acceptChangeClickListener = (DashboardActivity)getActivity();
         }
+        if(getActivity() instanceof SetToolbarTitleListener) {
+            toolbarTitleListener = (SetToolbarTitleListener) getActivity();
+            toolbarTitleListener.onSetTitle("Edit Profile");
+        }
 
-        getUserDetails();
+        getUserDetails(getContext(), getUserDetailsHandler);
     }
 
-    private String getAuthKey() {
-        SharedPreferences sharedPref = getActivity().getSharedPreferences("GlobalPref", Context.MODE_PRIVATE);
+    public static String getAuthKey(Context context) {
+        SharedPreferences sharedPref = context.getSharedPreferences("GlobalPref", Context.MODE_PRIVATE);
         String authKey = sharedPref.getString(ServerConnection.AUTHENTICATION_TOKEN,"");
         if(authKey.isEmpty()){
-            onGetUserDetailsFailure("You never logged in previously. Please login.");
+            Toast.makeText(context, "You never logged in previously. Please login.", Toast.LENGTH_SHORT).show();
             return "";
         }
         return authKey;
@@ -163,7 +167,7 @@ public class UserProfileFragment extends Fragment {
      *  Extract the user data from the graphical components, pass it to a task and pass the task to a runnable thread
      */
     private void setUserDetails() {
-        String authKey = getAuthKey();
+        String authKey = getAuthKey(getContext());
         ServerConnection.SetUserDetailsRunner.SetDetailsTask setDetailsTask = new ServerConnection.SetUserDetailsRunner.SetDetailsTask(
                 authKey,
                 setUserDetailsHandler,
@@ -178,9 +182,9 @@ public class UserProfileFragment extends Fragment {
         setUserDetailsThread.start();
     }
 
-    private void getUserDetails() {
-        String authKey = getAuthKey();
-        ServerConnection.GetUserDetailsRunner.GetUserDetailsTask userDetailsTask = new ServerConnection.GetUserDetailsRunner.GetUserDetailsTask(authKey, getUserDetailsHandler);
+    public static void getUserDetails(Context context, Handler handler) {
+        String authKey = getAuthKey(context);
+        ServerConnection.GetUserDetailsRunner.GetUserDetailsTask userDetailsTask = new ServerConnection.GetUserDetailsRunner.GetUserDetailsTask(authKey, handler);
         Thread userDetailsThread = new Thread (new ServerConnection.GetUserDetailsRunner(userDetailsTask));
         userDetailsThread.start();
     }
