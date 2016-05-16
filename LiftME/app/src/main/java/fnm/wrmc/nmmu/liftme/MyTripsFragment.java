@@ -104,6 +104,11 @@ public class MyTripsFragment extends Fragment {
             callbackListener = (IMyTripsCallback)getActivity();
         }
 
+        if(getActivity() instanceof SetToolbarTitleListener) {
+            SetToolbarTitleListener toolbarTitleListener = (SetToolbarTitleListener) getActivity();
+            toolbarTitleListener.onSetTitle("My Trips");
+        }
+
         myTripsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

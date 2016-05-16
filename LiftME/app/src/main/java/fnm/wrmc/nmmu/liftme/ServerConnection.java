@@ -61,7 +61,7 @@ public class ServerConnection {
     public static final int GET_USER_INTERESTED_TRIP_TASK = 9;
     public static final int ADD_NEW_TRIP_TASK = 10;
 
-    private static final String SERVER_IP = "192.168.1.82";//"csdev.nmmu.ac.za";
+    private static final String SERVER_IP = "10.0.0.104";//"csdev.nmmu.ac.za";
     private static final int SERVER_PORT = 8111;
     private static final int CONNECTION_TIMEOUT = 5000;
 
