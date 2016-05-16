@@ -55,7 +55,9 @@ public abstract class TripDetailsFragment extends Fragment {
     }
 
     protected void OnRetrieveFailure(String message) {
-        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+        if(getContext() != null) {
+            Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+        }
     }
 
     protected void RetrieveAddressFromLatLong() {

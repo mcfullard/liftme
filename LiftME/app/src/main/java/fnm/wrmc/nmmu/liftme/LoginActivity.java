@@ -102,24 +102,13 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void GoToDashBoard(){
-
-
         // may want to send the dashboard useful data here... or perhaps that should be done asynchronously?
         Intent intent = new Intent(this, DashboardActivity.class);
         startActivity(intent);
-
-//        Intent intent = new Intent(this, LocationActivity.class);
-//        startActivity(intent);
     }
 
     private void OnAuthenticationFailure(String message){
         Toast.makeText(this,message,Toast.LENGTH_SHORT).show();
-
-
-        //TODO remove this!!!!!!
-        Toast.makeText(this,"FOR DEBUGGING PURPOSES ONLY YOU CAN LOGIN WITHOUT THE SERVER WORKING!!!!!!!!!",Toast.LENGTH_LONG).show();
-        Intent intent = new Intent(this, DashboardActivity.class);
-        startActivity(intent);
         /*
         Intent intent = new Intent(this, LocationActivity.class);
         startActivity(intent);

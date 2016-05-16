@@ -155,8 +155,10 @@ public class MyTripsFragment extends Fragment {
     }
 
     private void OnUserTripRetrievalFailure(String message) {
-        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
-        myTripsSwipeRefresh.setRefreshing(false);
+        if(getContext() != null) {
+            Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+            myTripsSwipeRefresh.setRefreshing(false);
+        }
     }
 
     public void OnMyTripClick(Trip trip){
