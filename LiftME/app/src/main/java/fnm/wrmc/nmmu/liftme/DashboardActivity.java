@@ -1,7 +1,9 @@
 package fnm.wrmc.nmmu.liftme;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -130,10 +132,10 @@ public class DashboardActivity extends AppCompatActivity implements
         //noinspection SimplifiableIfStatement
         switch (currentMenuResource) {  //Allows for the action menu to change depending on current context
             case R.menu.dashboard:
-                if (id == R.id.action_settings) {
-                return true;
-            }
-                break;
+                if (id == R.id.action_logout) {
+                    logout(DashboardActivity.this);
+                    return true;
+                }
             case R.menu.my_trip_delete_menu:
                 if(id == R.id.action_delete_trip){
                     if(activeFragment instanceof MyTripDetailsFragment) {
@@ -242,5 +244,13 @@ public class DashboardActivity extends AppCompatActivity implements
         B.putSerializable(TripDetailsFragment.ARG_TRIP, ((Serializable) new SearchedTrip(clickedTrip,0,0)));
         Fragment newFragment = getFragmentFromContext(ViewTripDetails.FRAG_IDENTIFYER, B);
         AddFragmentToContainer(R.id.container, newFragment);
+    }
+
+    public static void logout(Context context) {
+        SharedPreferences sharedPref = context.getSharedPreferences("GlobalPref", Context.MODE_PRIVATE);
+        sharedPref.edit().remove(ServerConnection.AUTHENTICATION_TOKEN).commit();
+        Intent intent = new Intent(context, LoginActivity.class)
+                .addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
     }
 }
