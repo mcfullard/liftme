@@ -59,8 +59,8 @@ public class SearchResultsAdapter extends RecyclerView.Adapter<MatchedTripViewHo
             e.printStackTrace();
         }
         holder.title.setText(String.format("%s to %s", pickupAddress, dropoffAddress));
-        holder.subTitle1.setText(String.format("%fm from your pickup", trip.getDistanceBetweenPickups()));
-        holder.subTitle2.setText(String.format("%fm from your destination", trip.getDistanceBetweenDropOffs()));
+        holder.subTitle1.setText(String.format("%.2fkm from pickup", trip.getDistanceBetweenPickups()));
+        holder.subTitle2.setText(String.format("%.2fkm from destination", trip.getDistanceBetweenDropOffs()));
     }
 
     // Return the size of your dataset (invoked by the layout manager)
