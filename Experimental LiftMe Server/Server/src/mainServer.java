@@ -9,7 +9,12 @@ import java.util.Map;
  */
 public class mainServer {
 
-    public static void main(String args[]){
+    public static void main(String args[]) {
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
         new mainServer();
     }
 
@@ -20,7 +25,7 @@ public class mainServer {
         currentConnections = new HashMap<>();
 
         try{
-            serverSocket = new ServerSocket(5050);
+            serverSocket = new ServerSocket(8111);
             System.out.println("SERVER Thread: Server started Listening");
             while(true){
 
