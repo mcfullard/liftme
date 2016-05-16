@@ -76,6 +76,7 @@ public class ClientConnectionThread extends Thread {
                         break;
                     case GET_USER_INTERESTED_TRIPS:
                         GetUserInterestedTrips();
+                        break;
                 }
 
                 response = readStream.readUTF();
