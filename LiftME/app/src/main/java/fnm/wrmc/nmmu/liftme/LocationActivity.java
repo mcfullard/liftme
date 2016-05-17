@@ -134,6 +134,13 @@ public class LocationActivity extends AppCompatActivity implements
         };
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        handleIntent();
+        updateBasedOnIntent();
+    }
+
     private void handleIntent() {
         Intent intent = getIntent();
         if(intent != null) {
@@ -276,12 +283,28 @@ public class LocationActivity extends AppCompatActivity implements
                     }
                     break;
                 case 2:
-                    LatLng latLng = new LatLng(userTrip.getPickupLat(), userTrip.getPickupLong());
-                    panAndZoomCam(latLng);
+                    if(userTrip != null) {
+                        LatLng latLng = new LatLng(userTrip.getPickupLat(), userTrip.getPickupLong());
+                        panAndZoomCam(latLng);
+                    }else{
+                        LocationManager locationManager1 = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+                        Criteria criteria1 = new Criteria();
+
+                        Location location1 = locationManager1.getLastKnownLocation(locationManager1.getBestProvider(criteria1, false));
+                        if (location1 != null)
+                        {
+                            LatLng locationPos = new LatLng(location1.getLatitude(), location1.getLongitude());
+                            panAndZoomCam(locationPos);
+                        }else{
+                            LatLng defualtLatLng = new LatLng(0,0);
+                            panAndZoomCam(defualtLatLng);
+                        }
+                    }
                     break;
             }
         }
     }
+
 
     // method to move camera
     private void panAndZoomCam(LatLng latLng) {

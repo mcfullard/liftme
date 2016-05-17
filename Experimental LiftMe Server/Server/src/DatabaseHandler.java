@@ -14,7 +14,7 @@ public class DatabaseHandler {
 
     // JDBC driver name and database URL
     static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-    static final String DB_URL = "jdbc:mysql://localhost:3306/liftme";
+    static final String DB_URL = "jdbc:mysql://postgrad.nmmu.ac.za:3306/liftme";
 
     static final double TRIP_SEARCH_DB_TOLERANCE = 0.5;
 

@@ -175,6 +175,7 @@ public class MyTripsFragment extends Fragment {
 
     private void AddTripClick(){
         Intent intent = new Intent(getContext(), LocationActivity.class);
+        intent.putExtra("IS_PICKUP",1);
         startActivity(intent);
     }
 
